@@ -2,20 +2,39 @@
 #define GEOMETRY_HPP
 
 namespace geometry {
-  template <typename TNumber>
+  template<typename T = float>
   class Vector2 {
   public:
-    TNumber x = 0.0;
-    TNumber y = 0.0;
+    const T x, y;
 
-    Vector2();
-    Vector2(const TNumber x);
-    Vector2(const TNumber x, const TNumber y);
-    Vector2(const Vector2&);
-    ~Vector2();
+    T& operator[](const size_t);
+    Vector2(const T, const T);
+  };
 
-    TNumber arg() const;
-    TNumber abs() const;
+  template<typename T = float>
+  class Matrix {
+  private:
+    class Proxy {
+    private:
+      const int x;
+      T* const array;
+
+    public:
+      const Vector2<size_t>& size;
+
+      T& operator[](const int);
+
+      Proxy(T* const, const Vector2<size_t>&, const int);
+    };
+
+    T* array;
+
+  public:
+    const Vector2<size_t> size;
+
+    Proxy operator[](const int);
+    Matrix(const size_t, const size_t);
+    ~Matrix();
   };
 }
 
