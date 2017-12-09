@@ -74,8 +74,8 @@ namespace engine {
     tiles = new tileid_t[x * y]();
     size.x = x;
     size.y = y;
-    player.pos = sf::Vector2f(24, 64);
-    player.vel = sf::Vector2f(8, -16);
+    player.pos = sf::Vector2f(24, 128);
+    player.vel += sf::Vector2f(2, -16) * 16.0f;
   }
 
   World::~World() {
@@ -98,12 +98,15 @@ namespace engine {
   void Engine::resize(const size_t width, const size_t height) {}
 
   void Engine::tick() {
-    static const float max_yvel = 64;
+    // Constants in tiles (16) per second
+    static const float gravity = 16 * 16;
+    static const float max_yvel = 16 * 16;
+
+    world->player.vel += world->player.netForce / (tickRate * tickRate);
     if (world->player.vel.y < max_yvel) {
-      world->player.applyForce(sf::Vector2f(0, 4));
-      world->player.vel += (world->player.netForce / tickRate);
+      world->player.vel.y += gravity / tickRate;
     }
-    if (world->player.vel.y > max_yvel) {
+    else if (world->player.vel.y > max_yvel) {
       world->player.vel.y = max_yvel;
     }
     world->player.pos += world->player.vel / tickRate;
@@ -152,9 +155,10 @@ namespace engine {
     return EXIT_SUCCESS;
   }
 
-  Engine::Engine(const arglist& args) : args(args), tickRate(128) {
+  Engine::Engine(const arglist& args) : args(args) {
     window = new sf::RenderWindow(sf::VideoMode::getDesktopMode(), "Super Pixel Brawler");
     world = new World(64, 32);
+    tickRate = 128;
     tileart.loadFromFile("tiles.png");
   }
 
