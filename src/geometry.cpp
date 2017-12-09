@@ -1,6 +1,4 @@
-#include <utility>
-
-#include <ctgmath>
+#include <cstddef>
 
 #include "geometry.hpp"
 
@@ -36,7 +34,7 @@ namespace geometry {
   Matrix<T>::Proxy::Proxy(T* const array, const Vector2<size_t>& size, const int x) : array(array), size(size), x(x) {}
 
   template<typename T>
-  typename Matrix<T>::Proxy Matrix<T>::operator[](const int x) {
+  inline typename Matrix<T>::Proxy Matrix<T>::operator[](const int x) {
     if (x < size.x) {
       return Proxy(array, size, x);
     }
