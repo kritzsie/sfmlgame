@@ -2,6 +2,7 @@
 #include <sstream>
 #include <stdexcept>
 
+#include <cmath>
 #include <cstddef>
 #include <cstdlib>
 
@@ -99,7 +100,6 @@ namespace engine {
   }
 
   void Engine::resize(const size_t width, const size_t height) {
-    std::cout << width << "  " << height << "\n";
     window->setSize(sf::Vector2u(width, height));
   }
 
@@ -110,9 +110,7 @@ namespace engine {
 
     world->player.vel += world->player.netForce / (tickRate * tickRate);
     if (world->player.vel.y < max_yvel)
-      world->player.vel.y += gravity / tickRate;
-    else if (world->player.vel.y > max_yvel)
-      world->player.vel.y = max_yvel;
+      world->player.vel.y = fmin(world->player.vel.y + gravity / tickRate, max_yvel);
     world->player.pos += world->player.vel / tickRate;
     world->camera.pos += (4.0f * (world->player.pos - world->camera.pos) - world->camera.vel / 2.0f) / tickRate;
   }
@@ -128,13 +126,11 @@ namespace engine {
         resize(event.size.width, event.size.height);
     }
 
-    sf::Sprite tile(tileart);
-    {
-      auto view = window->getDefaultView();
-      view.setCenter(world->camera.pos);
-      view.zoom(0.5f);
-      window->setView(view);
-    }
+    auto view = sf::View(sf::Vector2f(), sf::Vector2f(width, height) / 2.0f);
+    view.setCenter(world->camera.pos);
+    window->setView(view);
+
+    auto tile = sf::Sprite(tileart);
     for (int y = 0; y < world->size.y; y++) {
       for (int x = 0; x < world->size.x; x++) {
         if (world->getTile(x, y)) {
@@ -173,12 +169,7 @@ namespace engine {
     window = new sf::RenderWindow(sf::VideoMode::getDesktopMode(), "Super Pixel Brawler");
     world = new World(64, 32);
     tickRate = 128;
-    {
-      auto view = window->getDefaultView();
-      view.setCenter(0, 0);
-      view.zoom(0.5f);
-      window->setView(view);
-    }
+    window->setView(sf::View(sf::Vector2f(), sf::Vector2f(window->getSize().x, window->getSize().y) / 2.0f));
     tileart.loadFromFile("tiles.png");
   }
 
