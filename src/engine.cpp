@@ -13,6 +13,8 @@
 #include "engine.hpp"
 
 namespace engine {
+  BaseEntity::BaseEntity(const entid_t entid) {}
+
   void Entity::applyForce(const sf::Vector2f& f) {
     netForce += f;
   }
@@ -21,7 +23,7 @@ namespace engine {
     applyForce(sf::Vector2f(x, y));
   }
 
-  Entity::Entity(const entid_t entid, const float mass) : mass(mass) {}
+  Entity::Entity(const entid_t entid, const float mass) : BaseEntity(entid), mass(mass) {}
 
   bool World::init() {
     for (int x = 0; x < 4; x++) {
@@ -70,12 +72,13 @@ namespace engine {
     }
   }
 
-  World::World(size_t x, size_t y) : player(1, 84) {
+  World::World(size_t x, size_t y) : player(0, 80), camera(0) {
     tiles = new tileid_t[x * y]();
     size.x = x;
     size.y = y;
     player.pos = sf::Vector2f(24, 128);
     player.vel += sf::Vector2f(2, -16) * 16.0f;
+    camera.pos = player.pos;
   }
 
   World::~World() {
@@ -95,7 +98,10 @@ namespace engine {
     return true;
   }
 
-  void Engine::resize(const size_t width, const size_t height) {}
+  void Engine::resize(const size_t width, const size_t height) {
+    std::cout << width << "  " << height << "\n";
+    window->setSize(sf::Vector2u(width, height));
+  }
 
   void Engine::tick() {
     // Constants in tiles (16) per second
@@ -103,13 +109,12 @@ namespace engine {
     static const float max_yvel = 16 * 16;
 
     world->player.vel += world->player.netForce / (tickRate * tickRate);
-    if (world->player.vel.y < max_yvel) {
+    if (world->player.vel.y < max_yvel)
       world->player.vel.y += gravity / tickRate;
-    }
-    else if (world->player.vel.y > max_yvel) {
+    else if (world->player.vel.y > max_yvel)
       world->player.vel.y = max_yvel;
-    }
     world->player.pos += world->player.vel / tickRate;
+    world->camera.pos += (4.0f * (world->player.pos - world->camera.pos) - world->camera.vel / 2.0f) / tickRate;
   }
 
   void Engine::render() {
@@ -117,11 +122,19 @@ namespace engine {
     auto height = window->getSize().y;
 
     while (window->pollEvent(event)) {
-      if      (event.type == sf::Event::Closed)  window->close();
-      else if (event.type == sf::Event::Resized) resize(event.size.width, event.size.height);
+      if (event.type == sf::Event::Closed)
+        window->close();
+      else if (event.type == sf::Event::Resized)
+        resize(event.size.width, event.size.height);
     }
 
     sf::Sprite tile(tileart);
+    {
+      auto view = window->getDefaultView();
+      view.setCenter(world->camera.pos);
+      view.zoom(0.5f);
+      window->setView(view);
+    }
     for (int y = 0; y < world->size.y; y++) {
       for (int x = 0; x < world->size.x; x++) {
         if (world->getTile(x, y)) {
@@ -136,6 +149,7 @@ namespace engine {
     }
     world->player.sprite.setPosition(world->player.pos);
     window->draw(world->player.sprite);
+
     window->display();
   }
 
@@ -159,6 +173,12 @@ namespace engine {
     window = new sf::RenderWindow(sf::VideoMode::getDesktopMode(), "Super Pixel Brawler");
     world = new World(64, 32);
     tickRate = 128;
+    {
+      auto view = window->getDefaultView();
+      view.setCenter(0, 0);
+      view.zoom(0.5f);
+      window->setView(view);
+    }
     tileart.loadFromFile("tiles.png");
   }
 

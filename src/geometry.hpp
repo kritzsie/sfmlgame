@@ -17,7 +17,7 @@ namespace geometry {
     class Proxy {
     private:
       const int x;
-      T* const array;
+      T* const data;
 
     public:
       const Vector2<size_t>& size;
@@ -27,7 +27,7 @@ namespace geometry {
       Proxy(T* const, const Vector2<size_t>&, const int);
     };
 
-    T* array;
+    T* data;
 
   public:
     const Vector2<size_t> size;

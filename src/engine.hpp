@@ -14,7 +14,15 @@
 namespace engine {
   using entid_t = unsigned int;
 
-  class Entity {
+  class BaseEntity {
+  public:
+    sf::Vector2f pos;
+    sf::Vector2f vel;
+
+    BaseEntity(const entid_t);
+  };
+
+  class Entity : public BaseEntity {
   public:
     sf::Texture texture;
     sf::Sprite sprite;
@@ -34,9 +42,10 @@ namespace engine {
 
   class World {
   public:
-    tileid_t *tiles;
+    tileid_t* tiles;
     sf::Vector2<size_t> size;
     Entity player;
+    BaseEntity camera;
 
     bool init();
     tileid_t& getTile(const int, const int);
