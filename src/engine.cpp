@@ -126,7 +126,7 @@ namespace engine {
         resize(event.size.width, event.size.height);
     }
 
-    auto view = sf::View(sf::Vector2f(), sf::Vector2f(width, height) / 2.0f);
+    auto view = sf::View(sf::Vector2f(), sf::Vector2f(width, height) / 3.0f);
     view.setCenter(world->camera.pos);
     window->setView(view);
 
@@ -167,9 +167,8 @@ namespace engine {
 
   Engine::Engine(const arglist& args) : args(args) {
     window = new sf::RenderWindow(sf::VideoMode::getDesktopMode(), "Super Pixel Brawler");
-    world = new World(64, 32);
+    world = new World(128, 64);
     tickRate = 128;
-    window->setView(sf::View(sf::Vector2f(), sf::Vector2f(window->getSize().x, window->getSize().y) / 2.0f));
     tileart.loadFromFile("tiles.png");
   }
 
