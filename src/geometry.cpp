@@ -14,7 +14,7 @@ namespace geometry {
     case 1:
       return y;
     default:
-      throw std::out_of_range(fmt::format("array index out of bounds ({} > 1)", index));
+      throw std::out_of_range(fmt::format("array index out of bounds ({} >= 2)", index));
     }
   }
 
@@ -22,26 +22,22 @@ namespace geometry {
   Vector2<T>::Vector2(const T x, const T y) : x(x), y(y) {}
 
   template<typename T>
-  T& Matrix<T>::Proxy::operator[](const int y) {
-    if (y < size.y) {
+  inline T& Matrix<T>::Proxy::operator[](const int y) {
+    if (y < size.y)
       return data[x + y * size.x];
-    }
-    else {
-      throw std::out_of_range(fmt::format("y index out of bounds ({0} > {1})", y, size.y - 1));
-    }
+    else
+      throw std::out_of_range(fmt::format("y index out of bounds ({0} >= {1})", y, size.y));
   }
 
   template<typename T>
-  Matrix<T>::Proxy::Proxy(T* const array, const Vector2<size_t>& size, const int x) : data(array), size(size), x(x) {}
+  Matrix<T>::Proxy::Proxy(T* const data, const Vector2<size_t>& size, const int x) : data(data), size(size), x(x) {}
 
   template<typename T>
   inline typename Matrix<T>::Proxy Matrix<T>::operator[](const int x) {
-    if (x < size.x) {
+    if (x < size.x)
       return Proxy(data, size, x);
-    }
-    else {
-      throw std::out_of_range(fmt::format("x index out of bounds ({0} > {1})", x, size.x - 1));
-    }
+    else
+      throw std::out_of_range(fmt::format("x index out of bounds ({0} >= {1})", x, size.x));
   }
 
   template<typename T>

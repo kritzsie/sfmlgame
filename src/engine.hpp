@@ -1,25 +1,23 @@
 #ifndef ENGINE_HPP
 #define ENGINE_HPP
 
-#include <vector>
-
-#include <cstddef>
-
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
 
-namespace engine {
-  using entid_t = unsigned int;
+#include <cstddef>
 
+#include <vector>
+
+namespace engine {
   class BaseEntity {
   public:
     sf::Vector2f pos;
     sf::Vector2f vel;
 
-    BaseEntity(const entid_t);
+    BaseEntity();
   };
 
   class Entity : public BaseEntity {
@@ -30,12 +28,11 @@ namespace engine {
     sf::Vector2f vel;
     sf::Vector2f netForce;
     float mass;
-    bool flying;
 
     void applyForce(const float, const float);
     void applyForce(const sf::Vector2f&);
 
-    Entity(const entid_t, const float);
+    Entity(const float);
   };
 
   using tileid_t = unsigned int;
