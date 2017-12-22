@@ -12,27 +12,48 @@
 #include <vector>
 
 namespace engine {
+  using enttype_t = unsigned int;
+
   class BaseEntity {
   public:
+    enttype_t type;
     sf::Vector2f pos;
     sf::Vector2f vel;
-
-    BaseEntity();
   };
 
-  class Entity : public BaseEntity {
+  class RenderEntity : public BaseEntity {
   public:
-    sf::Texture texture;
     sf::Sprite sprite;
-    sf::Vector2f pos;
-    sf::Vector2f vel;
-    sf::Vector2f netForce;
+    sf::Texture texture;
+    sf::Vector2f offset;
+    sf::Vector2f scale;
+    char facing;
+
+    void flipX();
+    void flipY();
+    sf::Vector2f toView();
+
+    RenderEntity(const sf::Vector2f&, const sf::Vector2f&);
+  };
+
+  class Entity : public RenderEntity {
+  public:
     float mass;
+    sf::Vector2f netForce;
 
     void applyForce(const float, const float);
     void applyForce(const sf::Vector2f&);
 
-    Entity(const float);
+    Entity(const float, const sf::Vector2f&, const sf::Vector2f&);
+  };
+
+  class PlayerEntity : public Entity {
+  public:
+    struct State {
+      bool jumping, crouching, underwater;
+    } state;
+
+    PlayerEntity(const float, const sf::Vector2f&, const sf::Vector2f&);
   };
 
   using tileid_t = unsigned int;
@@ -41,9 +62,11 @@ namespace engine {
   public:
     tileid_t* tiles;
     sf::Vector2<size_t> size;
-    Entity player;
+    PlayerEntity player;
     BaseEntity camera;
 
+    template<typename T>
+    static T toView(const T&);
     bool init();
     tileid_t& getTile(const int, const int);
     void setTile(const int, const int, const tileid_t);
@@ -53,24 +76,32 @@ namespace engine {
   };
 
   using arglist = std::vector<const char*>;
+  using uint_t = unsigned int;
 
   class Engine {
   private:
     const arglist& args;
+    uint_t tick;
     sf::Clock tickClock;
     float tickTime, tickRate;
     sf::Event event;
     sf::RenderWindow* window;
+    sf::Texture background;
     sf::Texture tileart;
     World* world;
+    struct Keys {
+      bool up, left, down, right;
+      bool jump, run;
+    } keys;
 
     bool init();
-    void resize(const size_t width, const size_t height);
-    void tick();
+    void updateKeys();
+    void resize(const size_t, const size_t);
+    void onTick();
     void render();
 
   public:
-    int run();
+    int exec();
     Engine(const arglist&);
     ~Engine();
   };

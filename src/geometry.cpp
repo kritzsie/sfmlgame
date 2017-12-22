@@ -1,9 +1,9 @@
 #include <stdexcept>
 
-#include <cstddef>
-
 #include "fmt/format.h"
 #include "geometry.hpp"
+
+#include <cstddef>
 
 namespace geometry {
   template<typename T>

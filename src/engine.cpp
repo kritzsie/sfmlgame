@@ -6,7 +6,7 @@
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
 
-#include <cmath>
+#include <ctgmath>
 #include <cstddef>
 #include <cstdlib>
 
@@ -15,8 +15,27 @@
 #include <stdexcept>
 
 namespace engine {
-  BaseEntity::BaseEntity() {}
+  // BaseEntity skipped; no methods
+  // RenderEntity
+  void RenderEntity::flipX() {
+    scale.x *= -1;
+  }
 
+  void RenderEntity::flipY() {
+    scale.y *= -1;
+  }
+
+  // Helper method to transform from world to screen coordinates
+  sf::Vector2f RenderEntity::toView() {
+    return sf::Vector2f(pos.x - (offset.x * scale.x * facing), -(pos.y - (offset.y * scale.y)));
+  }
+
+  RenderEntity::RenderEntity(
+    const sf::Vector2f& offset = sf::Vector2f(),
+    const sf::Vector2f& scale = sf::Vector2f()
+  ) : offset(offset), scale(scale), facing(1) {}
+
+  // Use Entity for things with collision
   void Entity::applyForce(const sf::Vector2f& f) {
     netForce += f;
   }
@@ -25,11 +44,27 @@ namespace engine {
     applyForce(sf::Vector2f(x, y));
   }
 
-  Entity::Entity(const float mass) : BaseEntity() {
-    this->mass = mass;
+  Entity::Entity(
+    const float mass = 1,
+    const sf::Vector2f& offset = sf::Vector2f(),
+    const sf::Vector2f& scale = sf::Vector2f()
+  ) : RenderEntity(offset, scale), mass(mass) {}
+
+  // Players inherit from Entity, but also hold states (jumping, crouching, etc.)
+  PlayerEntity::PlayerEntity(
+    const float mass = 85,
+    const sf::Vector2f& offset = sf::Vector2f(),
+    const sf::Vector2f& scale = sf::Vector2f(1, 1)
+  ) : Entity(mass, offset, scale) {}
+
+  // Static helper method used to flip the Y axis
+  template<typename T>
+  inline T World::toView(const T& vector) {
+    return T(vector.x, -vector.y);
   }
 
   bool World::init() {
+    // WARNING: Test world ahead
     for (unsigned int y = 0; y < 2; y++) {
       for (unsigned int x = 0; x < 6; x++) {
         setTile(x, y, 1);
@@ -38,11 +73,13 @@ namespace engine {
     setTile(0, 2, 1);
     setTile(size.x - 1, size.y - 1, 1);
     player.pos = sf::Vector2f(40, 32);
-    player.vel += sf::Vector2f(2, 16) * 16.0f;
     camera.pos = player.pos;
+    // End test world
+
     return true;
   }
 
+  // TODO: Inherit from dedicated 2D vector class
   inline tileid_t& World::getTile(const int x, const int y) {
     if (x < size.x)
       if (y < size.y)
@@ -59,7 +96,8 @@ namespace engine {
     else throw std::out_of_range(fmt::format("x index out of bounds ({0} >= {1})", x, size.x));
   }
 
-  World::World(size_t x, size_t y) : player(80) {
+  World::World(size_t x, size_t y)
+  : player(85, sf::Vector2f(7, 0), sf::Vector2f(1, 1)) {
     tiles = new tileid_t[x * y]();
     size.x = x;
     size.y = y;
@@ -70,9 +108,6 @@ namespace engine {
   }
 
   bool Engine::init() {
-    auto width  = window->getSize().x;
-    auto height = window->getSize().y;
-
     world->init();
     world->player.texture.loadFromFile("player.png");
     world->player.sprite.setTexture(world->player.texture);
@@ -86,60 +121,78 @@ namespace engine {
     window->setSize(sf::Vector2u(width, height));
   }
 
-  void Engine::tick() {
+  void Engine::onTick() {
     // Constants in tiles (16) per second
-    static const float gravity = -16 * 16;
+    static const float gravity = -32 * 16;
     static const float min_yvel = -16 * 16;
 
+    if (keys.left ^ keys.right) {
+      world->player.vel.x += (keys.right - keys.left) * (keys.run ? 2 : 1) * 2.0f;
+      world->player.facing = keys.left ? -1 : 1;
+    }
     world->player.vel += world->player.netForce / (tickRate * tickRate);
+    world->player.netForce = sf::Vector2f(0, 0);
     if (world->player.vel.y > min_yvel)
       world->player.vel.y = fmax(world->player.vel.y + gravity / tickRate, min_yvel);
     world->player.pos += world->player.vel / tickRate;
-    world->camera.pos += (4.0f * (world->player.pos - world->camera.pos) - world->camera.vel / 2.0f) / tickRate;
+    world->camera.pos += ((world->player.pos - world->camera.pos) * 4.0f - world->camera.vel / 2.0f) / tickRate;
+
+    tick++;
   }
 
   void Engine::render() {
-    auto width  = window->getSize().x;
+    auto width = window->getSize().x;
     auto height = window->getSize().y;
 
-    while (window->pollEvent(event)) {
-      if (event.type == sf::Event::Closed)
-        window->close();
-      else if (event.type == sf::Event::Resized)
-        resize(event.size.width, event.size.height);
-    }
-
-    auto view = sf::View(sf::Vector2f(), sf::Vector2f(width, height) / 3.0f);
-    view.setCenter(sf::Vector2f(world->camera.pos.x, -world->camera.pos.y));
+    sf::View view(sf::Vector2f(), sf::Vector2f(int(width / 3), int(height / 3)));
+    view.setCenter(World::toView(world->camera.pos));
     window->setView(view);
 
-    auto tile = sf::Sprite(tileart);
+    sf::Sprite sky(background);
+    sky.setPosition(World::toView(world->camera.pos - World::toView(sf::Vector2f(background.getSize()) / 2.0f)));
+    window->draw(sky);
+
+    sf::Sprite brick(tileart);
     for (int y = 0; y < world->size.y; y++) {
       for (int x = 0; x < world->size.x; x++) {
         if (world->getTile(x, y)) {
-          tile.setPosition(x * 16, -y * 16);
-          window->draw(tile);
+          brick.setPosition(World::toView(sf::Vector2f(x * 16, y * 16 + 16)));
+          window->draw(brick);
         }
         else {
           continue;
         }
       }
     }
-    world->player.sprite.setPosition(sf::Vector2f(world->player.pos.x, -world->player.pos.y));
+
+    world->player.sprite.setPosition(world->player.toView());
+    world->player.sprite.setScale(
+      sf::Vector2f(world->player.scale.x * world->player.facing,
+                   world->player.scale.y));
     window->draw(world->player.sprite);
 
     window->display();
+
+    while (window->pollEvent(event)) {
+      if (event.type == sf::Event::Closed)
+        window->close();
+      else if (event.type == sf::Event::Resized)
+        resize(event.size.width, event.size.height);
+      else if (event.type == sf::Event::KeyPressed
+           or  event.type == sf::Event::KeyReleased)
+        updateKeys();
+    }
   }
 
-  int Engine::run() {
+  int Engine::exec() {
     init();
 
-    float tickDelta;
+    float tickDelta = 0;
     while (window->isOpen()) {
       tickDelta = tickClock.getElapsedTime().asSeconds() - tickTime;
       tickTime = tickClock.getElapsedTime().asSeconds();
       if (int((tickTime - tickDelta) * tickRate) < int(tickTime * tickRate)) {
-        tick();
+        onTick();
       }
       render();
     }
@@ -147,11 +200,23 @@ namespace engine {
     return EXIT_SUCCESS;
   }
 
+  void Engine::updateKeys() {
+    keys.up = sf::Keyboard::isKeyPressed(sf::Keyboard::Up);
+    keys.left = sf::Keyboard::isKeyPressed(sf::Keyboard::Left);
+    keys.down = sf::Keyboard::isKeyPressed(sf::Keyboard::Down);
+    keys.right = sf::Keyboard::isKeyPressed(sf::Keyboard::Right);
+    keys.jump = sf::Keyboard::isKeyPressed(sf::Keyboard::X);
+    keys.run = sf::Keyboard::isKeyPressed(sf::Keyboard::Z);
+  }
+
   Engine::Engine(const arglist& args) : args(args) {
     window = new sf::RenderWindow(sf::VideoMode::getDesktopMode(), "Super Pixel Brawler");
     world = new World(128, 64);
+    tick = 0;
     tickRate = 128;
+    background.loadFromFile("background.png");
     tileart.loadFromFile("brick.png");
+    updateKeys();
   }
 
   Engine::~Engine() {
