@@ -27,7 +27,7 @@ namespace engine {
 
   // Helper method to transform from world to screen coordinates
   sf::Vector2f RenderEntity::toView() {
-    return sf::Vector2f(pos.x - (offset.x * scale.x * facing), -(pos.y - (offset.y * scale.y)));
+    return sf::Vector2f(pos.x - (offset.x * scale.x * facing), -(pos.y - (offset.y * scale.y) + texture.getSize().y));
   }
 
   RenderEntity::RenderEntity(
