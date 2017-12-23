@@ -82,13 +82,21 @@ namespace geometry {
     return acos(x * v.x + y * v.y);
   }
 
-  template<typename T, typename U>
-  T dot(const Vector2<T>& v1, const Vector2<U>& v2) {
-    return acos(v1.x * v2.x + v1.y * v2.y);
+  template<typename T>
+  T Vector2<T>::norm() const {
+    return sqrt(x * x + y * y);
   }
 
   template<typename T>
-  Vector2<T>::Vector2() : x(0), y(0) {}
+  Vector2<T> Vector2<T>::unit() const {
+    return *this / norm();
+  }
+
+  template<typename T>
+  Vector2<T>::Vector2(nullptr_t) {}
+
+  template<typename T>
+  Vector2<T>::Vector2() : x(), y() {}
 
   template<typename T>
   Vector2<T>::Vector2(const T n) : x(n), y(n) {}

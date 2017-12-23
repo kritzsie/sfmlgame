@@ -25,8 +25,15 @@ namespace geometry {
     Vector2<T>& operator=(const std::initializer_list<T>&);
     template<typename U>
     Vector2<T>& operator=(const Vector2<U>&);
+
     template<typename U>
     T dot(const Vector2<U>&) const;
+    T norm() const;
+    const T (&abs)() = norm;
+    Vector2 unit() const;
+    const Vector2 (&normalized)() = unit;
+
+    Vector2(nullptr_t);
     Vector2();
     Vector2(const T);
     Vector2(const T, const T);
