@@ -3,11 +3,14 @@
 #include "fmt/format.h"
 #include "geometry.hpp"
 
+#include <initializer_list>
+
 #include <cstddef>
+#include <ctgmath>
 
 namespace geometry {
   template<typename T>
-  T& Vector2<T>::operator[](const size_t index) {
+  T& Vector2<T>::operator[](const size_t index) const {
     switch (index) {
     case 0:
       return x;
@@ -19,10 +22,93 @@ namespace geometry {
   }
 
   template<typename T>
+  Vector2<T> Vector2<T>::operator+() const {
+    return Vector2<T>(+x, +y);
+  }
+
+  template<typename T> template<typename U>
+  Vector2<T> Vector2<T>::operator+(const Vector2<U>& v) const {
+    return Vector2<T>(x + v.x, y + v.y);
+  }
+
+  template<typename T>
+  Vector2<T> Vector2<T>::operator-() const {
+    return Vector2<T>(-x, -y);
+  }
+
+  template<typename T> template<typename U>
+  Vector2<T> Vector2<T>::operator-(const Vector2<U>& v) const {
+    return Vector2<T>(x - v.x, y - v.y);
+  }
+
+  template<typename T> template<typename U>
+  Vector2<T> Vector2<T>::operator*(const U n) const {
+    return Vector2<T>(x * n, y * n);
+  }
+
+  template<typename T, typename U>
+  Vector2<T> operator*(const U n, const Vector2<T>& v) {
+    return Vector2<T>(n * v.x, n * v.y);
+  }
+
+  template<typename T> template<typename U>
+  Vector2<T> Vector2<T>::operator/(const U n) const {
+    return Vector2<T>(x / n, y / n);
+  }
+
+  template<typename T, typename U>
+  Vector2<T> operator/(const U n, const Vector2<U>& v) {
+    return Vector2<T>(n / v.x, n / v.y);
+  }
+
+  template<typename T>
+  Vector2<T>& Vector2<T>::operator=(const std::initializer_list<T>& v) {
+    if (v.size > 2)
+      throw(fmt::format("initializer list size mismatch ({} > 2)", v.size));
+    x = v[0];
+    y = v[1];
+    return *this;
+  }
+
+  template<typename T> template<typename U>
+  Vector2<T>& Vector2<T>::operator=(const Vector2<U>& v) {
+    x = v.x;
+    y = v.y;
+    return *this;
+  }
+
+  template<typename T> template<typename U>
+  T Vector2<T>::dot(const Vector2<U>& v) const {
+    return acos(x * v.x + y * v.y);
+  }
+
+  template<typename T, typename U>
+  T dot(const Vector2<T>& v1, const Vector2<U>& v2) {
+    return acos(v1.x * v2.x + v1.y * v2.y);
+  }
+
+  template<typename T>
+  Vector2<T>::Vector2() : x(0), y(0) {}
+
+  template<typename T>
+  Vector2<T>::Vector2(const T n) : x(n), y(n) {}
+
+  template<typename T>
   Vector2<T>::Vector2(const T x, const T y) : x(x), y(y) {}
 
   template<typename T>
-  inline T& Matrix<T>::Proxy::operator[](const int y) {
+  Vector2<T>::Vector2(const std::initializer_list<T>& v) {
+    if (v.size > 2)
+      throw(fmt::format("initializer list size mismatch ({} > 2)", v.size));
+    x = v.x;
+    y = v.y;
+  }
+
+  template<typename T> template<typename U>
+  Vector2<T>::Vector2(const Vector2<U>& v) : x(v.x), y(v.y) {}
+
+  template<typename T>
+  T& Matrix<T>::Proxy::operator[](const int y) const {
     if (y < size.y)
       return data[x + y * size.x];
     else
@@ -33,7 +119,7 @@ namespace geometry {
   Matrix<T>::Proxy::Proxy(T* const data, const Vector2<size_t>& size, const int x) : data(data), size(size), x(x) {}
 
   template<typename T>
-  inline typename Matrix<T>::Proxy Matrix<T>::operator[](const int x) {
+  typename Matrix<T>::Proxy Matrix<T>::operator[](const int x) {
     if (x < size.x)
       return Proxy(data, size, x);
     else

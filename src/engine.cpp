@@ -6,13 +6,13 @@
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
 
-#include <ctgmath>
-#include <cstddef>
-#include <cstdlib>
-
+#include <algorithm>
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
+
+#include <cstddef>
+#include <cstdlib>
 
 namespace engine {
   // BaseEntity skipped; no methods
@@ -96,8 +96,7 @@ namespace engine {
     else throw std::out_of_range(fmt::format("x index out of bounds ({0} >= {1})", x, size.x));
   }
 
-  World::World(size_t x, size_t y)
-  : player(85, sf::Vector2f(7, 0), sf::Vector2f(1, 1)) {
+  World::World(size_t x, size_t y) : player(85, sf::Vector2f(7, 0), sf::Vector2f(1, 1)) {
     tiles = new tileid_t[x * y]();
     size.x = x;
     size.y = y;
@@ -127,13 +126,25 @@ namespace engine {
     static const float min_yvel = -16 * 16;
 
     if (keys.left ^ keys.right) {
-      world->player.vel.x += (keys.right - keys.left) * (keys.run ? 2 : 1) * 2.0f;
+      world->player.vel.x += (keys.right - keys.left) * (keys.run ? 2 : 1) * 2;
       world->player.facing = keys.left ? -1 : 1;
     }
+    if (world->player.state.jumping) {
+      if (world->player.vel.y > min_yvel) {
+        world->player.vel.y = std::max(world->player.vel.y + gravity / tickRate, min_yvel);
+      }
+    }
+    else {
+      if (world->player.vel.x > 0) {
+        world->player.vel.x = std::max(0.0f, world->player.vel.x - 1);
+      }
+      else if (world->player.vel.x < 0) {
+        world->player.vel.x = std::min(world->player.vel.x + 1, 0.0f);
+      }
+    }
     world->player.vel += world->player.netForce / (tickRate * tickRate);
-    world->player.netForce = sf::Vector2f(0, 0);
-    if (world->player.vel.y > min_yvel)
-      world->player.vel.y = fmax(world->player.vel.y + gravity / tickRate, min_yvel);
+    world->player.netForce.x = 0;
+    world->player.netForce.y = 0;
     world->player.pos += world->player.vel / tickRate;
     world->camera.pos += ((world->player.pos - world->camera.pos) * 4.0f - world->camera.vel / 2.0f) / tickRate;
 

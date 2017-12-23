@@ -7,11 +7,12 @@
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
 
-#include <cstddef>
-
 #include <vector>
 
+#include <cstddef>
+
 namespace engine {
+  using uint_t = unsigned int;
   using enttype_t = unsigned int;
 
   class BaseEntity {
@@ -76,7 +77,6 @@ namespace engine {
   };
 
   using arglist = std::vector<const char*>;
-  using uint_t = unsigned int;
 
   class Engine {
   private:
