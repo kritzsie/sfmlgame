@@ -65,8 +65,8 @@ namespace engine {
 
   bool World::init() {
     // WARNING: Test world ahead
-    for (unsigned int y = 0; y < 2; y++) {
-      for (unsigned int x = 0; x < 6; x++) {
+    for (int y = 0; y < 2; y++) {
+      for (int x = 0; x < 6; x++) {
         setTile(x, y, 1);
       }
     }
@@ -126,7 +126,10 @@ namespace engine {
     static const float min_yvel = -16 * 16;
 
     if (keys.left ^ keys.right) {
-      world->player.vel.x += (keys.right - keys.left) * (keys.run ? 2 : 1) * 2;
+      if (keys.left)
+        world->player.vel.x = std::max(world->player.vel.x - 1.5f, keys.run ? -160.0f : -96.0f);
+      else if (keys.right)
+        world->player.vel.x = std::min(world->player.vel.x + 1.5f, keys.run ? 160.0f : 96.0f);
       world->player.facing = keys.left ? -1 : 1;
     }
     if (world->player.state.jumping) {
@@ -134,7 +137,7 @@ namespace engine {
         world->player.vel.y = std::max(world->player.vel.y + gravity / tickRate, min_yvel);
       }
     }
-    else {
+    else if (not (keys.left ^ keys.right)) {
       if (world->player.vel.x > 0) {
         world->player.vel.x = std::max(0.0f, world->player.vel.x - 1);
       }

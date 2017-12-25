@@ -1,9 +1,8 @@
-#include <stdexcept>
-
 #include "fmt/format.h"
 #include "geometry.hpp"
 
 #include <initializer_list>
+#include <stdexcept>
 
 #include <cstddef>
 #include <ctgmath>

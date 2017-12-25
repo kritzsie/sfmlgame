@@ -12,8 +12,10 @@
 #include <cstddef>
 
 namespace engine {
+  using arglist = std::vector<const char*>;
+
   using uint_t = unsigned int;
-  using enttype_t = unsigned int;
+  using enttype_t = uint_t;
 
   class BaseEntity {
   public:
@@ -51,7 +53,8 @@ namespace engine {
   class PlayerEntity : public Entity {
   public:
     struct State {
-      bool jumping, crouching, underwater;
+      bool jumping, crouching, p_speed,
+           underwater, on_ice;
     } state;
 
     PlayerEntity(const float, const sf::Vector2f&, const sf::Vector2f&);
@@ -75,8 +78,6 @@ namespace engine {
     World(const size_t, const size_t);
     ~World();
   };
-
-  using arglist = std::vector<const char*>;
 
   class Engine {
   private:
