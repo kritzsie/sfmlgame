@@ -110,13 +110,23 @@ T Vector2<T>::dot(const Vector2<U>& v) const {
 }
 
 template<typename T>
-T Vector2<T>::norm() const {
+T Vector2<T>::length() const {
   return sqrt(x * x + y * y);
 }
 
 template<typename T>
-Vector2<T> Vector2<T>::unit() const {
-  return *this / norm();
+Vector2<T> Vector2<T>::normalized() const {
+  return *this / length();
+}
+
+template<typename T>
+Vector2<T> Vector2<T>::apply(const T (&f)(const T)) {
+  return Vector2<T>(f(x), f(y));
+}
+
+template<typename T>
+Vector2<T> Vector2<T>::apply(const T (&f)(const T, const T), const T n) {
+  return Vector2<T>(f(x, n), f(y, n));
 }
 
 template<typename T> template<typename U>

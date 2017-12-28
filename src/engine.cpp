@@ -138,9 +138,9 @@ void Engine::onTick() {
       world->player.vel.y = std::max(world->player.vel.y + gravity / tickRate, min_yvel);
     }
   }
-  else if (not (keys.left ^ keys.right)) {
+  else if (!(keys.left ^ keys.right)) {
     if (world->player.vel.x > 0) {
-      world->player.vel.x = std::max(0.0f, world->player.vel.x - 1);
+      world->player.vel.x = std::max(world->player.vel.x - 1, 0.0f);
     }
     else if (world->player.vel.x < 0) {
       world->player.vel.x = std::min(world->player.vel.x + 1, 0.0f);
@@ -150,7 +150,7 @@ void Engine::onTick() {
   world->player.netForce.x = 0;
   world->player.netForce.y = 0;
   world->player.pos += world->player.vel / tickRate;
-  world->camera.pos += ((world->player.pos - world->camera.pos) * 4.0f - world->camera.vel / 2.0f) / tickRate;
+  world->camera.pos += ((world->player.pos - world->camera.pos) * 4 - world->camera.vel / 2) / tickRate;
 
   tick++;
 }
@@ -164,7 +164,7 @@ void Engine::render() {
   window->setView(view);
 
   sf::Sprite sky(background);
-  sky.setPosition(World::toView(world->camera.pos - World::toView(Vector2f(background.getSize()) / 2.0f)));
+  sky.setPosition(World::toView(world->camera.pos - World::toView(Vector2f(background.getSize()) / 2)));
   window->draw(sky);
 
   sf::Sprite brick(tileart);

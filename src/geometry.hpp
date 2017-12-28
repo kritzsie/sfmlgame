@@ -41,10 +41,11 @@ public:
 
   template<typename U>
   T dot(const Vector2<U>&) const;
-  T norm() const;
-  //const T (&abs)() = norm;
-  Vector2 unit() const;
-  //const Vector2 (&normalized)() = unit;
+  T length() const;
+  Vector2 normalized() const;
+
+  Vector2 apply(const T (&)(const T));
+  Vector2 apply(const T (&)(const T, const T), const T);
 
   template<typename U>
   operator sf::Vector2<U>() const;
