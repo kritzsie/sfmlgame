@@ -21,7 +21,6 @@ add_executable(
   sfmlgame
   ${FMT_SOURCES}
   src/engine.cpp
-  src/geometry.cpp
   src/main.cpp
 )
 

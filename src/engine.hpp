@@ -1,6 +1,8 @@
 #ifndef ENGINE_HPP
 #define ENGINE_HPP
 
+#include "geometry.hpp"
+
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Texture.hpp>
@@ -12,100 +14,109 @@
 #include <cstddef>
 
 namespace engine {
-  using arglist = std::vector<const char*>;
+using geometry::Vector2;
+using Vector2f = Vector2<float>;
+using Vector2s = Vector2<size_t>;
+using Vector2u = Vector2<unsigned int>;
 
-  using uint_t = unsigned int;
-  using enttype_t = uint_t;
+using arglist = std::vector<const char*>;
 
-  class BaseEntity {
-  public:
-    enttype_t type;
-    sf::Vector2f pos;
-    sf::Vector2f vel;
-  };
+using uint_t = unsigned int;
+using enttype_t = uint_t;
 
-  class RenderEntity : public BaseEntity {
-  public:
-    sf::Sprite sprite;
-    sf::Texture texture;
-    sf::Vector2f offset;
-    sf::Vector2f scale;
-    char facing;
+class BaseEntity {
+public:
+  enttype_t type;
+  Vector2f pos;
+  Vector2f vel;
+};
 
-    void flipX();
-    void flipY();
-    sf::Vector2f toView();
+class RenderEntity : public BaseEntity {
+public:
+  sf::Sprite sprite;
+  sf::Texture texture;
+  Vector2f offset;
+  Vector2f scale;
+  char facing;
 
-    RenderEntity(const sf::Vector2f&, const sf::Vector2f&);
-  };
+  void flipX();
+  void flipY();
+  Vector2f toView();
 
-  class Entity : public RenderEntity {
-  public:
-    float mass;
-    sf::Vector2f netForce;
+  RenderEntity(const Vector2f&, const Vector2f&);
+};
 
-    void applyForce(const float, const float);
-    void applyForce(const sf::Vector2f&);
+class Entity : public RenderEntity {
+public:
+  float mass;
+  Vector2f netForce;
 
-    Entity(const float, const sf::Vector2f&, const sf::Vector2f&);
-  };
+  void applyForce(const float, const float);
+  void applyForce(const Vector2f&);
 
-  class PlayerEntity : public Entity {
-  public:
-    struct State {
-      bool jumping, crouching, p_speed,
-           underwater, on_ice;
-    } state;
+  Entity(const float, const Vector2f&, const Vector2f&);
+};
 
-    PlayerEntity(const float, const sf::Vector2f&, const sf::Vector2f&);
-  };
+class PlayerEntity : public Entity {
+public:
+  struct State {
+    bool jumping, crouching, p_speed,
+          underwater, on_ice;
+  } state;
 
-  using tileid_t = unsigned int;
+  PlayerEntity(const float, const Vector2f&, const Vector2f&);
+};
 
-  class World {
-  public:
-    tileid_t* tiles;
-    sf::Vector2<size_t> size;
-    PlayerEntity player;
-    BaseEntity camera;
+using tileid_t = unsigned int;
 
-    template<typename T>
-    static T toView(const T&);
-    bool init();
-    tileid_t& getTile(const int, const int);
-    void setTile(const int, const int, const tileid_t);
+class World {
+public:
+  tileid_t* tiles;
+  Vector2<size_t> size;
+  PlayerEntity player;
+  BaseEntity camera;
 
-    World(const size_t, const size_t);
-    ~World();
-  };
+  template<typename T>
+  static T toView(const T&);
+  bool init();
+  tileid_t& getTile(const int, const int);
+  void setTile(const int, const int, const tileid_t);
 
-  class Engine {
-  private:
-    const arglist& args;
-    uint_t tick;
-    sf::Clock tickClock;
-    float tickTime, tickRate;
-    sf::Event event;
-    sf::RenderWindow* window;
-    sf::Texture background;
-    sf::Texture tileart;
-    World* world;
-    struct Keys {
-      bool up, left, down, right;
-      bool jump, run;
-    } keys;
+  World(const size_t, const size_t);
+  ~World();
+};
 
-    bool init();
-    void updateKeys();
-    void resize(const size_t, const size_t);
-    void onTick();
-    void render();
+class Engine {
+private:
+  const arglist& args;
+  uint_t tick;
+  sf::Clock tickClock;
+  float tickTime, tickRate;
+  sf::Event event;
+  sf::RenderWindow* window;
+  sf::Texture background;
+  sf::Texture tileart;
+  World* world;
+  struct Keys {
+    bool up, left, down, right;
+    bool jump, run;
+  } keys;
 
-  public:
-    int exec();
-    Engine(const arglist&);
-    ~Engine();
-  };
+  bool init();
+  void updateKeys();
+  void resize(const size_t, const size_t);
+  void onTick();
+  void render();
+
+public:
+  int exec();
+  Engine(const arglist&);
+  ~Engine();
+};
+}
+
+namespace keng {
+  using namespace engine;
 }
 
 #endif
