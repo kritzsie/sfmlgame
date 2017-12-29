@@ -31,9 +31,11 @@ Vector2f RenderEntity::toView() {
   return Vector2f(pos.x - (offset.x * scale.x * facing), -(pos.y - (offset.y * scale.y) + texture.getSize().y));
 }
 
+RenderEntity::RenderEntity() : offset(0, 0), scale(1, 1), facing(1) {}
+
 RenderEntity::RenderEntity(
-  const Vector2f& offset = Vector2f(),
-  const Vector2f& scale = Vector2f()
+  const Vector2f& offset,
+  const Vector2f& scale
 ) : offset(offset), scale(scale), facing(1) {}
 
 // Use Entity for things with collision
@@ -45,18 +47,38 @@ void Entity::applyForce(const float x, const float y) {
   netForce += Vector2f(x, y);
 }
 
+Entity::Entity() : RenderEntity(), mass(1), radius(8), height(16) {}
+
 Entity::Entity(
+  const float mass,
+  const float radius,
+  const float height
+) : RenderEntity(), mass(mass), radius(radius), height(height) {}
+
+Entity::Entity(
+  const Vector2f& offset,
+  const Vector2f& scale,
   const float mass = 1,
-  const Vector2f& offset = Vector2f(),
-  const Vector2f& scale = Vector2f()
-) : RenderEntity(offset, scale), mass(mass) {}
+  const float radius = 8,
+  const float height = 16
+) : RenderEntity(offset, scale), mass(mass), radius(radius), height(height) {}
 
 // Players inherit from Entity, but also hold states (jumping, crouching, etc.)
+PlayerEntity::PlayerEntity() : Entity() {}
+
 PlayerEntity::PlayerEntity(
+  const float mass,
+  const float radius,
+  const float height
+) : Entity(mass, radius, height) {}
+
+PlayerEntity::PlayerEntity(
+  const Vector2f& offset,
+  const Vector2f& scale,
   const float mass = 85,
-  const Vector2f& offset = Vector2f(),
-  const Vector2f& scale = Vector2f(1, 1)
-) : Entity(mass, offset, scale) {}
+  const float radius = 6,
+  const float height = 24
+) : Entity(offset, scale, mass, radius, height) {}
 
 // Static helper method used to flip the Y axis
 template<typename T>
@@ -97,7 +119,7 @@ void World::setTile(const int x, const int y, const tileid_t tileid) {
   else throw std::out_of_range(fmt::format("x index out of bounds ({0} >= {1})", x, size.x));
 }
 
-World::World(size_t x, size_t y) : player(85, Vector2f(7, 0), Vector2f(1, 1)) {
+World::World(size_t x, size_t y) : player(Vector2f(7, 0), Vector2f(1, 1)) {
   tiles = new tileid_t[x * y]();
   size.x = x;
   size.y = y;
@@ -112,6 +134,7 @@ bool Engine::init() {
   world->player.texture.loadFromFile("player.png");
   world->player.sprite.setTexture(world->player.texture);
 
+  tick = 0;
   tickClock.restart();
 
   return true;
@@ -139,12 +162,10 @@ void Engine::onTick() {
     }
   }
   else if (!(keys.left ^ keys.right)) {
-    if (world->player.vel.x > 0) {
+    if (world->player.vel.x > 0)
       world->player.vel.x = std::max(world->player.vel.x - 1, 0.0f);
-    }
-    else if (world->player.vel.x < 0) {
+    else if (world->player.vel.x < 0)
       world->player.vel.x = std::min(world->player.vel.x + 1, 0.0f);
-    }
   }
   world->player.vel += world->player.netForce / (tickRate * tickRate);
   world->player.netForce.x = 0;
@@ -183,7 +204,7 @@ void Engine::render() {
   world->player.sprite.setPosition(world->player.toView());
   world->player.sprite.setScale(
     Vector2f(world->player.scale.x * world->player.facing,
-                  world->player.scale.y));
+             world->player.scale.y));
   window->draw(world->player.sprite);
 
   window->display();
@@ -194,7 +215,7 @@ void Engine::render() {
     else if (event.type == sf::Event::Resized)
       resize(event.size.width, event.size.height);
     else if (event.type == sf::Event::KeyPressed
-          or  event.type == sf::Event::KeyReleased)
+         or  event.type == sf::Event::KeyReleased)
       updateKeys();
   }
 }
@@ -227,7 +248,6 @@ void Engine::updateKeys() {
 Engine::Engine(const arglist& args) : args(args) {
   window = new sf::RenderWindow(sf::VideoMode::getDesktopMode(), "Super Pixel Brawler");
   world = new World(128, 64);
-  tick = 0;
   tickRate = 128;
   background.loadFromFile("background.png");
   tileart.loadFromFile("brick.png");

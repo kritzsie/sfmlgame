@@ -50,7 +50,6 @@ public:
   template<typename U>
   operator sf::Vector2<U>() const;
 
-  Vector2(nullptr_t);
   Vector2();
   Vector2(const T);
   Vector2(const T, const T);

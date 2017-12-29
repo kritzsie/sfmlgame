@@ -135,9 +135,6 @@ Vector2<T>::operator sf::Vector2<U>() const {
 }
 
 template<typename T>
-Vector2<T>::Vector2(nullptr_t) {}
-
-template<typename T>
 Vector2<T>::Vector2() : x(), y() {}
 
 template<typename T>
