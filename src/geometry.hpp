@@ -8,7 +8,7 @@
 #include <cstddef>
 
 namespace geometry {
-template<typename T = float>
+template<typename T = double>
 class Vector2 {
 public:
   T x, y;
@@ -17,30 +17,20 @@ public:
   Vector2<T> operator+() const;
   Vector2<T> operator-() const;
 
-  template<typename U>
-  Vector2<T> operator+(const Vector2<U>&) const;
-  template<typename U>
-  Vector2<T> operator-(const Vector2<U>&) const;
-  template<typename U>
-  Vector2<T> operator*(const U) const;
-  template<typename U>
-  Vector2<T> operator/(const U) const;
+  Vector2<T> operator+(const Vector2<T>&) const;
+  Vector2<T> operator-(const Vector2<T>&) const;
+  Vector2<T> operator*(const T) const;
+  Vector2<T> operator/(const T) const;
 
   Vector2<T>& operator=(const std::initializer_list<T>&);
-  template<typename U>
-  Vector2<T>& operator=(const Vector2<U>&);
+  Vector2<T>& operator=(const Vector2<T>&);
 
-  template<typename U>
-  Vector2<T>& operator+=(const Vector2<U>&);
-  template<typename U>
-  Vector2<T>& operator-=(const Vector2<U>&);
-  template<typename U>
-  Vector2<T>& operator*=(const U);
-  template<typename U>
-  Vector2<T>& operator/=(const U);
+  Vector2<T>& operator+=(const Vector2<T>&);
+  Vector2<T>& operator-=(const Vector2<T>&);
+  Vector2<T>& operator*=(const T);
+  Vector2<T>& operator/=(const T);
 
-  template<typename U>
-  T dot(const Vector2<U>&) const;
+  T dot(const Vector2<T>&) const;
   T length() const;
   Vector2 normalized() const;
 
@@ -54,8 +44,7 @@ public:
   Vector2(const T);
   Vector2(const T, const T);
   Vector2(const std::initializer_list<T>&);
-  template<typename U>
-  Vector2(const Vector2<U>&);
+  Vector2(const Vector2<T>&);
   template<typename U>
   Vector2(const sf::Vector2<U>&);
 };

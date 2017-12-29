@@ -30,33 +30,33 @@ Vector2<T> Vector2<T>::operator-() const {
   return Vector2<T>(-x, -y);
 }
 
-template<typename T> template<typename U>
-Vector2<T> Vector2<T>::operator+(const Vector2<U>& v) const {
+template<typename T>
+Vector2<T> Vector2<T>::operator+(const Vector2<T>& v) const {
   return Vector2<T>(x + v.x, y + v.y);
 }
 
-template<typename T> template<typename U>
-Vector2<T> Vector2<T>::operator-(const Vector2<U>& v) const {
+template<typename T>
+Vector2<T> Vector2<T>::operator-(const Vector2<T>& v) const {
   return Vector2<T>(x - v.x, y - v.y);
 }
 
-template<typename T> template<typename U>
-Vector2<T> Vector2<T>::operator*(const U n) const {
+template<typename T>
+Vector2<T> Vector2<T>::operator*(const T n) const {
   return Vector2<T>(x * n, y * n);
 }
 
-template<typename T, typename U>
-Vector2<T> operator*(const U n, const Vector2<T>& v) {
+template<typename T>
+Vector2<T> operator*(const T n, const Vector2<T>& v) {
   return Vector2<T>(n * v.x, n * v.y);
 }
 
-template<typename T> template<typename U>
-Vector2<T> Vector2<T>::operator/(const U n) const {
+template<typename T>
+Vector2<T> Vector2<T>::operator/(const T n) const {
   return Vector2<T>(x / n, y / n);
 }
 
-template<typename T, typename U>
-Vector2<T> operator/(const U n, const Vector2<U>& v) {
+template<typename T>
+Vector2<T> operator/(const T n, const Vector2<T>& v) {
   return Vector2<T>(n / v.x, n / v.y);
 }
 
@@ -69,43 +69,43 @@ Vector2<T>& Vector2<T>::operator=(const std::initializer_list<T>& v) {
   return *this;
 }
 
-template<typename T> template<typename U>
-Vector2<T>& Vector2<T>::operator=(const Vector2<U>& v) {
+template<typename T>
+Vector2<T>& Vector2<T>::operator=(const Vector2<T>& v) {
   x = v.x;
   y = v.y;
   return *this;
 }
 
-template<typename T> template<typename U>
-Vector2<T>& Vector2<T>::operator+=(const Vector2<U>& v) {
+template<typename T>
+Vector2<T>& Vector2<T>::operator+=(const Vector2<T>& v) {
   x += v.x;
   y += v.y;
   return *this;
 }
 
-template<typename T> template<typename U>
-Vector2<T>& Vector2<T>::operator-=(const Vector2<U>& v) {
+template<typename T>
+Vector2<T>& Vector2<T>::operator-=(const Vector2<T>& v) {
   x -= v.x;
   y -= v.y;
   return *this;
 }
 
-template<typename T> template<typename U>
-Vector2<T>& Vector2<T>::operator*=(const U n) {
+template<typename T>
+Vector2<T>& Vector2<T>::operator*=(const T n) {
   x *= n;
   y *= n;
   return *this;
 }
 
-template<typename T> template<typename U>
-Vector2<T>& Vector2<T>::operator/=(const U n) {
+template<typename T>
+Vector2<T>& Vector2<T>::operator/=(const T n) {
   x /= n;
   y /= n;
   return *this;
 }
 
-template<typename T> template<typename U>
-T Vector2<T>::dot(const Vector2<U>& v) const {
+template<typename T>
+T Vector2<T>::dot(const Vector2<T>& v) const {
   return acos(x * v.x + y * v.y);
 }
 
@@ -146,8 +146,8 @@ Vector2<T>::Vector2(const T x, const T y) : x(x), y(y) {}
 template<typename T>
 Vector2<T>::Vector2(const std::initializer_list<T>& v) : x(v[0]), y(v[1]) {}
 
-template<typename T> template<typename U>
-Vector2<T>::Vector2(const Vector2<U>& v) : x(v.x), y(v.y) {}
+template<typename T>
+Vector2<T>::Vector2(const Vector2<T>& v) : x(v.x), y(v.y) {}
 
 template<typename T> template<typename U>
 Vector2<T>::Vector2(const sf::Vector2<U>& v) : Vector2<T>(v.x, v.y) {}
