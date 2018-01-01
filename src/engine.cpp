@@ -192,7 +192,7 @@ Engine::Engine(const arglist& args) : args(args) {
 }
 
 Engine::~Engine() {
-  if (!window) delete window;
-  if (!world) delete world;
+  delete window;
+  delete world;
 }
 }
