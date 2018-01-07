@@ -93,6 +93,12 @@ void Engine::onTick() {
       world->player.vel.x = std::min(world->player.vel.x + 1.5f, keys.run ? 160.0f : 96.0f);
     world->player.facing = keys.left ? -1 : 1;
   }
+
+  if (keys.jump) {
+    world->player.state.jumping = true;
+    world->player.vel.y = 8 * 16;
+  }
+
   if (world->player.state.jumping) {
     if (world->player.vel.y > min_yvel) {
       world->player.vel.y = std::max(world->player.vel.y + gravity / tickRate, min_yvel);
@@ -104,10 +110,11 @@ void Engine::onTick() {
     else if (world->player.vel.x < 0)
       world->player.vel.x = std::min(world->player.vel.x + 1, 0.0f);
   }
+
   world->player.vel += world->player.netForce / (tickRate * tickRate);
-  world->player.netForce.x = 0;
-  world->player.netForce.y = 0;
+  world->player.netForce = {0, 0};
   world->player.pos += world->player.vel / tickRate;
+
   world->camera.pos += ((world->player.pos - world->camera.pos) * 4 - world->camera.vel / 2) / tickRate;
 
   tick++;

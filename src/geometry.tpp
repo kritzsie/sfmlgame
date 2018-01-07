@@ -1,7 +1,6 @@
 #include "fmt/format.h"
 #include "geometry.hpp"
 
-#include <initializer_list>
 #include <stdexcept>
 
 #include <cstddef>
@@ -58,15 +57,6 @@ Vector2<T> Vector2<T>::operator/(const T n) const {
 template<typename T>
 Vector2<T> operator/(const T n, const Vector2<T>& v) {
   return Vector2<T>(n / v.x, n / v.y);
-}
-
-template<typename T>
-Vector2<T>& Vector2<T>::operator=(const std::initializer_list<T>& v) {
-  if (v.size > 2)
-    throw(fmt::format("initializer list size mismatch ({} > 2)", v.size));
-  x = v[0];
-  y = v[1];
-  return *this;
 }
 
 template<typename T>
@@ -142,9 +132,6 @@ Vector2<T>::Vector2(const T n) : x(n), y(n) {}
 
 template<typename T>
 Vector2<T>::Vector2(const T x, const T y) : x(x), y(y) {}
-
-template<typename T>
-Vector2<T>::Vector2(const std::initializer_list<T>& v) : x(v[0]), y(v[1]) {}
 
 template<typename T>
 Vector2<T>::Vector2(const Vector2<T>& v) : x(v.x), y(v.y) {}

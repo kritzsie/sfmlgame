@@ -3,8 +3,6 @@
 
 #include <SFML/System.hpp>
 
-#include <initializer_list>
-
 #include <cstddef>
 
 namespace geometry {
@@ -22,7 +20,6 @@ public:
   Vector2<T> operator*(const T) const;
   Vector2<T> operator/(const T) const;
 
-  Vector2<T>& operator=(const std::initializer_list<T>&);
   Vector2<T>& operator=(const Vector2<T>&);
 
   Vector2<T>& operator+=(const Vector2<T>&);
@@ -43,7 +40,6 @@ public:
   Vector2();
   Vector2(const T);
   Vector2(const T, const T);
-  Vector2(const std::initializer_list<T>&);
   Vector2(const Vector2<T>&);
   template<typename U>
   Vector2(const sf::Vector2<U>&);
