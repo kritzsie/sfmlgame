@@ -1,6 +1,6 @@
 #include "engine.hpp"
 
-int main(int argc, const char* argv[]) {
+int main(int argc, char* argv[]) {
   keng::Engine engine(keng::arglist(argv, argc + argv));
 
   return engine.exec();

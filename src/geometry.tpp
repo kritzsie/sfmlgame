@@ -140,6 +140,24 @@ template<typename T> template<typename U>
 Vector2<T>::Vector2(const sf::Vector2<U>& v) : Vector2<T>(v.x, v.y) {}
 
 template<typename T>
+Rect<T>::Rect() : Vector2<T>(), size() {}
+
+template<typename T>
+Rect<T>::Rect(T n, T s) : Vector2<T>(n), size(s) {}
+
+template<typename T>
+Rect<T>::Rect(T x, T y, T w, T h) : Vector2<T>(x, y), size(w, h) {}
+
+template<typename T>
+Rect<T>::Rect(const Vector2<T>& v, T w, T h) : Vector2<T>(v), size(w, h) {}
+
+template<typename T>
+Rect<T>::Rect(T x, T y, const Vector2<T>& v) : Vector2<T>(x, y), size(v) {}
+
+template<typename T>
+Rect<T>::Rect(const Vector2<T>& v, const Vector2<T>& u) : Vector2<T>(v), size(u) {}
+
+template<typename T>
 T& Matrix<T>::Proxy::operator[](int y) const {
   if (y < size.y)
     return data[x + y * size.x];

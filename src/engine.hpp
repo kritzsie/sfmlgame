@@ -19,7 +19,7 @@ using namespace geometry;
 
 using uint_t = unsigned int;
 
-using arglist = std::vector<const char*>;
+using arglist = std::vector<char*>;
 using tileid_t = uint_t;
 
 using Vector2f = Vector2<float>;
