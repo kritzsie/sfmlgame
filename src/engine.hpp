@@ -26,11 +26,18 @@ using Vector2f = Vector2<float>;
 using Vector2u = Vector2<uint_t>;
 
 class World {
+protected:
+  class State {
+  public:
+    BaseEntity camera;
+    PlayerEntity player;
+  };
+
 public:
   tileid_t* tiles;
   Vector2<size_t> size;
-  PlayerEntity player;
-  BaseEntity camera;
+  State prevState;
+  State state;
 
   template<typename T>
   static T toView(const T&);

@@ -33,13 +33,13 @@ void Entity::applyForce(const float x, const float y) {
   netForce += Vector2f(x, y);
 }
 
-Entity::Entity() : RenderEntity(), mass(1), radius(8), height(16) {}
+Entity::Entity() : RenderEntity(Vector2f(4, 0), Vector2f(1, 1)), mass(1), radius(8), height(16) {}
 
 Entity::Entity(
   const float mass,
   const float radius,
   const float height
-) : RenderEntity(), mass(mass), radius(radius), height(height) {}
+) : RenderEntity(Vector2f(radius / 2, 0), Vector2f(1, 1)), mass(mass), radius(radius), height(height) {}
 
 Entity::Entity(
   const Vector2f& offset,

@@ -32,9 +32,11 @@ bool World::init() {
   }
   setTile(0, 2, 1);
   setTile(size.x - 1, size.y - 1, 1);
-  player.pos = Vector2f(40, 32);
-  camera.pos = player.pos;
+  state.player.pos = Vector2f(40, 32);
+  state.camera.pos = state.player.pos;
   // End test world
+
+  prevState = state;
 
   return true;
 }
@@ -56,7 +58,7 @@ void World::setTile(const int x, const int y, const tileid_t tileid) {
   else throw std::out_of_range(fmt::format("x index out of bounds ({0} >= {1})", x, size.x));
 }
 
-World::World(size_t x, size_t y) : player(Vector2f(7, 0), Vector2f(1, 1)) {
+World::World(size_t x, size_t y) {
   tiles = new tileid_t[x * y]();
   size.x = x;
   size.y = y;
@@ -68,8 +70,8 @@ World::~World() {
 
 bool Engine::init() {
   world->init();
-  world->player.texture.loadFromFile("player.png");
-  world->player.sprite.setTexture(world->player.texture);
+  world->state.player.texture.loadFromFile("player.png");
+  world->state.player.sprite.setTexture(world->state.player.texture);
 
   tick = 0;
   tickClock.restart();
@@ -88,34 +90,34 @@ void Engine::onTick() {
 
   if (keys.left ^ keys.right) {
     if (keys.left)
-      world->player.vel.x = std::max(world->player.vel.x - 1.5f, keys.run ? -160.0f : -96.0f);
+      world->state.player.vel.x = std::max(world->state.player.vel.x - 1.5f, keys.run ? -160.f : -96.f);
     else if (keys.right)
-      world->player.vel.x = std::min(world->player.vel.x + 1.5f, keys.run ? 160.0f : 96.0f);
-    world->player.facing = keys.left ? -1 : 1;
+      world->state.player.vel.x = std::min(world->state.player.vel.x + 1.5f, keys.run ? 160.f : 96.f);
+    world->state.player.facing = keys.left ? -1 : 1;
   }
 
   if (keys.jump) {
-    world->player.state.jumping = true;
-    world->player.vel.y = 8 * 16;
+    world->state.player.airborne = true;
+    world->state.player.vel.y = 8 * 16;
   }
 
-  if (world->player.state.jumping) {
-    if (world->player.vel.y > min_yvel) {
-      world->player.vel.y = std::max(world->player.vel.y + gravity / tickRate, min_yvel);
+  if (world->state.player.airborne) {
+    if (world->state.player.vel.y > min_yvel) {
+      world->state.player.vel.y = std::max(world->state.player.vel.y + gravity / tickRate, min_yvel);
     }
   }
   else if (!(keys.left ^ keys.right)) {
-    if (world->player.vel.x > 0)
-      world->player.vel.x = std::max(world->player.vel.x - 1, 0.0f);
-    else if (world->player.vel.x < 0)
-      world->player.vel.x = std::min(world->player.vel.x + 1, 0.0f);
+    if (world->state.player.vel.x > 0)
+      world->state.player.vel.x = std::max(world->state.player.vel.x - 1, 0.0f);
+    else if (world->state.player.vel.x < 0)
+      world->state.player.vel.x = std::min(world->state.player.vel.x + 1, 0.0f);
   }
 
-  world->player.vel += world->player.netForce / (tickRate * tickRate);
-  world->player.netForce = {0, 0};
-  world->player.pos += world->player.vel / tickRate;
+  world->state.player.vel += world->state.player.netForce / (tickRate * tickRate);
+  world->state.player.netForce = {0, 0};
+  world->state.player.pos += world->state.player.vel / tickRate;
 
-  world->camera.pos += ((world->player.pos - world->camera.pos) * 4 - world->camera.vel / 2) / tickRate;
+  world->state.camera.pos += ((world->state.player.pos - world->state.camera.pos) * 4 - world->state.camera.vel / 2) / tickRate;
 
   tick++;
 }
@@ -125,11 +127,11 @@ void Engine::render() {
   auto height = window->getSize().y;
 
   sf::View view(Vector2f(), Vector2u(width, height) / 3);
-  view.setCenter(World::toView(world->camera.pos));
+  view.setCenter(World::toView(world->state.camera.pos));
   window->setView(view);
 
   sf::Sprite sky(background);
-  sky.setPosition(World::toView(world->camera.pos - World::toView(Vector2f(background.getSize()) / 2)));
+  sky.setPosition(World::toView(world->state.camera.pos - World::toView(Vector2f(background.getSize()) / 2)));
   window->draw(sky);
 
   sf::Sprite brick(tileart);
@@ -145,11 +147,11 @@ void Engine::render() {
     }
   }
 
-  world->player.sprite.setPosition(world->player.toView());
-  world->player.sprite.setScale(
-    Vector2f(world->player.scale.x * world->player.facing,
-             world->player.scale.y));
-  window->draw(world->player.sprite);
+  world->state.player.sprite.setPosition(world->state.player.toView());
+  world->state.player.sprite.setScale(
+    Vector2f(world->state.player.scale.x * world->state.player.facing,
+             world->state.player.scale.y));
+  window->draw(world->state.player.sprite);
 
   window->display();
 

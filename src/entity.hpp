@@ -55,11 +55,9 @@ public:
 
 class PlayerEntity : public Entity {
 public:
-  struct State {
-    bool jumping = true;
-    bool crouching, p_speed;
-    bool underwater, on_ice;
-  } state {};
+  bool airborne;
+  bool crouching, p_speed;
+  bool underwater, on_ice;
 
   PlayerEntity();
   PlayerEntity(const float, const float, const float);
