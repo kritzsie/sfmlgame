@@ -50,7 +50,7 @@ public:
 };
 
 class Engine {
-private:
+protected:
   const arglist& args;
   uint_t tick;
   sf::Clock tickClock;
