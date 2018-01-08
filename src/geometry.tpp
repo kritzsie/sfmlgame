@@ -8,7 +8,7 @@
 
 namespace geometry {
 template<typename T>
-T& Vector2<T>::operator[](const size_t index) const {
+T& Vector2<T>::operator[](size_t index) const {
   switch (index) {
   case 0:
     return x;
@@ -45,17 +45,17 @@ Vector2<T> Vector2<T>::operator*(const T n) const {
 }
 
 template<typename T>
-Vector2<T> operator*(const T n, const Vector2<T>& v) {
+Vector2<T> operator*(T n, const Vector2<T>& v) {
   return Vector2<T>(n * v.x, n * v.y);
 }
 
 template<typename T>
-Vector2<T> Vector2<T>::operator/(const T n) const {
+Vector2<T> Vector2<T>::operator/(T n) const {
   return Vector2<T>(x / n, y / n);
 }
 
 template<typename T>
-Vector2<T> operator/(const T n, const Vector2<T>& v) {
+Vector2<T> operator/(T n, const Vector2<T>& v) {
   return Vector2<T>(n / v.x, n / v.y);
 }
 
@@ -81,14 +81,14 @@ Vector2<T>& Vector2<T>::operator-=(const Vector2<T>& v) {
 }
 
 template<typename T>
-Vector2<T>& Vector2<T>::operator*=(const T n) {
+Vector2<T>& Vector2<T>::operator*=(T n) {
   x *= n;
   y *= n;
   return *this;
 }
 
 template<typename T>
-Vector2<T>& Vector2<T>::operator/=(const T n) {
+Vector2<T>& Vector2<T>::operator/=(T n) {
   x /= n;
   y /= n;
   return *this;
@@ -110,12 +110,12 @@ Vector2<T> Vector2<T>::normalized() const {
 }
 
 template<typename T>
-Vector2<T> Vector2<T>::apply(const T (&f)(const T)) {
+Vector2<T> Vector2<T>::apply(T (&f)(T)) {
   return Vector2<T>(f(x), f(y));
 }
 
 template<typename T>
-Vector2<T> Vector2<T>::apply(const T (&f)(const T, const T), const T n) {
+Vector2<T> Vector2<T>::apply(T (&f)(T, T), T n) {
   return Vector2<T>(f(x, n), f(y, n));
 }
 
@@ -128,10 +128,10 @@ template<typename T>
 Vector2<T>::Vector2() : x(), y() {}
 
 template<typename T>
-Vector2<T>::Vector2(const T n) : x(n), y(n) {}
+Vector2<T>::Vector2(T n) : x(n), y(n) {}
 
 template<typename T>
-Vector2<T>::Vector2(const T x, const T y) : x(x), y(y) {}
+Vector2<T>::Vector2(T x, T y) : x(x), y(y) {}
 
 template<typename T>
 Vector2<T>::Vector2(const Vector2<T>& v) : x(v.x), y(v.y) {}
@@ -140,7 +140,7 @@ template<typename T> template<typename U>
 Vector2<T>::Vector2(const sf::Vector2<U>& v) : Vector2<T>(v.x, v.y) {}
 
 template<typename T>
-T& Matrix<T>::Proxy::operator[](const int y) const {
+T& Matrix<T>::Proxy::operator[](int y) const {
   if (y < size.y)
     return data[x + y * size.x];
   else
@@ -148,10 +148,10 @@ T& Matrix<T>::Proxy::operator[](const int y) const {
 }
 
 template<typename T>
-Matrix<T>::Proxy::Proxy(T* const data, const Vector2<size_t>& size, const int x) : data(data), size(size), x(x) {}
+Matrix<T>::Proxy::Proxy(const T* const data, const Vector2<size_t>& size, int x) : data(data), size(size), x(x) {}
 
 template<typename T>
-typename Matrix<T>::Proxy Matrix<T>::operator[](const int x) {
+typename Matrix<T>::Proxy Matrix<T>::operator[](int x) {
   if (x < size.x)
     return Proxy(data, size, x);
   else
@@ -159,7 +159,7 @@ typename Matrix<T>::Proxy Matrix<T>::operator[](const int x) {
 }
 
 template<typename T>
-Matrix<T>::Matrix(const size_t x, const size_t y) : size(x, y), data(new T[x * y]()) {}
+Matrix<T>::Matrix(size_t x, size_t y) : size(x, y), data(new T[x * y]()) {}
 
 template<typename T>
 Matrix<T>::~Matrix() {

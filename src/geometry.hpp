@@ -17,48 +17,47 @@ public:
 
   Vector2<T> operator+(const Vector2<T>&) const;
   Vector2<T> operator-(const Vector2<T>&) const;
-  Vector2<T> operator*(const T) const;
-  Vector2<T> operator/(const T) const;
+  Vector2<T> operator*(T) const;
+  Vector2<T> operator/(T) const;
 
   Vector2<T>& operator=(const Vector2<T>&);
 
   Vector2<T>& operator+=(const Vector2<T>&);
   Vector2<T>& operator-=(const Vector2<T>&);
-  Vector2<T>& operator*=(const T);
-  Vector2<T>& operator/=(const T);
+  Vector2<T>& operator*=(T);
+  Vector2<T>& operator/=(T);
 
   T dot(const Vector2<T>&) const;
   T length() const;
   Vector2 normalized() const;
 
-  Vector2 apply(const T (&)(const T));
-  Vector2 apply(const T (&)(const T, const T), const T);
+  Vector2 apply(T (&)(T));
+  Vector2 apply(T (&)(T, T), T);
 
   template<typename U>
   operator sf::Vector2<U>() const;
 
   Vector2();
-  Vector2(const T);
-  Vector2(const T, const T);
+  Vector2(T);
+  Vector2(T, T);
   Vector2(const Vector2<T>&);
   template<typename U>
   Vector2(const sf::Vector2<U>&);
 };
 
-template<typename T = float>
+template<typename T = double>
 class Matrix {
-private:
+protected:
   class Proxy {
   private:
     const int x;
-    T* const data;
-
-  public:
+    const T* const data;
     const Vector2<size_t>& size;
 
-    T& operator[](const int) const;
+  public:
+    T& operator[](int) const;
 
-    Proxy(T* const, const Vector2<size_t>&, const int);
+    Proxy(const T* const, const Vector2<size_t>&, int);
   };
 
   T* data;
@@ -66,8 +65,8 @@ private:
 public:
   const Vector2<size_t> size;
 
-  Proxy operator[](const int);
-  Matrix(const size_t, const size_t);
+  Proxy operator[](int);
+  Matrix(size_t, size_t);
   ~Matrix();
 };
 }

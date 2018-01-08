@@ -45,12 +45,12 @@ public:
   float radius, height;
   Vector2<Vector2f> aabb;
 
-  void applyForce(const float, const float);
+  void applyForce(float, float);
   void applyForce(const Vector2f&);
 
   Entity();
-  Entity(const float, const float, const float);
-  Entity(const Vector2f&, const Vector2f&, const float, const float, const float);
+  Entity(float, float, float);
+  Entity(const Vector2f&, const Vector2f&, float, float, float);
 };
 
 class PlayerEntity : public Entity {
@@ -60,9 +60,9 @@ public:
   bool underwater, on_ice;
 
   PlayerEntity();
-  PlayerEntity(const float, const float, const float);
+  PlayerEntity(float, float, float);
   PlayerEntity(const Vector2f&, const Vector2f&);
-  PlayerEntity(const Vector2f&, const Vector2f&, const float, const float, const float);
+  PlayerEntity(const Vector2f&, const Vector2f&, float, float, float);
 };
 }
 
