@@ -181,12 +181,25 @@ int Engine::exec() {
 }
 
 void Engine::updateKeys() {
-  keys.up = sf::Keyboard::isKeyPressed(sf::Keyboard::Up);
-  keys.left = sf::Keyboard::isKeyPressed(sf::Keyboard::Left);
-  keys.down = sf::Keyboard::isKeyPressed(sf::Keyboard::Down);
-  keys.right = sf::Keyboard::isKeyPressed(sf::Keyboard::Right);
-  keys.jump = sf::Keyboard::isKeyPressed(sf::Keyboard::X);
-  keys.run = sf::Keyboard::isKeyPressed(sf::Keyboard::Z);
+  switch (event.key.code) {
+  case sf::Keyboard::Up:
+    keys.up = sf::Keyboard::isKeyPressed(sf::Keyboard::Up);
+    break;
+  case sf::Keyboard::Left:
+    keys.left = sf::Keyboard::isKeyPressed(sf::Keyboard::Left);
+    break;
+  case sf::Keyboard::Down:
+    keys.down = sf::Keyboard::isKeyPressed(sf::Keyboard::Down);
+    break;
+  case sf::Keyboard::Right:
+    keys.right = sf::Keyboard::isKeyPressed(sf::Keyboard::Right);
+    break;
+  case sf::Keyboard::X:
+    keys.jump = sf::Keyboard::isKeyPressed(sf::Keyboard::X);
+    break;
+  case sf::Keyboard::Z:
+    keys.run = sf::Keyboard::isKeyPressed(sf::Keyboard::Z);
+  }
 }
 
 Engine::Engine(const arglist& args) : args(args) {

@@ -56,7 +56,7 @@ private:
   struct Keys {
     bool up, left, down, right;
     bool jump, run;
-  } keys;
+  } keys {};
 
   bool init();
   void updateKeys();
