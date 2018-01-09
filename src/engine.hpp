@@ -4,8 +4,7 @@
 #include "entity.hpp"
 #include "geometry.hpp"
 
-#include <SFML/Graphics/RenderWindow.hpp>
-#include <SFML/Graphics/Texture.hpp>
+#include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
 
@@ -38,6 +37,7 @@ public:
   Vector2<size_t> size;
   State prevState;
   State state;
+
 
   template<typename T>
   static T toView(const T&);

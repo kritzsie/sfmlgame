@@ -3,8 +3,7 @@
 
 #include "geometry.hpp"
 
-#include <SFML/Graphics/Sprite.hpp>
-#include <SFML/Graphics/Texture.hpp>
+#include <SFML/Graphics.hpp>
 
 namespace entity {
 using uint_t = unsigned int;

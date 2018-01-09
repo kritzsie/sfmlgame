@@ -1,6 +1,9 @@
 #include "entity.hpp"
 #include "geometry.hpp"
 
+#include <SFML/Graphics.hpp>
+#include <SFML/System.hpp>
+
 namespace entity {
 // BaseEntity skipped; no methods
 // RenderEntity
@@ -50,7 +53,7 @@ Entity::Entity(
 ) : RenderEntity(offset, scale), mass(mass), radius(radius), height(height) {}
 
 // Players inherit from Entity, but also hold states (jumping, crouching, etc.)
-PlayerEntity::PlayerEntity() : Entity() {}
+PlayerEntity::PlayerEntity() : Entity(Vector2f(7, 0), Vector2f(1, 1)) {}
 
 PlayerEntity::PlayerEntity(
   float mass,

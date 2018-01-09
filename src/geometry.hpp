@@ -1,7 +1,7 @@
 #ifndef GEOMETRY_HPP
 #define GEOMETRY_HPP
 
-#include <SFML/System.hpp>
+#include <SFML/Graphics.hpp>
 
 #include <cstddef>
 
@@ -46,20 +46,26 @@ public:
 };
 
 template<typename T = double>
-class Rect : public Vector2<T> {
-protected:
-  Vector2<T> size;
-
+class Rect {
 public:
+  Vector2<T> pos;
+  Vector2<T> size;
+  T& x = pos.x;
+  T& y = pos.y;
   T& w = size.x;
   T& h = size.y;
+
+  template<typename U>
+  operator sf::Rect<U>() const;
 
   Rect();
   Rect(T, T);
   Rect(T, T, T, T);
-  Rect(const Vector2<T>&, const Vector2<T>&);
   Rect(const Vector2<T>&, T, T);
   Rect(T, T, const Vector2<T>&);
+  Rect(const Vector2<T>&, const Vector2<T>&);
+  template<typename U>
+  Rect(const Rect<U>&);
 };
 
 template<typename T = double>

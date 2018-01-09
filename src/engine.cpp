@@ -4,7 +4,6 @@
 #include "geometry.hpp"
 
 #include <SFML/Graphics.hpp>
-#include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
 
