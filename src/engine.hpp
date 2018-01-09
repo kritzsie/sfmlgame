@@ -14,13 +14,13 @@
 
 namespace engine {
 using namespace entity;
-using namespace geometry;
 
 using uint_t = unsigned int;
 
 using arglist = std::vector<char*>;
 using tileid_t = uint_t;
 
+using keng::Vector2;
 using Vector2f = Vector2<float>;
 using Vector2u = Vector2<uint_t>;
 
@@ -81,4 +81,4 @@ namespace keng {
   using namespace engine;
 }
 
-#endif
+#endif // ENGINE_HPP

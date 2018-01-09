@@ -70,4 +70,4 @@ namespace keng {
   using namespace entity;
 }
 
-#endif
+#endif // ENTITY_HPP
