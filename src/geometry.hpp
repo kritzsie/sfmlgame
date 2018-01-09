@@ -12,16 +12,18 @@ public:
   T x, y;
 
   T& operator[](const size_t) const;
+
   Vector2<T> operator+() const;
   Vector2<T> operator-() const;
-
   Vector2<T> operator+(const Vector2<T>&) const;
   Vector2<T> operator-(const Vector2<T>&) const;
   Vector2<T> operator*(T) const;
   Vector2<T> operator/(T) const;
 
-  Vector2<T>& operator=(const Vector2<T>&);
+  bool operator==(const Vector2<T>&) const;
+  bool operator!=(const Vector2<T>&) const;
 
+  Vector2<T>& operator=(const Vector2<T>&);
   Vector2<T>& operator+=(const Vector2<T>&);
   Vector2<T>& operator-=(const Vector2<T>&);
   Vector2<T>& operator*=(T);
@@ -50,10 +52,27 @@ class Rect {
 public:
   Vector2<T> pos;
   Vector2<T> size;
+
   T& x = pos.x;
   T& y = pos.y;
   T& w = size.x;
   T& h = size.y;
+
+  Rect<T> operator+() const;
+  Rect<T> operator-() const;
+  Rect<T> operator+(const Rect<T>&) const;
+  Rect<T> operator-(const Rect<T>&) const;
+  Rect<T> operator*(T) const;
+  Rect<T> operator/(T) const;
+
+  bool operator==(const Rect<T>&) const;
+  bool operator!=(const Rect<T>&) const;
+
+  Rect<T>& operator=(const Rect<T>&);
+  Rect<T>& operator+=(const Rect<T>&);
+  Rect<T>& operator-=(const Rect<T>&);
+  Rect<T>& operator*=(T);
+  Rect<T>& operator/=(T);
 
   template<typename U>
   operator sf::Rect<U>() const;

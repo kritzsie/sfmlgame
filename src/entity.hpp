@@ -10,6 +10,7 @@ using uint_t = unsigned int;
 
 using enttype_t = uint_t;
 
+using keng::Rect;
 using keng::Vector2;
 using Vector2f = Vector2<float>;
 using Vector2u = Vector2<uint_t>;
@@ -42,7 +43,7 @@ public:
   float mass;
   Vector2f netForce;
   float radius, height;
-  Vector2<Vector2f> aabb;
+  Rect<float> aabb;
 
   void applyForce(float, float);
   void applyForce(const Vector2f&);

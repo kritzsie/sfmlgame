@@ -38,12 +38,11 @@ public:
   State prevState;
   State state;
 
-
   template<typename T>
   static T toView(const T&);
-  bool init();
   tileid_t& getTile(const int, const int);
   void setTile(const int, const int, const tileid_t);
+  bool init();
 
   World(const size_t, const size_t);
   ~World();

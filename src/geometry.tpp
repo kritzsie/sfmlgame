@@ -63,6 +63,16 @@ Vector2<T> operator/(T n, const Vector2<T>& v) {
 }
 
 template<typename T>
+bool Vector2<T>::operator==(const Vector2<T>& v) const {
+  return (x == v.x) and (y == v.y);
+}
+
+template<typename T>
+bool Vector2<T>::operator!=(const Vector2<T>& v) const {
+  return (x != v.x) and (y != v.y);
+}
+
+template<typename T>
 Vector2<T>& Vector2<T>::operator=(const Vector2<T>& v) {
   x = v.x;
   y = v.y;
@@ -141,6 +151,91 @@ Vector2<T>::Vector2(const Vector2<T>& v) : x(v.x), y(v.y) {}
 
 template<typename T> template<typename U>
 Vector2<T>::Vector2(const sf::Vector2<U>& v) : Vector2<T>(v.x, v.y) {}
+
+template<typename T>
+Rect<T> Rect<T>::operator+() const {
+  return Rect(+pos, +size);
+}
+
+template<typename T>
+Rect<T> Rect<T>::operator-() const {
+  return Rect(-pos, -size);
+}
+
+template<typename T>
+Rect<T> Rect<T>::operator+(const Rect<T>& r) const {
+  return Rect(pos + r.pos, size + r.size);
+}
+
+template<typename T>
+Rect<T> Rect<T>::operator-(const Rect<T>& r) const {
+  return Rect(pos - r.pos, size - r.size);
+}
+
+template<typename T>
+Rect<T> Rect<T>::operator*(T n) const {
+  return Rect(pos * n, size * n);
+}
+
+template<typename T>
+Rect<T> operator*(T n, const Rect<T>& r) {
+  return Rect(n / r.pos, n / r.size);
+}
+
+template<typename T>
+Rect<T> Rect<T>::operator/(T n) const {
+  return Rect(pos / n, size / n);
+}
+
+template<typename T>
+Rect<T> operator/(T n, const Rect<T>& r) {
+  return Rect(n / r.pos, n / r.size);
+}
+
+template<typename T>
+bool Rect<T>::operator==(const Rect<T>& v) const {
+  return (this->pos == v.pos) and (this->size == v.size);
+}
+
+template<typename T>
+bool Rect<T>::operator!=(const Rect<T>& v) const {
+  return (this->pos != v.pos) and (this->size != v.size);
+}
+
+template<typename T>
+Rect<T>& Rect<T>::operator=(const Rect<T>& r) {
+  pos = r.pos;
+  size = r.size;
+  return *this;
+}
+
+template<typename T>
+Rect<T>& Rect<T>::operator+=(const Rect<T>& r) {
+  pos += r.pos;
+  size += r.size;
+  return *this;
+}
+
+template<typename T>
+Rect<T>& Rect<T>::operator-=(const Rect<T>& r) {
+  pos -= r.pos;
+  size -= r.size;
+  return *this;
+}
+
+template<typename T>
+Rect<T>& Rect<T>::operator*=(T n) {
+  pos *= n;
+  size *= n;
+  return *this;
+}
+
+template<typename T>
+Rect<T>& Rect<T>::operator/=(T n) {
+  pos /= n;
+  size /= n;
+  return *this;
+}
 
 template<typename T> template<typename U>
 Rect<T>::operator sf::Rect<U>() const {

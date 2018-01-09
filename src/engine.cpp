@@ -22,6 +22,23 @@ inline T World::toView(const T& vector) {
   return T(vector.x, -vector.y);
 }
 
+// TODO: Inherit from dedicated 2D vector class
+inline tileid_t& World::getTile(const int x, const int y) {
+  if (x < size.x)
+    if (y < size.y)
+      return tiles[x * size.y + y];
+    else throw std::out_of_range(fmt::format("y index out of bounds ({0} >= {1})", y, size.y));
+  else throw std::out_of_range(fmt::format("x index out of bounds ({0} >= {1})", x, size.x));
+}
+
+void World::setTile(const int x, const int y, const tileid_t tileid) {
+  if (x < size.x)
+    if (y < size.y)
+      getTile(x, y) = tileid;
+    else throw std::out_of_range(fmt::format("y index out of bounds ({0} >= {1})", y, size.y));
+  else throw std::out_of_range(fmt::format("x index out of bounds ({0} >= {1})", x, size.x));
+}
+
 bool World::init() {
   // WARNING: Test world ahead
   for (int y = 0; y < 2; y++) {
@@ -38,23 +55,6 @@ bool World::init() {
   prevState = state;
 
   return true;
-}
-
-// TODO: Inherit from dedicated 2D vector class
-inline tileid_t& World::getTile(const int x, const int y) {
-  if (x < size.x)
-    if (y < size.y)
-      return tiles[x * size.y + y];
-    else throw std::out_of_range(fmt::format("y index out of bounds ({0} >= {1})", y, size.y));
-  else throw std::out_of_range(fmt::format("x index out of bounds ({0} >= {1})", x, size.x));
-}
-
-void World::setTile(const int x, const int y, const tileid_t tileid) {
-  if (x < size.x)
-    if (y < size.y)
-      getTile(x, y) = tileid;
-    else throw std::out_of_range(fmt::format("y index out of bounds ({0} >= {1})", y, size.y));
-  else throw std::out_of_range(fmt::format("x index out of bounds ({0} >= {1})", x, size.x));
 }
 
 World::World(size_t x, size_t y) {
@@ -146,6 +146,7 @@ void Engine::render() {
     }
   }
 
+  // FIXME: Set correct position for scaled sprites
   world->state.player.sprite.setPosition(world->state.player.toView());
   world->state.player.sprite.setScale(
     Vector2f(world->state.player.scale.x * world->state.player.facing,
