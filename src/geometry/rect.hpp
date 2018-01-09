@@ -47,10 +47,10 @@ public:
 };
 }
 
+#include "rect.cpp"
+
 namespace keng {
   using namespace geometry::rect;
 }
-
-#include "rect.cpp"
 
 #endif // GEOMETRY_RECT_HPP

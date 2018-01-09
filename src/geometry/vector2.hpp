@@ -48,10 +48,10 @@ public:
 };
 }
 
+#include "vector2.cpp"
+
 namespace keng {
   using namespace geometry::vector2;
 }
-
-#include "vector2.cpp"
 
 #endif // GEOMETRY_VECTOR2_HPP

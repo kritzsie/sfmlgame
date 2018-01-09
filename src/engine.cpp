@@ -2,6 +2,7 @@
 #include "entity.hpp"
 #include "fmt/format.h"
 #include "geometry.hpp"
+#include "types.hpp"
 
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>

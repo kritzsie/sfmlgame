@@ -1,5 +1,6 @@
 #include "entity.hpp"
 #include "geometry.hpp"
+#include "types.hpp"
 
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>

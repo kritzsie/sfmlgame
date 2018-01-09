@@ -3,6 +3,7 @@
 
 #include "entity.hpp"
 #include "geometry.hpp"
+#include "types.hpp"
 
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
@@ -14,15 +15,14 @@
 
 namespace engine {
 using namespace entity;
-
-using uint_t = unsigned int;
+using namespace types;
 
 using arglist = std::vector<char*>;
-using tileid_t = uint_t;
+using tileid_t = uint;
 
-using keng::Vector2;
+using geometry::vector2::Vector2;
 using Vector2f = Vector2<float>;
-using Vector2u = Vector2<uint_t>;
+using Vector2u = Vector2<uint>;
 
 class World {
 protected:
@@ -51,7 +51,7 @@ public:
 class Engine {
 protected:
   const arglist& args;
-  uint_t tick;
+  uint tick;
   sf::Clock tickClock;
   float tickTime, tickRate;
   sf::Event event;

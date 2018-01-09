@@ -1,10 +1,12 @@
 #ifndef GEOMETRY_MATRIX_HPP
 #define GEOMETRY_MATRIX_HPP
 
+#include "vector2.hpp"
+
 #include <cstddef>
 
 namespace geometry::matrix {
-using keng::Vector2;
+using geometry::vector2::Vector2;
 
 template<typename T = double>
 class Matrix {

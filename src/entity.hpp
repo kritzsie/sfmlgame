@@ -2,18 +2,20 @@
 #define ENTITY_HPP
 
 #include "geometry.hpp"
+#include "types.hpp"
 
 #include <SFML/Graphics.hpp>
 
 namespace entity {
-using uint_t = unsigned int;
+using namespace types;
 
-using enttype_t = uint_t;
+using geometry::rect::Rect;
+using geometry::vector2::Vector2;
 
-using keng::Rect;
-using keng::Vector2;
 using Vector2f = Vector2<float>;
-using Vector2u = Vector2<uint_t>;
+using Vector2u = Vector2<uint>;
+
+using enttype_t = uint;
 
 class BaseEntity {
 public:
