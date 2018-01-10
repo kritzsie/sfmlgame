@@ -15,6 +15,7 @@
 
 #include <cstddef>
 #include <cstdlib>
+#include <ctgmath>
 
 namespace engine {
 // Static helper method used to flip the Y axis
@@ -23,8 +24,16 @@ T World::toView(const T& vector) {
   return T(vector.x, -vector.y);
 }
 
+template<typename T>
+Rect<int> World::tilesFromAABB(const Rect<T>& bbox) {
+  return Rect<int>(
+    floor(bbox.x), floor(bbox.y),
+    ceil(bbox.w), ceil(bbox.h)
+  );
+}
+
 // TODO: Inherit from dedicated 2D vector class
-tileid_t& World::getTile(const int x, const int y) {
+tileid_t& World::getTile(int x, int y) {
   if (x < size.x)
     if (y < size.y)
       return tiles[x * size.y + y];
@@ -32,7 +41,7 @@ tileid_t& World::getTile(const int x, const int y) {
   else throw std::out_of_range(fmt::format("x index out of bounds ({0} >= {1})", x, size.x));
 }
 
-void World::setTile(const int x, const int y, const tileid_t tileid) {
+void World::setTile(int x, int y, tileid_t tileid) {
   if (x < size.x)
     if (y < size.y)
       getTile(x, y) = tileid;
@@ -79,7 +88,7 @@ bool Engine::init() {
   return true;
 }
 
-void Engine::resize(const size_t width, const size_t height) {
+void Engine::resize(size_t width, size_t height) {
   window->setSize(sf::Vector2u(width, height));
 }
 

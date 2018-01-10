@@ -40,11 +40,13 @@ public:
 
   template<typename T>
   static T toView(const T&);
-  tileid_t& getTile(const int, const int);
-  void setTile(const int, const int, const tileid_t);
+  template<typename T>
+  static Rect<int> tilesFromAABB(const Rect<T>&);
+  tileid_t& getTile(int, int);
+  void setTile(int, int, tileid_t);
   bool init();
 
-  World(const size_t, const size_t);
+  World(size_t, size_t);
   ~World();
 };
 
@@ -66,7 +68,7 @@ protected:
 
   bool init();
   void updateKeys();
-  void resize(const size_t, const size_t);
+  void resize(size_t, size_t);
   void onTick();
   void render();
 
