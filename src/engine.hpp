@@ -42,6 +42,7 @@ public:
   static T toView(const T&);
   template<typename T>
   static Rect<int> tilesFromAABB(const Rect<T>&);
+  Rect<float> tileAABB(int, int);
   tileid_t& getTile(int, int);
   void setTile(int, int, tileid_t);
   bool init();

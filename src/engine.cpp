@@ -27,8 +27,8 @@ T World::toView(const T& vector) {
 template<typename T>
 Rect<int> World::tilesFromAABB(const Rect<T>& bbox) {
   return Rect<int>(
-    floor(bbox.x), floor(bbox.y),
-    ceil(bbox.w), ceil(bbox.h)
+    floor(bbox.x / 16), floor(bbox.y / 16),
+    ceil(bbox.w / 16), ceil(bbox.h / 16)
   );
 }
 
@@ -47,6 +47,10 @@ void World::setTile(int x, int y, tileid_t tileid) {
       getTile(x, y) = tileid;
     else throw std::out_of_range(fmt::format("y index out of bounds ({0} >= {1})", y, size.y));
   else throw std::out_of_range(fmt::format("x index out of bounds ({0} >= {1})", x, size.x));
+}
+
+Rect<float> World::tileAABB(int x, int y) {
+  return Rect<float>(x * 16, y * 16, 16, 16);
 }
 
 bool World::init() {
@@ -125,6 +129,15 @@ void Engine::onTick() {
   world->state.player.vel += world->state.player.netForce / (tickRate * tickRate);
   world->state.player.netForce = {0, 0};
   world->state.player.pos += world->state.player.vel / tickRate;
+
+  auto playerAABB = world->state.player.getAABB();
+  auto range = World::tilesFromAABB(playerAABB);
+
+  for (int y = range.y; y < range.y + range.h; y++)
+  for (int x = range.x; x < range.x + range.w; x++)
+  if (world->getTile(x, y) != 0
+  and playerAABB.overlaps(world->tileAABB(x, y)))
+    world->state.player.vel = {0, 0};
 
   world->state.camera.pos += ((world->state.player.pos - world->state.camera.pos) * 4 - world->state.camera.vel / 2) / tickRate;
 
