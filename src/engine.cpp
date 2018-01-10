@@ -80,7 +80,7 @@ bool Engine::init() {
 }
 
 void Engine::resize(const size_t width, const size_t height) {
-  window->setSize(Vector2u(width, height));
+  window->setSize(sf::Vector2u(width, height));
 }
 
 void Engine::onTick() {

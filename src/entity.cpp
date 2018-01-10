@@ -34,16 +34,16 @@ void Entity::applyForce(const Vector2f& f) {
 }
 
 void Entity::applyForce(float x, float y) {
-  netForce += Vector2f(x, y);
+  netForce += {x, y};
 }
 
-Entity::Entity() : RenderEntity(Vector2f(4, 0), Vector2f(1, 1)), mass(1), radius(8), height(16) {}
+Entity::Entity() : RenderEntity({4, 0}, {1, 1}), mass(1), radius(8), height(16) {}
 
 Entity::Entity(
   float mass,
   float radius,
   float height
-) : RenderEntity(Vector2f(radius / 2, 0), Vector2f(1, 1)), mass(mass), radius(radius), height(height) {}
+) : RenderEntity({radius / 2, 0}, {1, 1}), mass(mass), radius(radius), height(height) {}
 
 Entity::Entity(
   const Vector2f& offset,
@@ -54,7 +54,7 @@ Entity::Entity(
 ) : RenderEntity(offset, scale), mass(mass), radius(radius), height(height) {}
 
 // Players inherit from Entity, but also hold states (jumping, crouching, etc.)
-PlayerEntity::PlayerEntity() : Entity(Vector2f(7, 0), Vector2f(1, 1)) {}
+PlayerEntity::PlayerEntity() : Entity({7, 0}, {1, 1}) {}
 
 PlayerEntity::PlayerEntity(
   float mass,
