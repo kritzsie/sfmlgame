@@ -19,12 +19,12 @@
 namespace engine {
 // Static helper method used to flip the Y axis
 template<typename T>
-inline T World::toView(const T& vector) {
+T World::toView(const T& vector) {
   return T(vector.x, -vector.y);
 }
 
 // TODO: Inherit from dedicated 2D vector class
-inline tileid_t& World::getTile(const int x, const int y) {
+tileid_t& World::getTile(const int x, const int y) {
   if (x < size.x)
     if (y < size.y)
       return tiles[x * size.y + y];

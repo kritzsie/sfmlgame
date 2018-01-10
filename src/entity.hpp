@@ -45,8 +45,8 @@ public:
   float mass;
   Vector2f netForce;
   float radius, height;
-  Rect<float> aabb;
 
+  Rect<float> getAABB() const;
   void applyForce(float, float);
   void applyForce(const Vector2f&);
 

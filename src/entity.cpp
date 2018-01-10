@@ -18,7 +18,10 @@ void RenderEntity::flipY() {
 
 // Helper method to transform from world to screen coordinates
 Vector2f RenderEntity::toView() {
-  return Vector2f(pos.x - (offset.x * scale.x * facing), -(pos.y - (offset.y * scale.y) + texture.getSize().y));
+  return Vector2f(
+    pos.x - (offset.x * scale.x * facing),
+    -(pos.y - (offset.y * scale.y) + texture.getSize().y)
+  );
 }
 
 RenderEntity::RenderEntity() : offset(0, 0), scale(1, 1), facing(1) {}
@@ -29,6 +32,10 @@ RenderEntity::RenderEntity(
 ) : offset(offset), scale(scale), facing(1) {}
 
 // Use Entity for things with collision
+Rect<float> Entity::getAABB() const {
+  return Rect<float>(pos.x - radius, pos.y, radius * 2, height);
+}
+
 void Entity::applyForce(const Vector2f& f) {
   netForce += f;
 }
