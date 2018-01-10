@@ -94,6 +94,30 @@ Rect<T>::operator sf::Rect<U>() const {
 }
 
 template<typename T>
+bool Rect<T>::overlaps(const Rect<T>& r) const {
+  if (x < r.x + r.w
+  and x + w > r.x
+  and y < r.y + r.h
+  and y + h > r.y)
+    return true;
+  return false;
+}
+
+template<typename T>
+Rect<T> Rect<T>::intersection(const Rect<T>& r) const {
+  return Rect<T>(
+    std::max(x, r.x), std::max(y, r.y),
+    (x < r.x) ? (x + w - r.x) : (r.x + r.w - x),
+    (y < r.y) ? (y + h - r.y) : (r.y + r.h - y)
+  );
+}
+
+template<typename T>
+T Rect<T>::area() const {
+  return w * h;
+}
+
+template<typename T>
 Rect<T>::Rect() : pos(), size() {}
 
 template<typename T>
