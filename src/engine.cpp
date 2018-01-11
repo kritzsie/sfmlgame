@@ -28,8 +28,12 @@ template<typename T>
 Rect<int> World::tilesFromAABB(const Rect<T>& bbox) {
   return Rect<int>(
     floor(bbox.x / 16), floor(bbox.y / 16),
-    ceil(bbox.w / 16), ceil(bbox.h / 16)
+    ceil(bbox.w / 16) + 1, ceil(bbox.h / 16) + 1
   );
+}
+
+Rect<float> World::tileAABB(int x, int y) {
+  return Rect<float>(x * 16, y * 16, 16, 16);
 }
 
 // TODO: Inherit from dedicated 2D vector class
@@ -47,10 +51,6 @@ void World::setTile(int x, int y, tileid_t tileid) {
       getTile(x, y) = tileid;
     else throw std::out_of_range(fmt::format("y index out of bounds ({0} >= {1})", y, size.y));
   else throw std::out_of_range(fmt::format("x index out of bounds ({0} >= {1})", x, size.x));
-}
-
-Rect<float> World::tileAABB(int x, int y) {
-  return Rect<float>(x * 16, y * 16, 16, 16);
 }
 
 bool World::init() {
@@ -75,6 +75,8 @@ World::World(size_t x, size_t y) {
   tiles = new tileid_t[x * y]();
   size.x = x;
   size.y = y;
+
+  state.player = PlayerEntity({7, 0}, {1, 1}, 85, 6, 24);
 }
 
 World::~World() {
@@ -101,7 +103,7 @@ void Engine::onTick() {
   static const float gravity = -32 * 16;
   static const float min_yvel = -16 * 16;
 
-  if (keys.left ^ keys.right) {
+  if (keys.left != keys.right) {
     if (keys.left)
       world->state.player.vel.x = std::max(world->state.player.vel.x - 1.5f, keys.run ? -160.f : -96.f);
     else if (keys.right)
@@ -119,7 +121,7 @@ void Engine::onTick() {
       world->state.player.vel.y = std::max(world->state.player.vel.y + gravity / tickRate, min_yvel);
     }
   }
-  else if (!(keys.left ^ keys.right)) {
+  else if (keys.left == keys.right) {
     if (world->state.player.vel.x > 0)
       world->state.player.vel.x = std::max(world->state.player.vel.x - 1, 0.0f);
     else if (world->state.player.vel.x < 0)
@@ -133,11 +135,18 @@ void Engine::onTick() {
   auto playerAABB = world->state.player.getAABB();
   auto range = World::tilesFromAABB(playerAABB);
 
-  for (int y = range.y; y < range.y + range.h; y++)
-  for (int x = range.x; x < range.x + range.w; x++)
-  if (world->getTile(x, y) != 0
-  and playerAABB.overlaps(world->tileAABB(x, y)))
-    world->state.player.vel = {0, 0};
+  for (int y = range.y; y < range.y + range.h; y++) {
+    for (int x = range.x; x < range.x + range.w; x++) {
+      if (x >= 0 and x < world->size.x
+      and y >= 0 and y < world->size.y) {
+        if (world->getTile(x, y) != 0
+        and playerAABB.overlaps(world->tileAABB(x, y))) {
+          world->state.player.airborne = false;
+          world->state.player.vel = {0, 0};
+        }
+      }
+    }
+  }
 
   world->state.camera.pos += ((world->state.player.pos - world->state.camera.pos) * 4 - world->state.camera.vel / 2) / tickRate;
 
@@ -229,7 +238,7 @@ void Engine::updateKeys() {
 
 Engine::Engine(const arglist& args) : args(args) {
   window = new sf::RenderWindow(sf::VideoMode::getDesktopMode(), "Super Pixel Brawler");
-  world = new World(128, 64);
+  world = new World(16, 8);
   tickRate = 128;
   background.loadFromFile("background.png");
   tileart.loadFromFile("brick.png");

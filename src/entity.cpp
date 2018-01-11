@@ -61,7 +61,7 @@ Entity::Entity(
 ) : RenderEntity(offset, scale), mass(mass), radius(radius), height(height) {}
 
 // Players inherit from Entity, but also hold states (jumping, crouching, etc.)
-PlayerEntity::PlayerEntity() : Entity({7, 0}, {1, 1}) {}
+PlayerEntity::PlayerEntity() : Entity() {}
 
 PlayerEntity::PlayerEntity(
   float mass,
