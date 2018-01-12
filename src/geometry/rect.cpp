@@ -94,7 +94,7 @@ Rect<T>::operator sf::Rect<U>() const {
 }
 
 template<typename T>
-bool Rect<T>::overlaps(const Rect<T>& r) const {
+bool Rect<T>::intersects(const Rect<T>& r) const {
   if (x < r.x + r.w
   and x + w > r.x
   and y < r.y + r.h

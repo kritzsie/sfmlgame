@@ -36,7 +36,7 @@ public:
   template<typename U>
   operator sf::Rect<U>() const;
 
-  bool overlaps(const Rect<T>&) const;
+  bool intersects(const Rect<T>&) const;
   Rect<T> intersection(const Rect<T>&) const;
   T area() const;
 

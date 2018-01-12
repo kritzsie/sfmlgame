@@ -132,23 +132,48 @@ void Engine::onTick() {
   world->state.player.netForce = {0, 0};
   world->state.player.pos += world->state.player.vel / tickRate;
 
-  auto playerAABB = world->state.player.getAABB();
-  auto range = World::tilesFromAABB(playerAABB);
+  auto& player = world->state.player;
+  auto range = World::tilesFromAABB(player.getAABB());
 
+  world->state.player.airborne = true;
   for (int y = range.y; y < range.y + range.h; y++) {
     for (int x = range.x; x < range.x + range.w; x++) {
       if (x >= 0 and x < world->size.x
       and y >= 0 and y < world->size.y) {
+        auto plyrBox = player.getAABB();
+        auto tileBox = world->tileAABB(x, y);
+
         if (world->getTile(x, y) != 0
-        and playerAABB.overlaps(world->tileAABB(x, y))) {
-          world->state.player.airborne = false;
-          world->state.player.vel = {0, 0};
+        and plyrBox.intersects(world->tileAABB(x, y))) {
+          auto plyrBoxOld = world->prevState.player.getAABB();
+          auto collBox = plyrBox.intersection(tileBox);
+
+          if (plyrBoxOld.x > tileBox.x + tileBox.w / 2) {
+            player.pos.x += collBox.w;
+            player.vel.x = 0;
+          }
+          else if (plyrBoxOld.x + plyrBoxOld.w / 2 < tileBox.x) {
+            player.pos.x -= collBox.w;
+            player.vel.x = 0;
+          }
+
+          if (plyrBoxOld.y > tileBox.y + tileBox.h / 2) {
+            player.airborne = false;
+            player.pos.y += collBox.h;
+            player.vel.y = 0;
+          }
+          else if (plyrBoxOld.y + plyrBoxOld.h / 2 < tileBox.y) {
+            player.pos.y -= collBox.h;
+            player.vel.y = 0;
+          }
         }
       }
     }
   }
 
   world->state.camera.pos += ((world->state.player.pos - world->state.camera.pos) * 4 - world->state.camera.vel / 2) / tickRate;
+
+  world->prevState = world->state;
 
   tick++;
 }
