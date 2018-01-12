@@ -65,13 +65,13 @@ protected:
   struct Keys {
     bool up, left, down, right;
     bool jump, run;
-  } keys {};
+  } keys;
 
   bool init();
-  void updateKeys();
+  void onKeyEvent();
   void resize(size_t, size_t);
-  void onTick();
-  void render();
+  void doTick();
+  void doRender();
 
 public:
   int exec();

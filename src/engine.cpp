@@ -98,7 +98,7 @@ void Engine::resize(size_t width, size_t height) {
   window->setSize(sf::Vector2u(width, height));
 }
 
-void Engine::onTick() {
+void Engine::doTick() {
   // Constants in tiles (16) per second
   static const float gravity = -32 * 16;
   static const float min_yvel = -16 * 16;
@@ -178,7 +178,7 @@ void Engine::onTick() {
   tick++;
 }
 
-void Engine::render() {
+void Engine::doRender() {
   auto width = window->getSize().x;
   auto height = window->getSize().y;
 
@@ -219,7 +219,7 @@ void Engine::render() {
       resize(event.size.width, event.size.height);
     else if (event.type == sf::Event::KeyPressed
          or  event.type == sf::Event::KeyReleased)
-      updateKeys();
+      onKeyEvent();
   }
 }
 
@@ -231,15 +231,15 @@ int Engine::exec() {
     tickDelta = tickClock.getElapsedTime().asSeconds() - tickTime;
     tickTime = tickClock.getElapsedTime().asSeconds();
     if (int((tickTime - tickDelta) * tickRate) < int(tickTime * tickRate)) {
-      onTick();
+      doTick();
     }
-    render();
+    doRender();
   }
 
   return EXIT_SUCCESS;
 }
 
-void Engine::updateKeys() {
+void Engine::onKeyEvent() {
   switch (event.key.code) {
   case sf::Keyboard::Up:
     keys.up = sf::Keyboard::isKeyPressed(sf::Keyboard::Up);
@@ -261,13 +261,12 @@ void Engine::updateKeys() {
   }
 }
 
-Engine::Engine(const arglist& args) : args(args) {
+Engine::Engine(const arglist& args) : args(args), keys{false} {
   window = new sf::RenderWindow(sf::VideoMode::getDesktopMode(), "Super Pixel Brawler");
   world = new World(16, 8);
   tickRate = 128;
   background.loadFromFile("background.png");
   tileart.loadFromFile("brick.png");
-  updateKeys();
 }
 
 Engine::~Engine() {
