@@ -114,11 +114,6 @@ Rect<T> Rect<T>::intersection(const Rect<T>& r) const {
 }
 
 template<typename T>
-T Rect<T>::area() const {
-  return w * h;
-}
-
-template<typename T>
 Rect<T>::Rect() : pos(), size() {}
 
 template<typename T>

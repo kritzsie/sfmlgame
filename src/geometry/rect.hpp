@@ -38,7 +38,6 @@ public:
 
   bool intersects(const Rect<T>&) const;
   Rect<T> intersection(const Rect<T>&) const;
-  T area() const;
 
   Rect();
   Rect(T, T);
