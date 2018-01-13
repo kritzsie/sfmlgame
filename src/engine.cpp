@@ -27,8 +27,8 @@ T World::toView(const T& vector) {
 template<typename T>
 Rect<int> World::tilesFromAABB(const Rect<T>& bbox) {
   return Rect<int>(
-    floor(bbox.x / 16), floor(bbox.y / 16),
-    ceil(bbox.w / 16) + 1, ceil(bbox.h / 16) + 1
+    floor(bbox.x / 16) - 1, floor(bbox.y / 16) - 1,
+    ceil(bbox.w / 16) + 2, ceil(bbox.h / 16) + 2
   );
 }
 
@@ -76,7 +76,7 @@ World::World(size_t x, size_t y) {
   size.x = x;
   size.y = y;
 
-  state.player = PlayerEntity({7, 0}, {1, 1}, 6, 24);
+  state.player = PlayerEntity({7, 0}, {1, 1}, 5, 24);
 }
 
 World::~World() {
@@ -134,10 +134,35 @@ void Engine::doTick() {
     }
   }
 
+  world->player.pos.x += world->player.vel.x / tickRate;
+
+  auto range = World::tilesFromAABB(world->player.getAABB());
+  for (int y = range.y; y < range.y + range.h; y++)
+  for (int x = range.x; x < range.x + range.w; x++) {
+    auto plyrBox = world->player.getAABB();
+    auto tileBox = World::tileAABB(x, y);
+
+    if (x >= 0 and x < world->size.x
+    and y >= 0 and y < world->size.y) {
+      if (world->getTile(x, y) != 0
+      and plyrBox.intersects(tileBox)) {
+        auto collBox = plyrBox.intersection(tileBox);
+
+        if (plyrBox.x + plyrBox.w / 2 > tileBox.x + tileBox.w / 2) {
+          world->player.vel.x = 0;
+          world->player.pos.x += collBox.w;
+        }
+        else /*if (plyrBox.x + plyrBox.w / 2 < tileBox.x + tileBox.w / 2)*/ {
+          world->player.vel.x = 0;
+          world->player.pos.x -= collBox.w;
+        }
+      }
+    }
+  }
+
   world->player.pos.y += world->player.vel.y / tickRate;
   world->player.airborne = true;
 
-  auto range = World::tilesFromAABB(world->player.getAABB());
   for (int y = range.y; y < range.y + range.h; y++)
   for (int x = range.x; x < range.x + range.w; x++) {
     auto plyrBox = world->player.getAABB();
@@ -154,34 +179,9 @@ void Engine::doTick() {
           world->player.vel.y = 0;
           world->player.pos.y += collBox.h;
         }
-        else if (plyrBox.y + plyrBox.h / 2 < tileBox.y + tileBox.h / 2) {
+        else /*if (plyrBox.y + plyrBox.h / 2 < tileBox.y + tileBox.h / 2)*/ {
           world->player.vel.y = 0;
           world->player.pos.y -= collBox.h;
-        }
-      }
-    }
-  }
-
-  world->player.pos.x += world->player.vel.x / tickRate;
-
-  for (int y = range.y; y < range.y + range.h; y++)
-  for (int x = range.x; x < range.x + range.w; x++) {
-    auto plyrBox = world->player.getAABB();
-    auto tileBox = World::tileAABB(x, y);
-
-    if (x >= 0 and x < world->size.x
-    and y >= 0 and y < world->size.y) {
-      if (world->getTile(x, y) != 0
-      and plyrBox.intersects(tileBox)) {
-        auto collBox = plyrBox.intersection(tileBox);
-
-        if (plyrBox.x + plyrBox.w / 2 > tileBox.x + tileBox.w / 2) {
-          world->player.vel.x = 0;
-          world->player.pos.x += collBox.w;
-        }
-        else if (plyrBox.x + plyrBox.w / 2 < tileBox.x + tileBox.w / 2) {
-          world->player.vel.x = 0;
-          world->player.pos.x -= collBox.w;
         }
       }
     }
