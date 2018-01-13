@@ -42,17 +42,13 @@ public:
 
 class Entity : public RenderEntity {
 public:
-  float mass;
-  Vector2f netForce;
   float radius, height;
 
   Rect<float> getAABB() const;
-  void applyForce(float, float);
-  void applyForce(const Vector2f&);
 
   Entity();
-  Entity(float, float, float);
-  Entity(const Vector2f&, const Vector2f&, float, float, float);
+  Entity(float, float);
+  Entity(const Vector2f&, const Vector2f&, float, float);
 };
 
 class PlayerEntity : public Entity {
@@ -62,9 +58,9 @@ public:
   bool underwater, on_ice;
 
   PlayerEntity();
-  PlayerEntity(float, float, float);
+  PlayerEntity(float, float);
   PlayerEntity(const Vector2f&, const Vector2f&);
-  PlayerEntity(const Vector2f&, const Vector2f&, float, float, float);
+  PlayerEntity(const Vector2f&, const Vector2f&, float, float);
 };
 }
 

@@ -36,49 +36,37 @@ Rect<float> Entity::getAABB() const {
   return Rect<float>(pos.x - radius, pos.y, radius * 2, height);
 }
 
-void Entity::applyForce(const Vector2f& f) {
-  netForce += f;
-}
-
-void Entity::applyForce(float x, float y) {
-  netForce += {x, y};
-}
-
-Entity::Entity() : RenderEntity({4, 0}, {1, 1}), mass(1), radius(8), height(16) {}
+Entity::Entity() : RenderEntity({4, 0}, {1, 1}), radius(8), height(16) {}
 
 Entity::Entity(
-  float mass,
   float radius,
   float height
-) : RenderEntity({radius / 2, 0}, {1, 1}), mass(mass), radius(radius), height(height) {}
+) : RenderEntity({radius / 2, 0}, {1, 1}), radius(radius), height(height) {}
 
 Entity::Entity(
   const Vector2f& offset,
   const Vector2f& scale,
-  float mass = 1,
   float radius = 8,
   float height = 16
-) : RenderEntity(offset, scale), mass(mass), radius(radius), height(height) {}
+) : RenderEntity(offset, scale), radius(radius), height(height) {}
 
 // Players inherit from Entity, but also hold states (jumping, crouching, etc.)
 PlayerEntity::PlayerEntity() : Entity() {}
 
 PlayerEntity::PlayerEntity(
-  float mass,
   float radius,
   float height
-) : Entity(mass, radius, height) {}
+) : Entity(radius, height) {}
 
 PlayerEntity::PlayerEntity(
   const Vector2f& offset,
   const Vector2f& scale
-) : Entity(offset, scale, 85, 5, 24) {}
+) : Entity(offset, scale, 5, 24) {}
 
 PlayerEntity::PlayerEntity(
   const Vector2f& offset,
   const Vector2f& scale,
-  float mass,
   float radius,
   float height
-) : Entity(offset, scale, mass, radius, height) {}
+) : Entity(offset, scale, radius, height) {}
 }

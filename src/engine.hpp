@@ -35,14 +35,17 @@ protected:
 public:
   tileid_t* tiles;
   Vector2<size_t> size;
-  State prevState;
+  State prev;
   State state;
+
+  BaseEntity& camera = state.camera;
+  PlayerEntity& player = state.player;
 
   template<typename T>
   static T toView(const T&);
   template<typename T>
   static Rect<int> tilesFromAABB(const Rect<T>&);
-  Rect<float> tileAABB(int, int);
+  static Rect<float> tileAABB(int, int);
   tileid_t& getTile(int, int);
   void setTile(int, int, tileid_t);
   bool init();

@@ -66,7 +66,7 @@ bool World::init() {
   state.camera.pos = state.player.pos;
   // End test world
 
-  prevState = state;
+  prev = state;
 
   return true;
 }
@@ -76,7 +76,7 @@ World::World(size_t x, size_t y) {
   size.x = x;
   size.y = y;
 
-  state.player = PlayerEntity({7, 0}, {1, 1}, 85, 6, 24);
+  state.player = PlayerEntity({7, 0}, {1, 1}, 6, 24);
 }
 
 World::~World() {
@@ -103,77 +103,91 @@ void Engine::doTick() {
   static const float gravity = -32 * 16;
   static const float min_yvel = -16 * 16;
 
+  world->prev = world->state;
+
   if (keys.left != keys.right) {
     if (keys.left)
-      world->state.player.vel.x = std::max(world->state.player.vel.x - 1.5f, keys.run ? -160.f : -96.f);
+      world->player.vel.x = std::max(world->player.vel.x - 1.5f, keys.run ? -160.f : -96.f);
     else if (keys.right)
-      world->state.player.vel.x = std::min(world->state.player.vel.x + 1.5f, keys.run ? 160.f : 96.f);
-    world->state.player.facing = keys.left ? -1 : 1;
+      world->player.vel.x = std::min(world->player.vel.x + 1.5f, keys.run ? 160.f : 96.f);
+    world->player.facing = keys.left ? -1 : 1;
   }
 
   if (keys.jump) {
-    world->state.player.airborne = true;
-    world->state.player.vel.y = 8 * 16;
+    world->player.airborne = true;
+    world->player.vel.y = 8 * 16;
   }
 
-  if (world->state.player.airborne) {
-    if (world->state.player.vel.y > min_yvel) {
-      world->state.player.vel.y = std::max(world->state.player.vel.y + gravity / tickRate, min_yvel);
+  if (world->player.airborne) {
+    if (world->player.vel.y > min_yvel) {
+      world->player.vel.y = std::max(world->player.vel.y + gravity / tickRate, min_yvel);
     }
   }
-  else if (keys.left == keys.right) {
-    if (world->state.player.vel.x > 0)
-      world->state.player.vel.x = std::max(world->state.player.vel.x - 1, 0.0f);
-    else if (world->state.player.vel.x < 0)
-      world->state.player.vel.x = std::min(world->state.player.vel.x + 1, 0.0f);
+  else {
+    if (keys.left == keys.right) {
+      if (world->player.vel.x > 0) {
+        world->player.vel.x = std::max(world->player.vel.x - 1, 0.0f);
+      }
+      else if (world->player.vel.x < 0) {
+        world->player.vel.x = std::min(world->player.vel.x + 1, 0.0f);
+      }
+    }
   }
 
-  world->state.player.vel += world->state.player.netForce / (tickRate * tickRate);
-  world->state.player.netForce = {0, 0};
-  world->state.player.pos += world->state.player.vel / tickRate;
+  world->player.pos.y += world->player.vel.y / tickRate;
+  world->player.airborne = true;
 
-  auto& player = world->state.player;
-  auto range = World::tilesFromAABB(player.getAABB());
+  auto range = World::tilesFromAABB(world->player.getAABB());
+  for (int y = range.y; y < range.y + range.h; y++)
+  for (int x = range.x; x < range.x + range.w; x++) {
+    auto plyrBox = world->player.getAABB();
+    auto tileBox = World::tileAABB(x, y);
 
-  world->state.player.airborne = true;
-  for (int y = range.y; y < range.y + range.h; y++) {
-    for (int x = range.x; x < range.x + range.w; x++) {
-      if (x >= 0 and x < world->size.x
-      and y >= 0 and y < world->size.y) {
-        auto plyrBox = player.getAABB();
-        auto tileBox = world->tileAABB(x, y);
+    if (x >= 0 and x < world->size.x
+    and y >= 0 and y < world->size.y) {
+      if (world->getTile(x, y) != 0
+      and plyrBox.intersects(tileBox)) {
+        auto collBox = plyrBox.intersection(tileBox);
 
-        if (world->getTile(x, y) != 0
-        and plyrBox.intersects(world->tileAABB(x, y))) {
-          auto plyrBoxOld = world->prevState.player.getAABB();
-          auto collBox = plyrBox.intersection(tileBox);
+        if (plyrBox.y + plyrBox.h / 2 > tileBox.y + tileBox.h / 2) {
+          world->player.airborne = false;
+          world->player.vel.y = 0;
+          world->player.pos.y += collBox.h;
+        }
+        else if (plyrBox.y + plyrBox.h / 2 < tileBox.y + tileBox.h / 2) {
+          world->player.vel.y = 0;
+          world->player.pos.y -= collBox.h;
+        }
+      }
+    }
+  }
 
-          if (plyrBoxOld.x > tileBox.x + tileBox.w / 2) {
-            player.pos.x += collBox.w;
-            player.vel.x = 0;
-          }
-          else if (plyrBoxOld.x + plyrBoxOld.w / 2 < tileBox.x) {
-            player.pos.x -= collBox.w;
-            player.vel.x = 0;
-          }
+  world->player.pos.x += world->player.vel.x / tickRate;
 
-          if (plyrBoxOld.y > tileBox.y + tileBox.h / 2) {
-            player.airborne = false;
-            player.pos.y += collBox.h;
-            player.vel.y = 0;
-          }
-          else if (plyrBoxOld.y + plyrBoxOld.h / 2 < tileBox.y) {
-            player.pos.y -= collBox.h;
-            player.vel.y = 0;
-          }
+  for (int y = range.y; y < range.y + range.h; y++)
+  for (int x = range.x; x < range.x + range.w; x++) {
+    auto plyrBox = world->player.getAABB();
+    auto tileBox = World::tileAABB(x, y);
+
+    if (x >= 0 and x < world->size.x
+    and y >= 0 and y < world->size.y) {
+      if (world->getTile(x, y) != 0
+      and plyrBox.intersects(tileBox)) {
+        auto collBox = plyrBox.intersection(tileBox);
+
+        if (plyrBox.x + plyrBox.w / 2 > tileBox.x + tileBox.w / 2) {
+          world->player.vel.x = 0;
+          world->player.pos.x += collBox.w;
+        }
+        else if (plyrBox.x + plyrBox.w / 2 < tileBox.x + tileBox.w / 2) {
+          world->player.vel.x = 0;
+          world->player.pos.x -= collBox.w;
         }
       }
     }
   }
 
   world->state.camera.pos += ((world->state.player.pos - world->state.camera.pos) * 4 - world->state.camera.vel / 2) / tickRate;
-
-  world->prevState = world->state;
 
   tick++;
 }
@@ -196,9 +210,6 @@ void Engine::doRender() {
       if (world->getTile(x, y)) {
         brick.setPosition(World::toView(Vector2f(x * 16, y * 16 + 16)));
         window->draw(brick);
-      }
-      else {
-        continue;
       }
     }
   }
