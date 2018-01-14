@@ -108,7 +108,6 @@ void Engine::doTick() {
   }
 
   if (keys.jump) {
-    world->player.airborne = true;
     world->player.vel.y = 8 * 16;
   }
 
@@ -117,14 +116,12 @@ void Engine::doTick() {
       world->player.vel.y = std::max(world->player.vel.y + gravity / tickRate, min_yvel);
     }
   }
-  else {
-    if (keys.left == keys.right) {
-      if (world->player.vel.x > 0) {
-        world->player.vel.x = std::max(world->player.vel.x - 1, 0.0f);
-      }
-      else if (world->player.vel.x < 0) {
-        world->player.vel.x = std::min(world->player.vel.x + 1, 0.0f);
-      }
+  else if (keys.left == keys.right) {
+    if (world->player.vel.x > 0) {
+      world->player.vel.x = std::max(world->player.vel.x - 1, 0.0f);
+    }
+    else if (world->player.vel.x < 0) {
+      world->player.vel.x = std::min(world->player.vel.x + 1, 0.0f);
     }
   }
 
@@ -142,13 +139,13 @@ void Engine::doTick() {
       and plyrBox.intersects(tileBox)) {
         auto collBox = plyrBox.intersection(tileBox);
 
-        if (plyrBox.x + plyrBox.w / 2 > tileBox.x + tileBox.w / 2) {
-          world->player.vel.x = 0;
-          world->player.pos.x += collBox.w;
-        }
-        else /*if (plyrBox.x + plyrBox.w / 2 < tileBox.x + tileBox.w / 2)*/ {
+        if (plyrBox.x + plyrBox.w / 2 < tileBox.x + tileBox.w / 2) {
           world->player.vel.x = 0;
           world->player.pos.x -= collBox.w;
+        }
+        else {
+          world->player.vel.x = 0;
+          world->player.pos.x += collBox.w;
         }
       }
     }
@@ -168,14 +165,14 @@ void Engine::doTick() {
       and plyrBox.intersects(tileBox)) {
         auto collBox = plyrBox.intersection(tileBox);
 
-        if (plyrBox.y + plyrBox.h / 2 > tileBox.y + tileBox.h / 2) {
+        if (plyrBox.y + plyrBox.h / 2 < tileBox.y + tileBox.h / 2) {
+          world->player.vel.y = 0;
+          world->player.pos.y -= collBox.h;
+        }
+        else {
           world->player.airborne = false;
           world->player.vel.y = 0;
           world->player.pos.y += collBox.h;
-        }
-        else /*if (plyrBox.y + plyrBox.h / 2 < tileBox.y + tileBox.h / 2)*/ {
-          world->player.vel.y = 0;
-          world->player.pos.y -= collBox.h;
         }
       }
     }
