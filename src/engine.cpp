@@ -55,12 +55,19 @@ void World::setTile(int x, int y, tileid_t tileid) {
 
 bool World::init() {
   // WARNING: Test world ahead
-  for (int y = 0; y < 2; y++) {
-    for (int x = 0; x < 6; x++) {
+  for (int x = 0; x < 8; x++) for (int y = 0; y < 2; y++) {
       setTile(x, y, 1);
-    }
   }
   setTile(0, 2, 1);
+  setTile(5, 2, 1);
+  setTile(6, 2, 1);
+  setTile(6, 3, 1);
+  setTile(7, 2, 1);
+  setTile(7, 3, 1);
+  setTile(7, 4, 1);
+  for (int x = 12; x < 16; x++) for (int y = 0; y < 2; y++) {
+    setTile(x, y, 1);
+  }
   setTile(size.x - 1, size.y - 1, 1);
   player.pos = Vector2f(40, 32);
   camera.pos = player.pos;
@@ -95,7 +102,7 @@ void Engine::resize(size_t width, size_t height) {
 }
 
 void Engine::doTick() {
-  // Constants in tiles (16) per second
+  // TODO: Send these to a better place
   static const float gravity = -32 * 16;
   static const float min_yvel = -16 * 16;
 
@@ -118,10 +125,10 @@ void Engine::doTick() {
   }
   else if (keys.left == keys.right) {
     if (world->player.vel.x > 0) {
-      world->player.vel.x = std::max(world->player.vel.x - 1, 0.0f);
+      world->player.vel.x = std::max(world->player.vel.x - 1.f, 0.f);
     }
     else if (world->player.vel.x < 0) {
-      world->player.vel.x = std::min(world->player.vel.x + 1, 0.0f);
+      world->player.vel.x = std::min(world->player.vel.x + 1.f, 0.f);
     }
   }
 
