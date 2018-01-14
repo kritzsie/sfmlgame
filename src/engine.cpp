@@ -70,7 +70,7 @@ bool World::init() {
   }
   setTile(size.x - 1, size.y - 1, 1);
   player.pos = Vector2f(40, 32);
-  camera.pos = player.pos;
+  camera.pos = player.pos + Vector2f(0, player.height / 2);
   // End test world
 
   return true;
@@ -185,7 +185,14 @@ void Engine::doTick() {
     }
   }
 
-  world->camera.pos += ((world->player.pos - world->camera.pos) * 4 - world->camera.vel / 2) / tickRate;
+  world->camera.vel = (world->player.pos + Vector2f(0, world->player.height / 2) - world->camera.pos) * tickRate / 16;
+
+  world->camera.pos += world->camera.vel / tickRate;
+
+  if (world->camera.pos.y < window->getSize().y / 6) {
+    world->camera.vel.y = 0;
+    world->camera.pos.y = window->getSize().y / 6;
+  }
 
   tick++;
 }
