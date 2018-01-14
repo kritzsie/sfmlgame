@@ -25,15 +25,19 @@ public:
 };
 
 class RenderEntity : public BaseEntity {
+protected:
+  signed char direction;
+
 public:
   sf::Sprite sprite;
   sf::Texture texture;
   Vector2f offset;
   Vector2f scale;
-  char facing;
 
   void flipX();
   void flipY();
+  signed char getDirection();
+  void setDirection(signed char);
   Vector2f toView();
 
   RenderEntity();

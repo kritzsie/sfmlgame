@@ -111,7 +111,7 @@ void Engine::doTick() {
       world->player.vel.x = std::max(world->player.vel.x - 1.5f, keys.run ? -160.f : -96.f);
     else if (keys.right)
       world->player.vel.x = std::min(world->player.vel.x + 1.5f, keys.run ? 160.f : 96.f);
-    world->player.facing = keys.left ? -1 : 1;
+    world->player.setDirection(keys.left ? -1 : 1);
   }
 
   if (keys.jump) {
@@ -215,7 +215,7 @@ void Engine::doRender() {
   // FIXME: Set correct position for scaled sprites
   world->player.sprite.setPosition(world->player.toView());
   world->player.sprite.setScale(
-    Vector2f(world->player.scale.x * world->player.facing,
+    Vector2f(world->player.scale.x * world->player.getDirection(),
              world->player.scale.y));
   window->draw(world->player.sprite);
 

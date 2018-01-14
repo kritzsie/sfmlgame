@@ -5,6 +5,8 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 
+#include <ctgmath>
+
 namespace entity {
 // BaseEntity skipped; no methods
 // RenderEntity
@@ -16,27 +18,35 @@ void RenderEntity::flipY() {
   scale.y *= -1;
 }
 
+signed char RenderEntity::getDirection() {
+  return direction;
+}
+
+void RenderEntity::setDirection(signed char d) {
+  direction = std::copysign(1, d);
+}
+
 // Helper method to transform from world to screen coordinates
 Vector2f RenderEntity::toView() {
   return Vector2f(
-    pos.x - (offset.x * scale.x * facing),
+    pos.x - (offset.x * scale.x * direction),
     -(pos.y - (offset.y * scale.y) + texture.getSize().y)
   );
 }
 
-RenderEntity::RenderEntity() : offset(0, 0), scale(1, 1), facing(1) {}
+RenderEntity::RenderEntity() : offset(0, 0), scale(1, 1), direction(1) {}
 
 RenderEntity::RenderEntity(
   const Vector2f& offset,
   const Vector2f& scale
-) : offset(offset), scale(scale), facing(1) {}
+) : offset(offset), scale(scale), direction(1) {}
 
 // Use Entity for things with collision
 Rect<float> Entity::getAABB() const {
   return Rect<float>(pos.x - radius, pos.y, radius * 2, height);
 }
 
-Entity::Entity() : RenderEntity({4, 0}, {1, 1}), radius(8), height(16) {}
+Entity::Entity() : RenderEntity({8, 0}, {1, 1}), radius(8), height(16) {}
 
 Entity::Entity(
   float radius,
