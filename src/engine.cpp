@@ -212,7 +212,6 @@ void Engine::doRender() {
     }
   }
 
-  // FIXME: Set correct position for scaled sprites
   world->player.sprite.setPosition(world->player.toView());
   world->player.sprite.setScale(
     Vector2f(world->player.scale.x * world->player.getDirection(),

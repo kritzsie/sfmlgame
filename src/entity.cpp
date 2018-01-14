@@ -30,7 +30,7 @@ void RenderEntity::setDirection(signed char d) {
 Vector2f RenderEntity::toView() {
   return Vector2f(
     pos.x - (offset.x * scale.x * direction),
-    -(pos.y - (offset.y * scale.y) + texture.getSize().y)
+    -(pos.y - (offset.y * scale.y) + texture.getSize().y * scale.y)
   );
 }
 
