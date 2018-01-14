@@ -25,8 +25,10 @@ using Vector2f = Vector2<float>;
 using Vector2u = Vector2<uint>;
 
 class World {
-public:
+protected:
   tileid_t* tiles;
+
+public:
   Vector2<size_t> size;
 
   BaseEntity camera;

@@ -71,7 +71,7 @@ PlayerEntity::PlayerEntity(
 PlayerEntity::PlayerEntity(
   const Vector2f& offset,
   const Vector2f& scale
-) : Entity(offset, scale, 5, 24) {}
+) : Entity(offset, scale, 5, 25) {}
 
 PlayerEntity::PlayerEntity(
   const Vector2f& offset,
