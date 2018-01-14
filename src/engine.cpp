@@ -62,21 +62,17 @@ bool World::init() {
   }
   setTile(0, 2, 1);
   setTile(size.x - 1, size.y - 1, 1);
-  state.player.pos = Vector2f(40, 32);
-  state.camera.pos = state.player.pos;
+  player.pos = Vector2f(40, 32);
+  camera.pos = player.pos;
   // End test world
-
-  prev = state;
 
   return true;
 }
 
-World::World(size_t x, size_t y) {
+World::World(size_t x, size_t y) : player({7, 0}, {1, 1}, 5, 25) {
   tiles = new tileid_t[x * y]();
   size.x = x;
   size.y = y;
-
-  state.player = PlayerEntity({7, 0}, {1, 1}, 5, 24);
 }
 
 World::~World() {
@@ -85,8 +81,8 @@ World::~World() {
 
 bool Engine::init() {
   world->init();
-  world->state.player.texture.loadFromFile("player.png");
-  world->state.player.sprite.setTexture(world->state.player.texture);
+  world->player.texture.loadFromFile("player.png");
+  world->player.sprite.setTexture(world->player.texture);
 
   tick = 0;
   tickClock.restart();
@@ -102,8 +98,6 @@ void Engine::doTick() {
   // Constants in tiles (16) per second
   static const float gravity = -32 * 16;
   static const float min_yvel = -16 * 16;
-
-  world->prev = world->state;
 
   if (keys.left != keys.right) {
     if (keys.left)
@@ -187,7 +181,7 @@ void Engine::doTick() {
     }
   }
 
-  world->state.camera.pos += ((world->state.player.pos - world->state.camera.pos) * 4 - world->state.camera.vel / 2) / tickRate;
+  world->camera.pos += ((world->player.pos - world->camera.pos) * 4 - world->camera.vel / 2) / tickRate;
 
   tick++;
 }
@@ -197,11 +191,11 @@ void Engine::doRender() {
   auto height = window->getSize().y;
 
   sf::View view(Vector2f(), Vector2u(width, height) / 3);
-  view.setCenter(World::toView(world->state.camera.pos));
+  view.setCenter(World::toView(world->camera.pos));
   window->setView(view);
 
   sf::Sprite sky(background);
-  sky.setPosition(World::toView(world->state.camera.pos - World::toView(Vector2f(background.getSize()) / 2)));
+  sky.setPosition(World::toView(world->camera.pos - World::toView(Vector2f(background.getSize()) / 2)));
   window->draw(sky);
 
   sf::Sprite brick(tileart);
@@ -215,11 +209,11 @@ void Engine::doRender() {
   }
 
   // FIXME: Set correct position for scaled sprites
-  world->state.player.sprite.setPosition(world->state.player.toView());
-  world->state.player.sprite.setScale(
-    Vector2f(world->state.player.scale.x * world->state.player.facing,
-             world->state.player.scale.y));
-  window->draw(world->state.player.sprite);
+  world->player.sprite.setPosition(world->player.toView());
+  world->player.sprite.setScale(
+    Vector2f(world->player.scale.x * world->player.facing,
+             world->player.scale.y));
+  window->draw(world->player.sprite);
 
   window->display();
 
