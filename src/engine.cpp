@@ -261,31 +261,35 @@ void Engine::doRender() {
   window->draw(sky);
 
   sf::Sprite brick(tileart);
-  for (int y = 0; y < world->size.y; y++) {
-    for (int x = 0; x < world->size.x; x++) {
-      if (world->getTile(x, y)) {
-        brick.setPosition(World::toView(Vector2f(x * 16, y * 16 + 16)));
-        window->draw(brick);
-      }
+  for (int y = 0; y < world->size.y; y++)
+  for (int x = 0; x < world->size.x; x++) {
+    if (world->getTile(x, y)) {
+      brick.setPosition(World::toView(Vector2f(x * 16, y * 16 + 16)));
+      window->draw(brick);
     }
   }
 
+  const Vector2f sprScale(
+    world->player.scale.x * world->player.getDirection(),
+    world->player.scale.y
+  );
   world->player.sprite.setPosition(world->player.toView());
-  world->player.sprite.setScale(
-    Vector2f(world->player.scale.x * world->player.getDirection(),
-             world->player.scale.y));
+  world->player.sprite.setScale(sprScale);
   window->draw(world->player.sprite);
 
   window->display();
 
   while (window->pollEvent(event)) {
-    if (event.type == sf::Event::Closed)
+    if (event.type == sf::Event::Closed) {
       window->close();
-    else if (event.type == sf::Event::Resized)
+    }
+    else if (event.type == sf::Event::Resized) {
       resize(event.size.width, event.size.height);
+    }
     else if (event.type == sf::Event::KeyPressed
-         or  event.type == sf::Event::KeyReleased)
+         or  event.type == sf::Event::KeyReleased) {
       onKeyEvent();
+    }
   }
 }
 
