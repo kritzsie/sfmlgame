@@ -65,10 +65,10 @@ bool World::init() {
   setTile(7, 2, 1);
   setTile(7, 3, 1);
   setTile(7, 4, 1);
-  for (int x = 12; x < 16; x++) for (int y = 0; y < 2; y++) {
+  for (int x = 12; x < 24; x++) for (int y = 0; y < 2; y++) {
     setTile(x, y, 1);
   }
-  setTile(size.x - 1, size.y - 1, 1);
+  setTile(23, 2, 1);
   player.pos = Vector2f(40, 32);
   camera.pos = player.pos + Vector2f(0, player.height / 2);
   // End test world
@@ -189,9 +189,37 @@ void Engine::doTick() {
 
   world->camera.pos += world->camera.vel / tickRate;
 
-  if (world->camera.pos.y < window->getSize().y / 6) {
-    world->camera.vel.y = 0;
-    world->camera.pos.y = window->getSize().y / 6;
+  auto camLeft = window->getSize().x / 6;
+  auto camRight = world->size.x * 16 - window->getSize().x / 6;
+  auto camUp = world->size.y * 16 - window->getSize().y / 6;
+  auto camDown = window->getSize().y / 6;
+
+  if (world->camera.pos.x < camLeft
+  and world->camera.pos.x > camRight) {
+    world->camera.pos.x = (camLeft + camRight) / 2;
+  }
+  else {
+    if (world->camera.pos.x < camLeft) {
+      world->camera.pos.x = camLeft;
+    }
+    else if (world->camera.pos.x > camRight) {
+      world->camera.pos.x = camRight;
+    }
+  }
+
+  if (world->camera.pos.y > camUp
+  and world->camera.pos.y < camDown) {
+    world->camera.pos.y = (camUp + camDown) / 2;
+  }
+  else {
+    if (world->camera.pos.y > camUp) {
+      world->camera.vel.y = 0;
+      world->camera.pos.y = camUp;
+    }
+    else if (world->camera.pos.y < camDown) {
+      world->camera.vel.y = 0;
+      world->camera.pos.y = camDown + 0.5;
+    }
   }
 
   tick++;
@@ -278,7 +306,7 @@ void Engine::onKeyEvent() {
 
 Engine::Engine(const arglist& args) : args(args), keys{false} {
   window = new sf::RenderWindow(sf::VideoMode::getDesktopMode(), "Super Pixel Brawler");
-  world = new World(16, 8);
+  world = new World(128, 32);
   tickRate = 128;
   background.loadFromFile("background.png");
   tileart.loadFromFile("brick.png");
