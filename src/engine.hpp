@@ -59,6 +59,19 @@ protected:
   sf::Texture tileart;
   World* world;
   struct Keys {
+    class State {
+    private:
+      bool state;
+      byte delta;
+
+    public:
+      void set(bool);
+      void press();
+      void release();
+      bool get() const;
+      byte popDelta();
+    };
+
     bool up, left, down, right;
     bool jump, run;
   } keys;

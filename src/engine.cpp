@@ -86,6 +86,29 @@ World::~World() {
   delete tiles;
 }
 
+void Engine::Keys::State::set(bool pressed) {
+  delta = (pressed ? 1 : 0) - state;
+  state = pressed ? true : false;
+}
+
+void Engine::Keys::State::press() {
+  set(true);
+}
+
+void Engine::Keys::State::release() {
+  set(false);
+}
+
+bool Engine::Keys::State::get() const {
+  return state;
+}
+
+byte Engine::Keys::State::popDelta() {
+  auto retval = delta;
+  delta = 0;
+  return retval;
+}
+
 bool Engine::init() {
   world->init();
   world->player.texture.loadFromFile("player.png");
