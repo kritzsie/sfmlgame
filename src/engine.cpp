@@ -241,7 +241,7 @@ void Engine::doTick() {
     }
     else if (world->camera.pos.y < camDown) {
       world->camera.vel.y = 0;
-      world->camera.pos.y = camDown + 0.5;
+      world->camera.pos.y = camDown;
     }
   }
 
