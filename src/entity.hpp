@@ -26,7 +26,7 @@ public:
 
 class RenderEntity : public BaseEntity {
 protected:
-  signed char direction;
+  byte direction;
 
 public:
   sf::Sprite sprite;
@@ -36,8 +36,7 @@ public:
 
   void flipX();
   void flipY();
-  signed char getDirection();
-  void setDirection(signed char);
+  byte setDirection(byte);
   Vector2f toView();
 
   RenderEntity();
