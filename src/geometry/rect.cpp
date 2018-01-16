@@ -98,9 +98,12 @@ bool Rect<T>::intersects(const Rect<T>& r) const {
   if (x < r.x + r.w
   and x + w > r.x
   and y < r.y + r.h
-  and y + h > r.y)
+  and y + h > r.y) {
     return true;
-  return false;
+  }
+  else {
+    return false;
+  }
 }
 
 template<typename T>
