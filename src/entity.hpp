@@ -59,10 +59,14 @@ public:
 class PlayerEntity : public Entity {
 public:
   bool airborne = false;
-  bool crouching = false, p_speed = false;
+  bool ducking = false, p_speed = false;
   bool underwater = false, on_ice = false;
 
   float jumptime = 0;
+
+  void stand();
+  void jump(float);
+  void duck();
 
   PlayerEntity();
   PlayerEntity(float, float);

@@ -179,18 +179,8 @@ void Engine::doTick() {
 
   auto direction = (right ? 1 : 0) + (left ? -1 : 0);
 
-  world->player.sprite.setTexture(textures.at("player.still"));
-
   if (direction) {
     world->player.setDirection(direction);
-    world->player.vel.x += direction * 256 / tickRate;
-  }
-  else if (world->player.vel.x) {
-    world->player.vel.x -= copysign(128 / tickRate, world->player.vel.x);
-  }
-
-  if (down) {
-    world->player.sprite.setTexture(textures.at("player.duck"));
   }
 
   if (keys.jump.delta() == 1) {
@@ -203,24 +193,35 @@ void Engine::doTick() {
   }
 
   if (jump and world->player.jumptime > 0) {
-    world->player.jumptime = std::max(world->player.jumptime - 1 / tickRate, 0.0f);
-    world->player.vel.y = 160 + abs(world->player.vel.x / 16);
+    world->player.jump(1 / tickRate);
   }
 
-  world->player.airborne = true;
-
-  if (not world->player.airborne
-  and not direction) {
-    if (world->player.vel.x > 0) {
-      world->player.vel.x = std::max(world->player.vel.x - 1.f, 0.f);
+  if (not world->player.airborne) {
+    if (direction
+    and not world->player.ducking) {
+      world->player.vel.x += direction * 192 / tickRate;
     }
-    else if (world->player.vel.x < 0) {
-      world->player.vel.x = std::min(world->player.vel.x + 1.f, 0.f);
+    else if (world->player.vel.x) {
+      world->player.vel.x -= copysign(128 / tickRate, world->player.vel.x);
+    }
+
+    if (down) {
+      world->player.sprite.setTexture(textures.at("player.duck"));
+      world->player.duck();
+    }
+    else {
+      world->player.sprite.setTexture(textures.at("player.still"));
+      world->player.stand();
+    }
+  }
+  else {
+    if (direction) {
+      world->player.setDirection(direction);
+      world->player.vel.x += direction * 96 / tickRate;
     }
   }
 
   auto range = World::tilesFromAABB(world->player.getAABB());
-
   world->player.pos.x += world->player.vel.x / tickRate;
   for (int y = range.y; y < range.y + range.h; y++)
   for (int x = range.x; x < range.x + range.w; x++) {
@@ -249,6 +250,7 @@ void Engine::doTick() {
     world->player.vel.y = std::max(world->player.vel.y + gravity / tickRate, min_yvel);
   }
 
+  world->player.airborne = true;
   world->player.pos.y += world->player.vel.y / tickRate;
   for (int y = range.y; y < range.y + range.h; y++)
   for (int x = range.x; x < range.x + range.w; x++) {
@@ -381,7 +383,6 @@ int Engine::exec() {
 Engine::Engine(const arglist& args) : args(args) {
   window = new sf::RenderWindow(sf::VideoMode::getDesktopMode(), "Super Pixel Brawler");
   world = new World(128, 32);
-  tickRate = 64;
   background.loadFromFile("background.png");
   tileart.loadFromFile("brick.png");
 }
