@@ -18,11 +18,11 @@ void RenderEntity::flipY() {
   scale.y *= -1;
 }
 
-signed char RenderEntity::getDirection() {
+byte RenderEntity::getDirection() const {
   return direction;
 }
 
-void RenderEntity::setDirection(signed char d) {
+void RenderEntity::setDirection(byte d) {
   direction = std::copysign(1, d);
 }
 

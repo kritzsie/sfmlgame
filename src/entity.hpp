@@ -36,7 +36,10 @@ public:
 
   void flipX();
   void flipY();
-  byte setDirection(byte);
+
+  byte getDirection() const;
+  void setDirection(byte);
+
   Vector2f toView();
 
   RenderEntity();
