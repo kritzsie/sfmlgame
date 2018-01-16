@@ -58,27 +58,31 @@ protected:
   sf::Texture background;
   sf::Texture tileart;
   World* world;
+
   struct Keys {
     class State {
     private:
-      bool state;
-      byte delta;
+      bool my_state = false;
+      byte my_delta = 0;
 
     public:
+      bool state() const;
+      byte delta() const;
+
       void set(bool);
       void press();
       void release();
-      bool get() const;
-      byte popDelta();
+      void tick();
     };
 
-    bool up, left, down, right;
-    bool jump, run;
+    State up, left, down, right;
+    State jump, run;
   } keys;
 
   bool init();
-  void onKeyEvent();
   void resize(size_t, size_t);
+  void onKeyEvent();
+  void tickKeys();
   void doTick();
   void doRender();
 

@@ -9,8 +9,6 @@
 #include <SFML/Window.hpp>
 
 #include <algorithm>
-#include <iostream>
-#include <sstream>
 #include <stdexcept>
 
 #include <cstddef>
@@ -86,9 +84,17 @@ World::~World() {
   delete tiles;
 }
 
-void Engine::Keys::State::set(bool pressed) {
-  delta = (pressed ? 1 : 0) - state;
-  state = pressed ? true : false;
+bool Engine::Keys::State::state() const {
+  return my_state;
+}
+
+byte Engine::Keys::State::delta() const {
+  return my_delta;
+}
+
+void Engine::Keys::State::set(bool state) {
+  my_delta = (state ? 1 : 0) - my_state;
+  my_state = state ? true : false;
 }
 
 void Engine::Keys::State::press() {
@@ -99,14 +105,8 @@ void Engine::Keys::State::release() {
   set(false);
 }
 
-bool Engine::Keys::State::get() const {
-  return state;
-}
-
-byte Engine::Keys::State::popDelta() {
-  auto retval = delta;
-  delta = 0;
-  return retval;
+void Engine::Keys::State::tick() {
+  my_delta = 0;
 }
 
 bool Engine::init() {
@@ -124,29 +124,80 @@ void Engine::resize(size_t width, size_t height) {
   window->setSize(sf::Vector2u(width, height));
 }
 
+void Engine::onKeyEvent() {
+  switch (event.key.code) {
+  case sf::Keyboard::Up:
+    keys.up.set(sf::Keyboard::isKeyPressed(sf::Keyboard::Up));
+    break;
+  case sf::Keyboard::Left:
+    keys.left.set(sf::Keyboard::isKeyPressed(sf::Keyboard::Left));
+    break;
+  case sf::Keyboard::Down:
+    keys.down.set(sf::Keyboard::isKeyPressed(sf::Keyboard::Down));
+    break;
+  case sf::Keyboard::Right:
+    keys.right.set(sf::Keyboard::isKeyPressed(sf::Keyboard::Right));
+    break;
+  case sf::Keyboard::X:
+    keys.jump.set(sf::Keyboard::isKeyPressed(sf::Keyboard::X));
+    break;
+  case sf::Keyboard::Z:
+    keys.run.set(sf::Keyboard::isKeyPressed(sf::Keyboard::Z));
+  default:
+    break;
+  }
+}
+
+void Engine::tickKeys() {
+  keys.up.tick();
+  keys.left.tick();
+  keys.down.tick();
+  keys.right.tick();
+  keys.jump.tick();
+  keys.run.tick();
+}
+
 void Engine::doTick() {
   // TODO: Send these to a better place
   static const float gravity = -32 * 16;
   static const float min_yvel = -16 * 16;
 
-  if (keys.left != keys.right) {
-    if (keys.left)
-      world->player.vel.x = std::max(world->player.vel.x - 1.5f, keys.run ? -160.f : -96.f);
-    else if (keys.right)
-      world->player.vel.x = std::min(world->player.vel.x + 1.5f, keys.run ? 160.f : 96.f);
-    world->player.setDirection(keys.left ? -1 : 1);
+  // Handle keyboard input first
+  auto up = keys.up.state();
+  auto left = keys.left.state();
+  auto down = keys.down.state();
+  auto right = keys.right.state();
+  auto jump = keys.jump.state();
+  auto run = keys.run.state();
+
+  auto direction = (right ? 1 : 0) + (left ? -1 : 0);
+
+  if (direction) {
+    world->player.setDirection(direction);
+    world->player.vel.x += direction * 160 / tickRate;
+  }
+  else if (world->player.vel.x) {
+    world->player.vel.x -= copysign(128 / tickRate, world->player.vel.x);
   }
 
-  if (keys.jump) {
-    world->player.vel.y = 8 * 16;
-  }
-
-  if (world->player.airborne) {
-    if (world->player.vel.y > min_yvel) {
-      world->player.vel.y = std::max(world->player.vel.y + gravity / tickRate, min_yvel);
+  if (keys.jump.delta() == 1) {
+    if (not world->player.airborne) {
+      world->player.jumptime = 0.25;
     }
   }
-  else if (keys.left == keys.right) {
+  else if (keys.jump.delta() == -1) {
+    world->player.jumptime = 0;
+  }
+
+  if (jump and world->player.jumptime > 0) {
+    world->player.jumptime = std::max(world->player.jumptime - 1 / tickRate, 0.0f);
+    world->player.vel.y = 160 + abs(world->player.vel.x / 16);
+  }
+
+  world->player.airborne = true;
+
+  if (not world->player.airborne
+  and not direction) {
     if (world->player.vel.x > 0) {
       world->player.vel.x = std::max(world->player.vel.x - 1.f, 0.f);
     }
@@ -155,9 +206,9 @@ void Engine::doTick() {
     }
   }
 
-  world->player.pos.x += world->player.vel.x / tickRate;
-
   auto range = World::tilesFromAABB(world->player.getAABB());
+
+  world->player.pos.x += world->player.vel.x / tickRate;
   for (int y = range.y; y < range.y + range.h; y++)
   for (int x = range.x; x < range.x + range.w; x++) {
     auto plyrBox = world->player.getAABB();
@@ -181,9 +232,11 @@ void Engine::doTick() {
     }
   }
 
-  world->player.pos.y += world->player.vel.y / tickRate;
-  world->player.airborne = true;
+  if (world->player.vel.y > min_yvel) {
+    world->player.vel.y = std::max(world->player.vel.y + gravity / tickRate, min_yvel);
+  }
 
+  world->player.pos.y += world->player.vel.y / tickRate;
   for (int y = range.y; y < range.y + range.h; y++)
   for (int x = range.x; x < range.x + range.w; x++) {
     auto plyrBox = world->player.getAABB();
@@ -245,6 +298,7 @@ void Engine::doTick() {
     }
   }
 
+  tickKeys();
   tick++;
 }
 
@@ -278,19 +332,6 @@ void Engine::doRender() {
   window->draw(world->player.sprite);
 
   window->display();
-
-  while (window->pollEvent(event)) {
-    if (event.type == sf::Event::Closed) {
-      window->close();
-    }
-    else if (event.type == sf::Event::Resized) {
-      resize(event.size.width, event.size.height);
-    }
-    else if (event.type == sf::Event::KeyPressed
-         or  event.type == sf::Event::KeyReleased) {
-      onKeyEvent();
-    }
-  }
 }
 
 int Engine::exec() {
@@ -300,41 +341,34 @@ int Engine::exec() {
   while (window->isOpen()) {
     tickDelta = tickClock.getElapsedTime().asSeconds() - tickTime;
     tickTime = tickClock.getElapsedTime().asSeconds();
+
+    while (window->pollEvent(event)) {
+      if (event.type == sf::Event::Closed) {
+        window->close();
+      }
+      else if (event.type == sf::Event::Resized) {
+        resize(event.size.width, event.size.height);
+      }
+      else if (event.type == sf::Event::KeyPressed
+          or  event.type == sf::Event::KeyReleased) {
+        onKeyEvent();
+      }
+    }
+
     if (int((tickTime - tickDelta) * tickRate) < int(tickTime * tickRate)) {
       doTick();
     }
+
     doRender();
   }
 
   return EXIT_SUCCESS;
 }
 
-void Engine::onKeyEvent() {
-  switch (event.key.code) {
-  case sf::Keyboard::Up:
-    keys.up = sf::Keyboard::isKeyPressed(sf::Keyboard::Up);
-    break;
-  case sf::Keyboard::Left:
-    keys.left = sf::Keyboard::isKeyPressed(sf::Keyboard::Left);
-    break;
-  case sf::Keyboard::Down:
-    keys.down = sf::Keyboard::isKeyPressed(sf::Keyboard::Down);
-    break;
-  case sf::Keyboard::Right:
-    keys.right = sf::Keyboard::isKeyPressed(sf::Keyboard::Right);
-    break;
-  case sf::Keyboard::X:
-    keys.jump = sf::Keyboard::isKeyPressed(sf::Keyboard::X);
-    break;
-  case sf::Keyboard::Z:
-    keys.run = sf::Keyboard::isKeyPressed(sf::Keyboard::Z);
-  }
-}
-
-Engine::Engine(const arglist& args) : args(args), keys{false} {
+Engine::Engine(const arglist& args) : args(args) {
   window = new sf::RenderWindow(sf::VideoMode::getDesktopMode(), "Super Pixel Brawler");
   world = new World(128, 32);
-  tickRate = 128;
+  tickRate = 64;
   background.loadFromFile("background.png");
   tileart.loadFromFile("brick.png");
 }
