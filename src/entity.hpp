@@ -30,7 +30,6 @@ protected:
 
 public:
   sf::Sprite sprite;
-  sf::Texture texture;
   Vector2f offset;
   Vector2f scale;
 

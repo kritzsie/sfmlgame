@@ -9,6 +9,8 @@
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
 
+#include <map>
+#include <string>
 #include <vector>
 
 #include <cstddef>
@@ -57,6 +59,7 @@ protected:
   sf::RenderWindow* window;
   sf::Texture background;
   sf::Texture tileart;
+  std::map<std::string, sf::Texture> textures;
   World* world;
 
   struct Keys {

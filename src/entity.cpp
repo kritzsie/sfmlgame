@@ -30,16 +30,16 @@ void RenderEntity::setDirection(byte d) {
 Vector2f RenderEntity::toView() {
   return Vector2f(
     pos.x - (offset.x * scale.x * direction),
-    -(pos.y - (offset.y * scale.y) + texture.getSize().y * scale.y)
+    -(pos.y - (offset.y * scale.y) + sprite.getTexture()->getSize().y * scale.y)
   );
 }
 
-RenderEntity::RenderEntity() : offset(0, 0), scale(1, 1), direction(1) {}
+RenderEntity::RenderEntity() : direction(1), offset(0, 0), scale(1, 1) {}
 
 RenderEntity::RenderEntity(
   const Vector2f& offset,
   const Vector2f& scale
-) : offset(offset), scale(scale), direction(1) {}
+) : direction(1) , offset(offset), scale(scale) {}
 
 // Use Entity for things with collision
 Rect<float> Entity::getAABB() const {

@@ -111,8 +111,15 @@ void Engine::Keys::State::tick() {
 
 bool Engine::init() {
   world->init();
-  world->player.texture.loadFromFile("player.png");
-  world->player.sprite.setTexture(world->player.texture);
+
+  textures.emplace("player.still", sf::Texture());
+  textures.emplace("player.duck", sf::Texture());
+
+  for (auto& it : textures) {
+    it.second.loadFromFile(it.first + ".png");
+  }
+
+  world->player.sprite.setTexture(textures.at("player.still"));
 
   tick = 0;
   tickClock.restart();
@@ -172,12 +179,18 @@ void Engine::doTick() {
 
   auto direction = (right ? 1 : 0) + (left ? -1 : 0);
 
+  world->player.sprite.setTexture(textures.at("player.still"));
+
   if (direction) {
     world->player.setDirection(direction);
-    world->player.vel.x += direction * 160 / tickRate;
+    world->player.vel.x += direction * 256 / tickRate;
   }
   else if (world->player.vel.x) {
     world->player.vel.x -= copysign(128 / tickRate, world->player.vel.x);
+  }
+
+  if (down) {
+    world->player.sprite.setTexture(textures.at("player.duck"));
   }
 
   if (keys.jump.delta() == 1) {
