@@ -206,11 +206,11 @@ void Engine::doTick() {
     }
 
     if (down) {
-      world->player.sprite.setTexture(textures.at("player.duck"));
+      world->player.sprite.setTexture(textures.at("player.duck"), true);
       world->player.duck();
     }
     else {
-      world->player.sprite.setTexture(textures.at("player.still"));
+      world->player.sprite.setTexture(textures.at("player.still"), true);
       world->player.stand();
     }
   }
@@ -221,8 +221,10 @@ void Engine::doTick() {
     }
   }
 
+  if (world->player.vel.x) {
+    world->player.pos.x += world->player.vel.x / tickRate;
+  }
   auto range = World::tilesFromAABB(world->player.getAABB());
-  world->player.pos.x += world->player.vel.x / tickRate;
   for (int y = range.y; y < range.y + range.h; y++)
   for (int x = range.x; x < range.x + range.w; x++) {
     auto plyrBox = world->player.getAABB();
@@ -250,8 +252,10 @@ void Engine::doTick() {
     world->player.vel.y = std::max(world->player.vel.y + gravity / tickRate, min_yvel);
   }
 
+  if (world->player.vel.y) {
+    world->player.pos.y += world->player.vel.y / tickRate;
+  }
   world->player.airborne = true;
-  world->player.pos.y += world->player.vel.y / tickRate;
   for (int y = range.y; y < range.y + range.h; y++)
   for (int x = range.x; x < range.x + range.w; x++) {
     auto plyrBox = world->player.getAABB();
