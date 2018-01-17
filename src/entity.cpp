@@ -68,11 +68,8 @@ void PlayerEntity::stand() {
   height = 25;
 }
 
-void PlayerEntity::jump(float dt) {
-  if (jumptime > 0) {
-    jumptime = std::max(jumptime - 1 * dt, 0.0f);
-    vel.y = 160 + abs(vel.x / 16);
-  }
+void PlayerEntity::jump() {
+  vel.y = 160 + abs(vel.x / 16);
 }
 
 void PlayerEntity::duck() {

@@ -193,7 +193,8 @@ void Engine::doTick() {
   }
 
   if (jump and world->player.jumptime > 0) {
-    world->player.jump(1 / tickRate);
+    world->player.jumptime = std::max(world->player.jumptime - 1 / tickRate, 0.0f);
+    world->player.jump();
   }
 
   if (not world->player.airborne) {

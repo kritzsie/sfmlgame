@@ -65,7 +65,7 @@ public:
   float jumptime = 0;
 
   void stand();
-  void jump(float);
+  void jump();
   void duck();
 
   PlayerEntity();
