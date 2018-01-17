@@ -216,7 +216,6 @@ void Engine::doTick() {
   }
   else {
     if (direction) {
-      world->player.setDirection(direction);
       world->player.vel.x += direction * 96 / tickRate;
     }
   }
