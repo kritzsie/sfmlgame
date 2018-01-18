@@ -179,34 +179,27 @@ void Engine::doTick() {
 
   auto direction = (right ? 1 : 0) + (left ? -1 : 0);
 
+  const float max_xvel = (run ? 10 : 6) * 16;
+  const float min_xvel = -max_xvel;
+
   if (direction) {
     world->player.setDirection(direction);
   }
 
-  if (keys.jump.delta() == 1) {
-    if (not world->player.airborne) {
-      world->player.jumptime = 0.25;
-    }
-  }
-  else if (keys.jump.delta() == -1) {
-    world->player.jumptime = 0;
-  }
-
-  if (jump and world->player.jumptime > 0) {
-    world->player.jumptime = std::max(world->player.jumptime - 1 / tickRate, 0.0f);
-    world->player.jump();
-  }
-
   if (not world->player.airborne) {
-    if (direction
-    and not world->player.ducking) {
-      world->player.vel.x += direction * 192 / tickRate;
+    if (direction and not world->player.ducking
+    and world->player.vel.x > min_xvel
+    and world->player.vel.x < max_xvel) {
+      world->player.vel.x = std::max(min_xvel, std::min(world->player.vel.x + direction * 12 * 16 / tickRate, max_xvel));
     }
-    else if (world->player.vel.x) {
-      world->player.vel.x -= copysign(128 / tickRate, world->player.vel.x);
+    else if (world->player.vel.x > 0) {
+      world->player.vel.x = std::max(world->player.vel.x - 128 / tickRate, 0.0f);
+    }
+    else if (world->player.vel.x < 0) {
+      world->player.vel.x = std::min(world->player.vel.x + 128 / tickRate, 0.0f);
     }
 
-    if (down) {
+    if (down and not direction) {
       world->player.sprite.setTexture(textures.at("player.duck"), true);
       world->player.duck();
     }
@@ -217,7 +210,23 @@ void Engine::doTick() {
   }
   else {
     if (direction) {
-      world->player.vel.x += direction * 96 / tickRate;
+      world->player.vel.x += direction * 6 * 16 / tickRate;
+    }
+  }
+
+  if (not world->player.underwater) {
+    if (keys.jump.delta() == 1) {
+      if (not world->player.airborne) {
+        world->player.jumptime = 0.25;
+      }
+    }
+    else if (keys.jump.delta() == -1) {
+      world->player.jumptime = 0;
+    }
+
+    if (jump and world->player.jumptime > 0) {
+      world->player.jumptime = std::max(world->player.jumptime - 1 / tickRate, 0.0f);
+      world->player.jump();
     }
   }
 
@@ -384,7 +393,7 @@ int Engine::exec() {
   return EXIT_SUCCESS;
 }
 
-Engine::Engine(const arglist& args) : args(args) {
+Engine::Engine(const arglist& args) : args(args), tickRate(64) {
   window = new sf::RenderWindow(sf::VideoMode::getDesktopMode(), "Super Pixel Brawler");
   world = new World(128, 32);
   background.loadFromFile("background.png");

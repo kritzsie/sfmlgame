@@ -54,8 +54,7 @@ protected:
   const arglist& args;
   uint tick;
   sf::Clock tickClock;
-  float tickTime;
-  float tickRate = 64;
+  float tickTime, tickRate;
   sf::Event event;
   sf::RenderWindow* window;
   sf::Texture background;
