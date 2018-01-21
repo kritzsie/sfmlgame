@@ -350,8 +350,8 @@ void Engine::doRender() {
   view.setCenter(World::toView(world->camera.pos));
   window->setView(view);
 
-  sf::Sprite sky(background);
-  sky.setPosition(World::toView(world->camera.pos - World::toView(Vector2f(background.getSize()) / 2)));
+  sf::Sprite sky(background, sf::IntRect(0, 0, width, height));
+  sky.setPosition(World::toView(world->camera.pos) - Vector2f(width / 6, height / 6));
   window->draw(sky);
 
   sf::Sprite brick(tileart, sf::IntRect(0, 17, 16, 16));
@@ -408,6 +408,7 @@ Engine::Engine(const arglist& args) : args(args), tickRate(64) {
   window = new sf::RenderWindow(sf::VideoMode::getDesktopMode(), "Super Pixel Brawler");
   world = new World(128, 32);
   background.loadFromFile("background.png");
+  background.setRepeated(true);
   tileart.loadFromFile("tiles.png");
 }
 
