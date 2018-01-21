@@ -193,13 +193,13 @@ void Engine::doTick() {
     if (direction and not world->player.ducking
     and world->player.vel.x > min_xvel
     and world->player.vel.x < max_xvel) {
-      world->player.vel.x = std::max(min_xvel, std::min(world->player.vel.x + direction * 12 * 16 / tickRate, max_xvel));
+      world->player.vel.x = std::max(min_xvel, std::min(world->player.vel.x + direction * 18 * 16 / tickRate, max_xvel));
     }
     else if (world->player.vel.x > 0) {
-      world->player.vel.x = std::max(world->player.vel.x - 128 / tickRate, 0.0f);
+      world->player.vel.x = std::max(world->player.vel.x - 12 * 16 / tickRate, 0.0f);
     }
     else if (world->player.vel.x < 0) {
-      world->player.vel.x = std::min(world->player.vel.x + 128 / tickRate, 0.0f);
+      world->player.vel.x = std::min(world->player.vel.x + 12 * 16 / tickRate, 0.0f);
     }
 
     if (down and not direction) {
