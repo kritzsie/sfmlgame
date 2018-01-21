@@ -69,7 +69,7 @@ void PlayerEntity::stand() {
 }
 
 void PlayerEntity::jump() {
-  vel.y = 160 + abs(vel.x / 16);
+  vel.y = 176 + abs(vel.x / 16);
 }
 
 void PlayerEntity::duck() {

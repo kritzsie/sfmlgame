@@ -57,6 +57,9 @@ bool World::init() {
       setTile(x, y, 1);
   }
   setTile(0, 2, 1);
+  for (int x = 15; x < 20; x++) {
+      setTile(x, 5, 1);
+  }
   setTile(5, 2, 1);
   setTile(6, 2, 1);
   setTile(6, 3, 1);
@@ -166,7 +169,7 @@ void Engine::tickKeys() {
 
 void Engine::doTick() {
   // TODO: Send these to a better place
-  static const float gravity = -32 * 16;
+  static const float gravity = -48 * 16;
   static const float min_yvel = -16 * 16;
 
   // Handle keyboard input first
@@ -217,7 +220,7 @@ void Engine::doTick() {
   if (not world->player.underwater) {
     if (keys.jump.delta() == 1) {
       if (not world->player.airborne) {
-        world->player.jumptime = 0.25;
+        world->player.jumptime = 0.3125;
       }
     }
     else if (keys.jump.delta() == -1) {
@@ -257,7 +260,8 @@ void Engine::doTick() {
     }
   }
 
-  if (world->player.vel.y > min_yvel) {
+  if (world->player.vel.y > min_yvel
+  and world->player.jumptime == 0) {
     world->player.vel.y = std::max(world->player.vel.y + gravity / tickRate, min_yvel);
   }
 
@@ -277,6 +281,14 @@ void Engine::doTick() {
         auto collBox = plyrBox.intersection(tileBox);
 
         if (plyrBox.y + plyrBox.h / 2 < tileBox.y + tileBox.h / 2) {
+          if (world->player.pos.x > tileBox.x + tileBox.w
+          and world->getTile(x + 1, y) != 0) {
+            world->setTile(x + 1, y, 0);
+          }
+          else {
+            world->setTile(x, y, 0);
+          }
+          world->player.jumptime = 0;
           world->player.vel.y = 0;
           world->player.pos.y -= collBox.h;
         }
@@ -342,7 +354,7 @@ void Engine::doRender() {
   sky.setPosition(World::toView(world->camera.pos - World::toView(Vector2f(background.getSize()) / 2)));
   window->draw(sky);
 
-  sf::Sprite brick(tileart);
+  sf::Sprite brick(tileart, sf::IntRect(0, 17, 16, 16));
   for (int y = 0; y < world->size.y; y++)
   for (int x = 0; x < world->size.x; x++) {
     if (world->getTile(x, y)) {
@@ -351,12 +363,11 @@ void Engine::doRender() {
     }
   }
 
-  const Vector2f sprScale(
+  world->player.sprite.setPosition(world->player.toView());
+  world->player.sprite.setScale(Vector2f(
     world->player.scale.x * world->player.getDirection(),
     world->player.scale.y
-  );
-  world->player.sprite.setPosition(world->player.toView());
-  world->player.sprite.setScale(sprScale);
+  ));
   window->draw(world->player.sprite);
 
   window->display();
@@ -397,7 +408,7 @@ Engine::Engine(const arglist& args) : args(args), tickRate(64) {
   window = new sf::RenderWindow(sf::VideoMode::getDesktopMode(), "Super Pixel Brawler");
   world = new World(128, 32);
   background.loadFromFile("background.png");
-  tileart.loadFromFile("brick.png");
+  tileart.loadFromFile("tiles.png");
 }
 
 Engine::~Engine() {
