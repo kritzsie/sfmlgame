@@ -350,8 +350,8 @@ void Engine::doRender() {
   view.setCenter(World::toView(world->camera.pos));
   window->setView(view);
 
-  sf::Sprite sky(background, sf::IntRect(0, 0, width, height));
-  sky.setPosition(World::toView(world->camera.pos) - Vector2f(width / 6, height / 6));
+  sf::Sprite sky(background, sf::IntRect(Vector2f(), Vector2f(width, height) / 3));
+  sky.setOrigin(Vector2f(0, height / 3));
   window->draw(sky);
 
   sf::Sprite brick(tileart, sf::IntRect(0, 17, 16, 16));
@@ -389,7 +389,7 @@ int Engine::exec() {
         resize(event.size.width, event.size.height);
       }
       else if (event.type == sf::Event::KeyPressed
-          or  event.type == sf::Event::KeyReleased) {
+           or  event.type == sf::Event::KeyReleased) {
         onKeyEvent();
       }
     }
