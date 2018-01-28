@@ -350,9 +350,20 @@ void Engine::doRender() {
   view.setCenter(World::toView(world->camera.pos));
   window->setView(view);
 
-  sf::Sprite sky(background, sf::IntRect(Vector2f(), Vector2f(width, height) / 3));
-  sky.setOrigin(Vector2f(0, height / 3));
-  window->draw(sky);
+  auto sky_w = background.getSize().x;
+  auto sky_h = background.getSize().y;
+
+  int min_x = (world->camera.pos.x - width / 6) / sky_w;
+  int min_y = (world->camera.pos.y - height / 6) / sky_h;
+  int max_x = (world->camera.pos.x + width / 6) / sky_w + 1;
+  int max_y = (world->camera.pos.y + height / 6) / sky_h + 1;
+
+  sf::Sprite sky(background);
+  for (int y = min_y; y < max_y; y++)
+  for (int x = min_x; x < max_x; x++) {
+    sky.setPosition(World::toView(Vector2f(x * sky_w, y * sky_h + sky_h)));
+    window->draw(sky);
+  }
 
   sf::Sprite brick(tileart, sf::IntRect(0, 17, 16, 16));
   for (int y = 0; y < world->size.y; y++)
