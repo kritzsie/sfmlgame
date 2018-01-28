@@ -353,15 +353,17 @@ void Engine::doRender() {
   auto sky_w = background.getSize().x;
   auto sky_h = background.getSize().y;
 
-  int min_x = (world->camera.pos.x - width / 6) / sky_w;
-  int min_y = (world->camera.pos.y - height / 6) / sky_h;
-  int max_x = (world->camera.pos.x + width / 6) / sky_w + 1;
-  int max_y = (world->camera.pos.y + height / 6) / sky_h + 1;
+  float left = world->camera.pos.x - width / 6;
+  float bottom = world->camera.pos.y - height / 6;
+  int min_x = left / sky_w;
+  int min_y = bottom / sky_h;
+  int max_x = (world->camera.pos.x + width * 3 / 6) / sky_w + 2;
+  int max_y = (world->camera.pos.y + height * 3 / 6) / sky_h + 2;
 
   sf::Sprite sky(background);
-  for (int y = min_y; y < max_y; y++)
-  for (int x = min_x; x < max_x; x++) {
-    sky.setPosition(World::toView(Vector2f(x * sky_w, y * sky_h + sky_h)));
+  for (int y = min_y / 2; y < max_y / 2; y++)
+  for (int x = min_x / 2; x < max_x / 2; x++) {
+    sky.setPosition(World::toView(Vector2f(x * sky_w + left / 2, y * sky_h + sky_h + bottom / 2)));
     window->draw(sky);
   }
 
