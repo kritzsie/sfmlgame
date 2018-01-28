@@ -350,20 +350,24 @@ void Engine::doRender() {
   view.setCenter(World::toView(world->camera.pos));
   window->setView(view);
 
-  auto sky_w = background.getSize().x;
-  auto sky_h = background.getSize().y;
+  // Parallax factor
+  const int dist = 3;
+  const float distdiv = dist / (dist - 1.0f);
 
   float left = world->camera.pos.x - width / 6;
   float bottom = world->camera.pos.y - height / 6;
+
+  int sky_w = background.getSize().x;
+  int sky_h = background.getSize().y;
   int min_x = left / sky_w;
   int min_y = bottom / sky_h;
-  int max_x = (world->camera.pos.x + width * 3 / 6) / sky_w + 2;
-  int max_y = (world->camera.pos.y + height * 3 / 6) / sky_h + 2;
+  int max_x = (world->camera.pos.x + width * (2 * dist - 1) / 6) / sky_w + dist;
+  int max_y = (world->camera.pos.y + height * (2 * dist - 1) / 6) / sky_h + dist;
 
   sf::Sprite sky(background);
-  for (int y = min_y / 2; y < max_y / 2; y++)
-  for (int x = min_x / 2; x < max_x / 2; x++) {
-    sky.setPosition(World::toView(Vector2f(x * sky_w + left / 2, y * sky_h + sky_h + bottom / 2)));
+  for (int y = min_y / int(dist); y < max_y / int(dist); y++)
+  for (int x = min_x / int(dist); x < max_x / int(dist); x++) {
+    sky.setPosition(World::toView(Vector2f(x * sky_w + left / distdiv, y * sky_h + sky_h + bottom / distdiv)));
     window->draw(sky);
   }
 
@@ -419,7 +423,7 @@ int Engine::exec() {
 
 Engine::Engine(const arglist& args) : args(args), tickRate(64) {
   window = new sf::RenderWindow(sf::VideoMode::getDesktopMode(), "Super Pixel Brawler");
-  world = new World(128, 32);
+  world = new World(132, 28);
   background.loadFromFile("background.png");
   background.setRepeated(true);
   tileart.loadFromFile("tiles.png");
