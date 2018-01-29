@@ -57,7 +57,6 @@ protected:
   float tickTime, tickRate;
   sf::Event event;
   sf::RenderWindow* window;
-  sf::Texture background;
   sf::Texture tileart;
   std::map<std::string, sf::Texture> textures;
   World* world;
@@ -87,6 +86,9 @@ protected:
   void onKeyEvent();
   void tickKeys();
   void doTick();
+  void drawBG(const char*, int);
+  void drawBGBottom(const char*, int);
+  void drawBGTop(const char*, int);
   void doRender();
 
 public:
