@@ -86,9 +86,9 @@ protected:
   void onKeyEvent();
   void tickKeys();
   void doTick();
-  void drawBG(const char*, int);
-  void drawBGBottom(const char*, int);
-  void drawBGTop(const char*, int);
+  void drawBG(const char*, float, float);
+  void drawBGBottom(const char*, float, float);
+  void drawBGTop(const char*, float, float);
   void doRender();
 
 public:

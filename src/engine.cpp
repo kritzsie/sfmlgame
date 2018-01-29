@@ -70,7 +70,7 @@ bool World::init() {
     setTile(x, y, 1);
   }
   setTile(23, 2, 1);
-  player.pos = Vector2f(40, 32);
+  player.pos = Vector2f(32, 32);
   camera.pos = player.pos + Vector2f(0, player.height / 2);
   // End test world
 
@@ -344,72 +344,70 @@ void Engine::doTick() {
   tick++;
 }
 
-void Engine::drawBG(const char* bg, int dist) {
+void Engine::drawBG(const char* bg, float distx, float disty) {
   const auto win_w = window->getSize().x;
   const auto win_h = window->getSize().y;
 
-  const float distdiv = dist / (dist - 1.0f);
+  const float distdivx = distx / (distx - 1.0f);
+  const float distdivy = disty / (disty - 1.0f);
   const sf::Texture& texture = textures.at(bg);
 
   float left = world->camera.pos.x - win_w / 6;
   float bottom = world->camera.pos.y - win_h / 6;
-
   int sky_w = texture.getSize().x;
   int sky_h = texture.getSize().y;
   int min_x = left / sky_w;
   int min_y = bottom / sky_h;
-  int max_x = (world->camera.pos.x + win_w * (2 * dist - 1) / 6) / sky_w + dist;
-  int max_y = (world->camera.pos.y + win_h * (2 * dist - 1) / 6) / sky_h + dist;
+  int max_x = (world->camera.pos.x + win_w * (2 * distx - 1) / 6) / sky_w + distx;
+  int max_y = (world->camera.pos.y + win_h * (2 * disty - 1) / 6) / sky_h + disty;
 
   sf::Sprite sky(texture);
-  for (int y = floor(min_y / dist); y < floor(max_y / dist); y++)
-  for (int x = floor(min_x / dist); x < floor(max_x / dist); x++) {
-    sky.setPosition(World::toView(Vector2f(x * sky_w + left / distdiv, y * sky_h + sky_h + bottom / distdiv)));
+  for (int y = floor(min_y / disty); y < floor(max_y / disty) + 1; y++)
+  for (int x = floor(min_x / distx); x < floor(max_x / distx) + 1; x++) {
+    sky.setPosition(World::toView(Vector2f(x * sky_w + left / distdivx, y * sky_h + sky_h + bottom / distdivy)));
     window->draw(sky);
   }
 }
 
-void Engine::drawBGBottom(const char* bg, int dist) {
+void Engine::drawBGBottom(const char* bg, float distx, float disty) {
   const auto win_w = window->getSize().x;
   const auto win_h = window->getSize().y;
 
-  const float distdiv = dist / (dist - 1.0f);
+  const float distdivx = distx / (distx - 1.0f);
+  const float distdivy = disty / (disty - 1.0f);
   const sf::Texture& texture = textures.at(bg);
 
   float left = world->camera.pos.x - win_w / 6;
   float bottom = world->camera.pos.y - win_h / 6;
-
   int sky_w = texture.getSize().x;
   int sky_h = texture.getSize().y;
-
   int min_x = left / sky_w;
-  int max_x = (world->camera.pos.x + win_w * (2 * dist - 1) / 6) / sky_w + dist;
+  int max_x = (world->camera.pos.x + win_w * (2 * distx - 1) / 6) / sky_w + distx;
 
   sf::Sprite sky(texture);
-  for (int x = floor(min_x / dist); x < floor(max_x / dist); x++) {
-    sky.setPosition(World::toView(Vector2f(x * sky_w + left / distdiv, sky_h + bottom / distdiv)));
+  for (int x = floor(min_x / distx); x < floor(max_x / distx) + 1; x++) {
+    sky.setPosition(World::toView(Vector2f(x * sky_w + left / distdivx, sky_h + bottom / distdivy)));
     window->draw(sky);
   }
 }
 
-void Engine::drawBGTop(const char* bg, int dist) {
+void Engine::drawBGTop(const char* bg, float distx, float disty) {
   const auto win_w = window->getSize().x;
   const auto win_h = window->getSize().y;
 
-  const float distdiv = dist / (dist - 1.0f);
+  const float distdivx = distx / (distx - 1.0f);
+  const float distdivy = disty / (disty - 1.0f);
   const sf::Texture& texture = textures.at(bg);
 
   float left = world->camera.pos.x - win_w / 6;
   float top = world->camera.pos.y + win_h / 6;
-
   int sky_w = texture.getSize().x;
-
   int min_x = left / sky_w;
-  int max_x = (world->camera.pos.x + win_w * (2 * dist - 1) / 6) / sky_w + dist;
+  int max_x = (world->camera.pos.x + win_w * (2 * distx - 1) / 6) / sky_w + distx;
 
   sf::Sprite sky(texture);
-  for (int x = floor(min_x / dist); x < floor(max_x / dist); x++) {
-    sky.setPosition(World::toView(Vector2f(x * sky_w + left / distdiv, world->size.y * 16 / dist + top / distdiv)));
+  for (int x = floor(min_x / distx); x < floor(max_x / distx) + 1; x++) {
+    sky.setPosition(World::toView(Vector2f(x * sky_w + left / distdivx, world->size.y * 16 / disty + top / distdivy)));
     window->draw(sky);
   }
 }
@@ -422,10 +420,10 @@ void Engine::doRender() {
   view.setCenter(World::toView(world->camera.pos));
   window->setView(view);
 
-  drawBGBottom("overworld-blocks", 3);
-  drawBGTop("overworld-clouds", 2);
+  drawBGBottom("overworld-blocks", 1.5, 1.5);
+  drawBGTop("overworld-clouds", 1.625, 1.125);
 
-  sf::Sprite brick(tileart, sf::IntRect(340, 119, 16, 16));
+  sf::Sprite brick(tileart, sf::IntRect(255, 136, 16, 16));
   for (int y = 0; y < world->size.y; y++)
   for (int x = 0; x < world->size.x; x++) {
     if (world->getTile(x, y)) {
@@ -476,8 +474,8 @@ int Engine::exec() {
 }
 
 Engine::Engine(const arglist& args) : args(args), tickRate(64) {
-  window = new sf::RenderWindow(sf::VideoMode::getDesktopMode(), "Super Pixel Brawler");
-  world = new World(128, 32);
+  window = new sf::RenderWindow(sf::VideoMode(768, 576), "Super Pixel Brawler");
+  world = new World(176, 27);
   tileart.loadFromFile("tiles.png");
 }
 
