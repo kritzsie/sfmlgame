@@ -22,6 +22,7 @@ add_executable(
   ${FMT_SOURCES}
   src/engine.cpp
   src/entity.cpp
+  src/world.cpp
   src/main.cpp
 )
 
