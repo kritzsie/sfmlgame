@@ -48,6 +48,7 @@ bool Engine::init() {
   textures.emplace("overworld-clouds", sf::Texture());
   textures.emplace("player.still", sf::Texture());
   textures.emplace("player.duck", sf::Texture());
+  textures.emplace("tiles", sf::Texture());
 
   for (auto& it : textures) {
     it.second.loadFromFile(it.first + ".png");
@@ -273,24 +274,23 @@ void Engine::doTick() {
   tick++;
 }
 
-void Engine::drawBG(const char* bg, float distx, float disty) {
+void Engine::drawBG(const sf::Texture& bg, float distx, float disty) {
   const auto win_w = window->getSize().x;
   const auto win_h = window->getSize().y;
 
   const float distdivx = distx / (distx - 1.0f);
   const float distdivy = disty / (disty - 1.0f);
-  const sf::Texture& texture = textures.at(bg);
 
   float left = world->camera.pos.x - win_w / 6;
   float bottom = world->camera.pos.y - win_h / 6;
-  int sky_w = texture.getSize().x;
-  int sky_h = texture.getSize().y;
+  int sky_w = bg.getSize().x;
+  int sky_h = bg.getSize().y;
   int min_x = left / sky_w;
   int min_y = bottom / sky_h;
   int max_x = (world->camera.pos.x + win_w * (2 * distx - 1) / 6) / sky_w + distx;
   int max_y = (world->camera.pos.y + win_h * (2 * disty - 1) / 6) / sky_h + disty;
 
-  sf::Sprite sky(texture);
+  sf::Sprite sky(bg);
   for (int y = floor(min_y / disty); y < floor(max_y / disty) + 1; y++)
   for (int x = floor(min_x / distx); x < floor(max_x / distx) + 1; x++) {
     sky.setPosition(World::toView(Vector2f(x * sky_w + left / distdivx, y * sky_h + sky_h + bottom / distdivy)));
@@ -298,43 +298,41 @@ void Engine::drawBG(const char* bg, float distx, float disty) {
   }
 }
 
-void Engine::drawBGBottom(const char* bg, float distx, float disty) {
+void Engine::drawBGBottom(const sf::Texture& bg, float distx, float disty) {
   const auto win_w = window->getSize().x;
   const auto win_h = window->getSize().y;
 
   const float distdivx = distx / (distx - 1.0f);
   const float distdivy = disty / (disty - 1.0f);
-  const sf::Texture& texture = textures.at(bg);
 
   float left = world->camera.pos.x - win_w / 6;
   float bottom = world->camera.pos.y - win_h / 6;
-  int sky_w = texture.getSize().x;
-  int sky_h = texture.getSize().y;
+  int sky_w = bg.getSize().x;
+  int sky_h = bg.getSize().y;
   int min_x = left / sky_w;
   int max_x = (world->camera.pos.x + win_w * (2 * distx - 1) / 6) / sky_w + distx;
 
-  sf::Sprite sky(texture);
+  sf::Sprite sky(bg);
   for (int x = floor(min_x / distx); x < floor(max_x / distx) + 1; x++) {
     sky.setPosition(World::toView(Vector2f(x * sky_w + left / distdivx, sky_h + bottom / distdivy)));
     window->draw(sky);
   }
 }
 
-void Engine::drawBGTop(const char* bg, float distx, float disty) {
+void Engine::drawBGTop(const sf::Texture& bg, float distx, float disty) {
   const auto win_w = window->getSize().x;
   const auto win_h = window->getSize().y;
 
   const float distdivx = distx / (distx - 1.0f);
   const float distdivy = disty / (disty - 1.0f);
-  const sf::Texture& texture = textures.at(bg);
 
   float left = world->camera.pos.x - win_w / 6;
   float top = world->camera.pos.y + win_h / 6;
-  int sky_w = texture.getSize().x;
+  int sky_w = bg.getSize().x;
   int min_x = left / sky_w;
   int max_x = (world->camera.pos.x + win_w * (2 * distx - 1) / 6) / sky_w + distx;
 
-  sf::Sprite sky(texture);
+  sf::Sprite sky(bg);
   for (int x = floor(min_x / distx); x < floor(max_x / distx) + 1; x++) {
     sky.setPosition(World::toView(Vector2f(x * sky_w + left / distdivx, world->size.y * 16 / disty + top / distdivy)));
     window->draw(sky);
@@ -349,10 +347,10 @@ void Engine::doRender() {
   view.setCenter(World::toView(world->camera.pos));
   window->setView(view);
 
-  drawBGBottom("overworld-blocks", 1.5, 1.5);
-  drawBGTop("overworld-clouds", 1.625, 1.125);
+  drawBGBottom(textures.at("overworld-blocks"), 1.5, 1.5);
+  drawBGTop(textures.at("overworld-clouds"), 1.875, 1.125);
 
-  sf::Sprite brick(tileart, sf::IntRect(255, 136, 16, 16));
+  sf::Sprite brick(textures.at("tiles"), sf::IntRect(255, 136, 16, 16));
   for (int y = 0; y < world->size.y; y++)
   for (int x = 0; x < world->size.x; x++) {
     if (world->getTile(x, y)) {
@@ -405,7 +403,6 @@ int Engine::exec() {
 Engine::Engine(const arglist& args) : args(args), tickRate(64) {
   window = new sf::RenderWindow(sf::VideoMode::getDesktopMode(), "Super Pixel Brawler");
   world = new World(176, 27);
-  tileart.loadFromFile("tiles.png");
 }
 
 Engine::~Engine() {
