@@ -2,6 +2,8 @@
 #define ENGINE_HPP
 
 #include "geometry.hpp"
+#include "music.hpp"
+#include "sound.hpp"
 #include "types.hpp"
 #include "world.hpp"
 
@@ -17,12 +19,15 @@
 
 namespace engine {
 using namespace types;
-using arglist = std::vector<char*>;
 
 using geometry::vec2::Vec2;
 using Vec2f = Vec2<float>;
 
+using music::Music;
+using sound::Sound;
 using world::World;
+
+using arglist = std::vector<char*>;
 
 class Engine {
 protected:
@@ -33,6 +38,7 @@ protected:
   sf::Event event;
   sf::RenderWindow* window;
   std::map<std::string, sf::Texture> textures;
+  Sound* sound;
   World* world;
 
   struct Keys {

@@ -2,6 +2,7 @@
 #define MUSIC_HPP
 
 namespace music {
+class Music {};
 }
 
 namespace keng {

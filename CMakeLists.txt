@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-find_package(SFML 2 REQUIRED graphics system window)
+find_package(SFML 2 REQUIRED audio graphics system window)
 include_directories(${SFML_INCLUDE_DIR})
 
 set(
@@ -22,6 +22,8 @@ add_executable(
   ${FMT_SOURCES}
   src/engine.cpp
   src/entity.cpp
+  src/music.cpp
+  src/sound.cpp
   src/world.cpp
   src/main.cpp
 )

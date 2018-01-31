@@ -42,6 +42,7 @@ void Engine::Keys::State::resetDelta() {
 }
 
 bool Engine::init() {
+  sound->init();
   world->init();
 
   textures.emplace("overworld-blocks", sf::Texture());
@@ -153,6 +154,7 @@ void Engine::doTick() {
     if (keys.jump.getDelta() == 1) {
       if (not world->player.airborne) {
         world->player.jumptime = 0.3125;
+        sound->play("jump");
       }
     }
     else if (keys.jump.getDelta() == -1) {
@@ -380,8 +382,8 @@ void Engine::doRender() {
   window->setView(view);
 
   drawBG(sf::Color(0x6898F8FF));
-  drawBGBottom(textures.at("overworld-blocks"), 1.625, 1.625);
-  drawBGTop(textures.at("overworld-clouds"), 2.125, 1.125);
+  drawBGBottom(textures.at("overworld-blocks"), 2.125, 2.125);
+  drawBGTop(textures.at("overworld-clouds"), 3.125, 1.125);
   drawTiles();
   drawEntities();
 
@@ -420,12 +422,14 @@ int Engine::exec() {
 }
 
 Engine::Engine(const arglist& args) : args(args), tickRate(64) {
-  window = new sf::RenderWindow(sf::VideoMode::getDesktopMode(), "Super Pixel Brawler");
+  window = new sf::RenderWindow(sf::VideoMode(768, 576), "Super Pixel Brawler");
+  sound = new Sound();
   world = new World(176, 27);
 }
 
 Engine::~Engine() {
   delete window;
+  delete sound;
   delete world;
 }
 }
