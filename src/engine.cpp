@@ -362,6 +362,15 @@ void Engine::drawTiles() {
   }
 }
 
+void Engine::drawEntities() {
+  world->player.sprite.setPosition(world->player.toView());
+  world->player.sprite.setScale(Vec2f(
+    world->player.scale.x * world->player.getDirection(),
+    world->player.scale.y
+  ));
+  window->draw(world->player.sprite);
+}
+
 void Engine::doRender() {
   const auto win_w = window->getSize().x;
   const auto win_h = window->getSize().y;
@@ -371,17 +380,10 @@ void Engine::doRender() {
   window->setView(view);
 
   drawBG(sf::Color(0x6898F8FF));
-  drawBGBottom(textures.at("overworld-blocks"), 1.5, 1.5);
-  drawBGTop(textures.at("overworld-clouds"), 1.875, 1.125);
-
+  drawBGBottom(textures.at("overworld-blocks"), 1.625, 1.625);
+  drawBGTop(textures.at("overworld-clouds"), 2.125, 1.125);
   drawTiles();
-
-  world->player.sprite.setPosition(world->player.toView());
-  world->player.sprite.setScale(Vec2f(
-    world->player.scale.x * world->player.getDirection(),
-    world->player.scale.y
-  ));
-  window->draw(world->player.sprite);
+  drawEntities();
 
   window->display();
 }
