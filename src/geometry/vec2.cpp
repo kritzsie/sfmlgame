@@ -122,12 +122,12 @@ Vec2<T> Vec2<T>::normalized() const {
 }
 
 template<typename T>
-Vec2<T> Vec2<T>::apply(T (&f)(T)) {
+Vec2<T> Vec2<T>::map(T (&f)(T)) {
   return Vec2<T>(f(x), f(y));
 }
 
 template<typename T>
-Vec2<T> Vec2<T>::apply(T (&f)(T, T), T n) {
+Vec2<T> Vec2<T>::map(T (&f)(T, T), T n) {
   return Vec2<T>(f(x, n), f(y, n));
 }
 

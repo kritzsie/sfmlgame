@@ -33,8 +33,8 @@ public:
   T length() const;
   Vec2 normalized() const;
 
-  Vec2 apply(T (&)(T));
-  Vec2 apply(T (&)(T, T), T);
+  Vec2 map(T (&)(T));
+  Vec2 map(T (&)(T, T), T);
 
   template<typename U>
   operator sf::Vector2<U>() const;
