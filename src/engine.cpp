@@ -49,6 +49,7 @@ bool Engine::init() {
   textures.emplace("overworld-clouds", sf::Texture());
   textures.emplace("player.still", sf::Texture());
   textures.emplace("player.duck", sf::Texture());
+  textures.emplace("player.jump", sf::Texture());
   textures.emplace("tiles", sf::Texture());
 
   for (auto& it : textures) {
@@ -102,8 +103,8 @@ void Engine::tickKeys() {
 
 void Engine::doTick() {
   // TODO: Send these to a better place
-  static const float gravity = -48 * 16;
-  static const float min_yvel = -16 * 16;
+  const float gravity = -48 * 16;
+  const float min_yvel = -16 * 16;
 
   // Handle keyboard input first
   auto up = keys.up.getState();
@@ -115,18 +116,23 @@ void Engine::doTick() {
 
   auto direction = (right ? 1 : 0) + (left ? -1 : 0);
 
-  const float max_xvel = (run ? 10 : 6) * 16;
-  const float min_xvel = -max_xvel;
+  float max_xvel = (run ? (world->player.p_speed ? 12 : 10) : 6) * 16;
+  float min_xvel = -max_xvel;
 
   if (direction) {
     world->player.setDirection(direction);
   }
 
   if (not world->player.airborne) {
-    if (direction and not world->player.ducking
-    and world->player.vel.x > min_xvel
-    and world->player.vel.x < max_xvel) {
-      world->player.vel.x = std::max(min_xvel, std::min(world->player.vel.x + direction * 18 * 16 / tickRate, max_xvel));
+    if (direction and not world->player.ducking) {
+      if (direction > 0
+      and world->player.vel.x < max_xvel) {
+        world->player.vel.x = std::max(-8.0f * 16.0f, std::min(world->player.vel.x + direction * 16 * 16 / tickRate, max_xvel));
+      }
+      else if (direction < 0
+      and world->player.vel.x > min_xvel) {
+        world->player.vel.x = std::max(min_xvel, std::min(world->player.vel.x + direction * 16 * 16 / tickRate, 8.0f * 16.0f));
+      }
     }
     else if (world->player.vel.x > 0) {
       world->player.vel.x = std::max(world->player.vel.x - 12 * 16 / tickRate, 0.0f);
@@ -137,16 +143,29 @@ void Engine::doTick() {
 
     if (down and not direction) {
       world->player.sprite.setTexture(textures.at("player.duck"), true);
+      world->player.offset.x = 7;
       world->player.duck();
     }
     else {
       world->player.sprite.setTexture(textures.at("player.still"), true);
+      world->player.offset.x = 7;
       world->player.stand();
     }
   }
   else {
     if (direction) {
-      world->player.vel.x += direction * 6 * 16 / tickRate;
+      if (direction > 0
+      and world->player.vel.x < max_xvel * 0.625f) {
+        world->player.vel.x = std::max(-8.0f * 16.0f, std::min(world->player.vel.x + direction * 8 * 16 / tickRate, max_xvel * 0.625f));
+      }
+      else if (direction < 0
+      and world->player.vel.x > min_xvel * 0.625f) {
+        world->player.vel.x = std::max(min_xvel * 0.625f, std::min(world->player.vel.x + direction * 8 * 16 / tickRate, 8.0f * 16.0f));
+      }
+    }
+    if (not world->player.ducking) {
+      world->player.sprite.setTexture(textures.at("player.jump"), true);
+      world->player.offset.x = 8;
     }
   }
 
@@ -281,11 +300,11 @@ void Engine::drawBG(const sf::Color& color) {
 }
 
 void Engine::drawBG(const sf::Texture& bg, float distx, float disty) {
-  const auto win_w = window->getSize().x;
-  const auto win_h = window->getSize().y;
+  auto win_w = window->getSize().x;
+  auto win_h = window->getSize().y;
 
-  const float distdivx = distx / (distx - 1.0f);
-  const float distdivy = disty / (disty - 1.0f);
+  float distdivx = distx / (distx - 1.0f);
+  float distdivy = disty / (disty - 1.0f);
 
   float left = world->camera.pos.x - win_w / 6;
   float bottom = world->camera.pos.y - win_h / 6;
@@ -305,11 +324,11 @@ void Engine::drawBG(const sf::Texture& bg, float distx, float disty) {
 }
 
 void Engine::drawBGBottom(const sf::Texture& bg, float distx, float disty) {
-  const auto win_w = window->getSize().x;
-  const auto win_h = window->getSize().y;
+  auto win_w = window->getSize().x;
+  auto win_h = window->getSize().y;
 
-  const float distdivx = distx / (distx - 1.0f);
-  const float distdivy = disty / (disty - 1.0f);
+  float distdivx = distx / (distx - 1.0f);
+  float distdivy = disty / (disty - 1.0f);
 
   float left = world->camera.pos.x - win_w / 6;
   float bottom = world->camera.pos.y - win_h / 6;
@@ -326,11 +345,11 @@ void Engine::drawBGBottom(const sf::Texture& bg, float distx, float disty) {
 }
 
 void Engine::drawBGTop(const sf::Texture& bg, float distx, float disty) {
-  const auto win_w = window->getSize().x;
-  const auto win_h = window->getSize().y;
+  auto win_w = window->getSize().x;
+  auto win_h = window->getSize().y;
 
-  const float distdivx = distx / (distx - 1.0f);
-  const float distdivy = disty / (disty - 1.0f);
+  float distdivx = distx / (distx - 1.0f);
+  float distdivy = disty / (disty - 1.0f);
 
   float left = world->camera.pos.x - win_w / 6;
   float top = world->camera.pos.y + win_h / 6;
@@ -346,8 +365,8 @@ void Engine::drawBGTop(const sf::Texture& bg, float distx, float disty) {
 }
 
 void Engine::drawTiles() {
-  const auto win_w = window->getSize().x;
-  const auto win_h = window->getSize().y;
+  auto win_w = window->getSize().x;
+  auto win_h = window->getSize().y;
 
   int left = std::max(0, std::min(int(floor((world->camera.pos.x - win_w / 6) / 16)), world->size.x));
   int bottom = std::max(0, std::min(int(floor((world->camera.pos.y - win_h / 6) / 16)), world->size.y));
@@ -374,16 +393,16 @@ void Engine::drawEntities() {
 }
 
 void Engine::doRender() {
-  const auto win_w = window->getSize().x;
-  const auto win_h = window->getSize().y;
+  auto win_w = window->getSize().x;
+  auto win_h = window->getSize().y;
 
   sf::View view(Vec2f(), Vec2f(win_w, win_h) / 3);
   view.setCenter(World::toView(world->camera.pos));
   window->setView(view);
 
   drawBG(sf::Color(0x6898F8FF));
-  drawBGBottom(textures.at("overworld-blocks"), 2.125, 2.125);
-  drawBGTop(textures.at("overworld-clouds"), 3.125, 1.125);
+  drawBGBottom(textures.at("overworld-blocks"), 1.625, 1.375);
+  drawBGTop(textures.at("overworld-clouds"), 2.625, 1.125);
   drawTiles();
   drawEntities();
 
@@ -423,13 +442,13 @@ int Engine::exec() {
 
 Engine::Engine(const arglist& args) : args(args), tickRate(64) {
   window = new sf::RenderWindow(sf::VideoMode(768, 576), "Super Pixel Brawler");
-  sound = new Sound();
   world = new World(176, 27);
+  sound = new Sound();
 }
 
 Engine::~Engine() {
   delete window;
-  delete sound;
   delete world;
+  delete sound;
 }
 }
