@@ -1,4 +1,3 @@
-#include "../fmt/format.h"
 #include "vec2.hpp"
 
 #include <SFML/Graphics.hpp>
@@ -10,20 +9,13 @@
 
 namespace geometry::vec2 {
 template<typename T>
-T& Vec2<T>::operator[](size_t index) const {
-  switch (index) {
-  case 0:
-    return x;
-  case 1:
-    return y;
-  default:
-    throw std::out_of_range(fmt::format("array index out of bounds ({} >= 2)", index));
-  }
+Vec2<T> Vec2<T>::operator+() const {
+  return Vec2<T>(+x, +y);
 }
 
 template<typename T>
-Vec2<T> Vec2<T>::operator+() const {
-  return Vec2<T>(+x, +y);
+Vec2<T> Vec2<T>::operator+(const Vec2<T>& rhs) const {
+  return Vec2<T>(x + rhs.x, y + rhs.y);
 }
 
 template<typename T>
@@ -32,83 +24,78 @@ Vec2<T> Vec2<T>::operator-() const {
 }
 
 template<typename T>
-Vec2<T> Vec2<T>::operator+(const Vec2<T>& v) const {
-  return Vec2<T>(x + v.x, y + v.y);
+Vec2<T> Vec2<T>::operator-(const Vec2<T>& rhs) const {
+  return Vec2<T>(x - rhs.x, y - rhs.y);
 }
 
 template<typename T>
-Vec2<T> Vec2<T>::operator-(const Vec2<T>& v) const {
-  return Vec2<T>(x - v.x, y - v.y);
+Vec2<T> Vec2<T>::operator*(const T rhs) const {
+  return Vec2<T>(x * rhs, y * rhs);
 }
 
 template<typename T>
-Vec2<T> Vec2<T>::operator*(const T n) const {
-  return Vec2<T>(x * n, y * n);
+Vec2<T> operator*(T lhs, const Vec2<T>& rhs) {
+  return Vec2<T>(lhs * rhs.x, lhs * rhs.y);
 }
 
 template<typename T>
-Vec2<T> operator*(T n, const Vec2<T>& v) {
-  return Vec2<T>(n * v.x, n * v.y);
+Vec2<T> Vec2<T>::operator/(T rhs) const {
+  return Vec2<T>(x / rhs, y / rhs);
 }
 
 template<typename T>
-Vec2<T> Vec2<T>::operator/(T n) const {
-  return Vec2<T>(x / n, y / n);
+Vec2<T> operator/(T lhs, const Vec2<T>& rhs) {
+  return Vec2<T>(lhs / rhs.x, lhs / rhs.y);
 }
 
 template<typename T>
-Vec2<T> operator/(T n, const Vec2<T>& v) {
-  return Vec2<T>(n / v.x, n / v.y);
+bool Vec2<T>::operator==(const Vec2<T>& rhs) const {
+  return (x == rhs.x) and (y == rhs.y);
 }
 
 template<typename T>
-bool Vec2<T>::operator==(const Vec2<T>& v) const {
-  return (x == v.x) and (y == v.y);
+bool Vec2<T>::operator!=(const Vec2<T>& rhs) const {
+  return (x != rhs.x) and (y != rhs.y);
 }
 
 template<typename T>
-bool Vec2<T>::operator!=(const Vec2<T>& v) const {
-  return (x != v.x) and (y != v.y);
-}
-
-template<typename T>
-Vec2<T>& Vec2<T>::operator=(const Vec2<T>& v) {
-  x = v.x;
-  y = v.y;
+Vec2<T>& Vec2<T>::operator=(const Vec2<T>& rhs) {
+  x = rhs.x;
+  y = rhs.y;
   return *this;
 }
 
 template<typename T>
-Vec2<T>& Vec2<T>::operator+=(const Vec2<T>& v) {
-  x += v.x;
-  y += v.y;
+Vec2<T>& Vec2<T>::operator+=(const Vec2<T>& rhs) {
+  x += rhs.x;
+  y += rhs.y;
   return *this;
 }
 
 template<typename T>
-Vec2<T>& Vec2<T>::operator-=(const Vec2<T>& v) {
-  x -= v.x;
-  y -= v.y;
+Vec2<T>& Vec2<T>::operator-=(const Vec2<T>& rhs) {
+  x -= rhs.x;
+  y -= rhs.y;
   return *this;
 }
 
 template<typename T>
-Vec2<T>& Vec2<T>::operator*=(T n) {
-  x *= n;
-  y *= n;
+Vec2<T>& Vec2<T>::operator*=(T rhs) {
+  x *= rhs;
+  y *= rhs;
   return *this;
 }
 
 template<typename T>
-Vec2<T>& Vec2<T>::operator/=(T n) {
-  x /= n;
-  y /= n;
+Vec2<T>& Vec2<T>::operator/=(T rhs) {
+  x /= rhs;
+  y /= rhs;
   return *this;
 }
 
 template<typename T>
-T Vec2<T>::dot(const Vec2<T>& v) const {
-  return acos(x * v.x + y * v.y);
+T Vec2<T>::dot(const Vec2<T>& rhs) const {
+  return acos(x * rhs.x + y * rhs.y);
 }
 
 template<typename T>
@@ -127,27 +114,27 @@ Vec2<T> Vec2<T>::map(T (&f)(T)) {
 }
 
 template<typename T>
-Vec2<T> Vec2<T>::map(T (&f)(T, T), T n) {
-  return Vec2<T>(f(x, n), f(y, n));
+Vec2<T> Vec2<T>::map(T (&f)(T, T), T rhs) {
+  return Vec2<T>(f(x, rhs), f(y, rhs));
 }
 
-template<typename T> template<typename U>
-Vec2<T>::operator sf::Vector2<U>() const {
-  return sf::Vector2<U>(x, y);
+template<typename T>
+Vec2<T>::operator sf::Vector2<T>() const {
+  return sf::Vector2<T>(x, y);
 }
 
 template<typename T>
 Vec2<T>::Vec2() : x(), y() {}
 
 template<typename T>
-Vec2<T>::Vec2(T n) : x(n), y(n) {}
+Vec2<T>::Vec2(T both) : x(both), y(both) {}
 
 template<typename T>
 Vec2<T>::Vec2(T x, T y) : x(x), y(y) {}
 
 template<typename T>
-Vec2<T>::Vec2(const Vec2<T>& v) : x(v.x), y(v.y) {}
+Vec2<T>::Vec2(const Vec2<T>& vec2) : x(vec2.x), y(vec2.y) {}
 
-template<typename T> template<typename U>
-Vec2<T>::Vec2(const sf::Vector2<U>& v) : Vec2<T>(v.x, v.y) {}
+template<typename T>
+Vec2<T>::Vec2(const sf::Vector2<T>& vec2) : Vec2<T>(vec2.x, vec2.y) {}
 }

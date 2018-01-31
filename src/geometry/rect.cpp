@@ -88,9 +88,9 @@ Rect<T>& Rect<T>::operator/=(T n) {
   return *this;
 }
 
-template<typename T> template<typename U>
-Rect<T>::operator sf::Rect<U>() const {
-  return sf::Rect<U>(pos, size);
+template<typename T>
+Rect<T>::operator sf::Rect<T>() const {
+  return sf::Rect<T>(pos, size);
 }
 
 template<typename T>
@@ -120,20 +120,14 @@ template<typename T>
 Rect<T>::Rect() : pos(), size() {}
 
 template<typename T>
-Rect<T>::Rect(T n, T s) : pos(n), size(s) {}
+Rect<T>::Rect(T both) : pos(both), size(both) {}
 
 template<typename T>
 Rect<T>::Rect(T x, T y, T w, T h) : pos(x, y), size(w, h) {}
 
 template<typename T>
-Rect<T>::Rect(const Vec2<T>& v, T w, T h) : pos(v), size(w, h) {}
+Rect<T>::Rect(const Rect<T>& rect) : pos(rect.pos), size(rect.size) {}
 
 template<typename T>
-Rect<T>::Rect(T x, T y, const Vec2<T>& v) : pos(x, y), size(v) {}
-
-template<typename T>
-Rect<T>::Rect(const Vec2<T>& v, const Vec2<T>& u) : pos(v), size(u) {}
-
-template<typename T> template<typename U>
-Rect<T>::Rect(const Rect<U>& r) : pos(r.pos), size(r.size) {}
+Rect<T>::Rect(const Vec2<T>& pos, const Vec2<T>& size) : pos(pos), size(size) {}
 }

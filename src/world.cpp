@@ -1,3 +1,4 @@
+#include "fmt/format.h"
 #include "geometry.hpp"
 #include "world.hpp"
 

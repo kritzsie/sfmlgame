@@ -12,7 +12,6 @@ using tileid_t = uint;
 
 using geometry::vec2::Vec2;
 using Vec2f = Vec2<float>;
-using Vec2u = Vec2<uint>;
 
 using geometry::rect::Rect;
 

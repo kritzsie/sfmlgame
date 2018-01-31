@@ -35,20 +35,16 @@ public:
   Rect<T>& operator*=(T);
   Rect<T>& operator/=(T);
 
-  template<typename U>
-  operator sf::Rect<U>() const;
+  operator sf::Rect<T>() const;
 
   bool intersects(const Rect<T>&) const;
   Rect<T> intersection(const Rect<T>&) const;
 
   Rect();
-  Rect(T, T);
+  Rect(T);
   Rect(T, T, T, T);
-  Rect(const Vec2<T>&, T, T);
-  Rect(T, T, const Vec2<T>&);
+  Rect(const Rect<T>&);
   Rect(const Vec2<T>&, const Vec2<T>&);
-  template<typename U>
-  Rect(const Rect<U>&);
 };
 }
 

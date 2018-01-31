@@ -3,15 +3,11 @@
 
 #include <SFML/Graphics.hpp>
 
-#include <cstddef>
-
 namespace geometry::vec2 {
 template<typename T>
 class Vec2 {
 public:
   T x, y;
-
-  T& operator[](const size_t) const;
 
   Vec2<T> operator+() const;
   Vec2<T> operator-() const;
@@ -36,15 +32,13 @@ public:
   Vec2 map(T (&)(T));
   Vec2 map(T (&)(T, T), T);
 
-  template<typename U>
-  operator sf::Vector2<U>() const;
+  operator sf::Vector2<T>() const;
 
   Vec2();
   Vec2(T);
   Vec2(T, T);
   Vec2(const Vec2<T>&);
-  template<typename U>
-  Vec2(const sf::Vector2<U>&);
+  Vec2(const sf::Vector2<T>&);
 };
 }
 

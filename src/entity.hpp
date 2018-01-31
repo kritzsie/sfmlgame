@@ -13,7 +13,6 @@ using geometry::rect::Rect;
 using geometry::vec2::Vec2;
 
 using Vec2f = Vec2<float>;
-using Vec2u = Vec2<uint>;
 
 using enttype_t = uint;
 
