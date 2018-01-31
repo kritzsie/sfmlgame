@@ -27,8 +27,8 @@ void RenderEntity::setDirection(byte d) {
 }
 
 // Helper method to transform from world to screen coordinates
-Vector2f RenderEntity::toView() {
-  return Vector2f(
+Vec2f RenderEntity::toView() {
+  return Vec2f(
     pos.x - (offset.x * scale.x * direction),
     -(pos.y - (offset.y * scale.y) + sprite.getTexture()->getSize().y * scale.y)
   );
@@ -37,8 +37,8 @@ Vector2f RenderEntity::toView() {
 RenderEntity::RenderEntity() : direction(1), offset(0, 0), scale(1, 1) {}
 
 RenderEntity::RenderEntity(
-  const Vector2f& offset,
-  const Vector2f& scale
+  const Vec2f& offset,
+  const Vec2f& scale
 ) : direction(1) , offset(offset), scale(scale) {}
 
 // Use Entity for things with collision
@@ -54,8 +54,8 @@ Entity::Entity(
 ) : RenderEntity({radius / 2, 0}, {1, 1}), radius(radius), height(height) {}
 
 Entity::Entity(
-  const Vector2f& offset,
-  const Vector2f& scale,
+  const Vec2f& offset,
+  const Vec2f& scale,
   float radius = 8,
   float height = 16
 ) : RenderEntity(offset, scale), radius(radius), height(height) {}
@@ -83,13 +83,13 @@ PlayerEntity::PlayerEntity(
 ) : Entity(radius, height) {}
 
 PlayerEntity::PlayerEntity(
-  const Vector2f& offset,
-  const Vector2f& scale
+  const Vec2f& offset,
+  const Vec2f& scale
 ) : Entity(offset, scale, 5, 25) {}
 
 PlayerEntity::PlayerEntity(
-  const Vector2f& offset,
-  const Vector2f& scale,
+  const Vec2f& offset,
+  const Vec2f& scale,
   float radius,
   float height
 ) : Entity(offset, scale, radius, height) {}

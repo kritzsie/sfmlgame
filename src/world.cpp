@@ -2,8 +2,8 @@
 #include "world.hpp"
 
 namespace world {
-Vector2f World::toView(const Vector2f& vector) {
-  return Vector2f(vector.x, -vector.y);
+Vec2f World::toView(const Vec2f& vector) {
+  return Vec2f(vector.x, -vector.y);
 }
 
 Rect<int> World::tilesFromAABB(const Rect<float>& bbox) {
@@ -53,8 +53,8 @@ bool World::init() {
     setTile(x, y, 1);
   }
   setTile(23, 1, 1);
-  player.pos = Vector2f(32, 16);
-  camera.pos = player.pos + Vector2f(0, player.height / 2);
+  player.pos = Vec2f(32, 16);
+  camera.pos = player.pos + Vec2f(0, player.height / 2);
   // End test world
 
   return true;

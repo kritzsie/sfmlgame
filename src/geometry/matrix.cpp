@@ -12,7 +12,7 @@ T& Matrix<T>::Proxy::operator[](int y) const {
 }
 
 template<typename T>
-Matrix<T>::Proxy::Proxy(const T* const data, const Vector2<size_t>& size, int x) : data(data), size(size), x(x) {}
+Matrix<T>::Proxy::Proxy(const T* const data, const Vec2<size_t>& size, int x) : data(data), size(size), x(x) {}
 
 template<typename T>
 typename Matrix<T>::Proxy Matrix<T>::operator[](int x) {

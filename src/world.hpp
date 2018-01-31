@@ -10,9 +10,9 @@ using namespace types;
 
 using tileid_t = uint;
 
-using geometry::vector2::Vector2;
-using Vector2f = Vector2<float>;
-using Vector2u = Vector2<uint>;
+using geometry::vec2::Vec2;
+using Vec2f = Vec2<float>;
+using Vec2u = Vec2<uint>;
 
 using geometry::rect::Rect;
 
@@ -21,12 +21,12 @@ protected:
   tileid_t* tiles;
 
 public:
-  Vector2<int> size;
+  Vec2<int> size;
 
   BaseEntity camera;
   PlayerEntity player;
 
-  static Vector2f toView(const Vector2f&);
+  static Vec2f toView(const Vec2f&);
   static Rect<int> tilesFromAABB(const Rect<float>&);
   static Rect<float> tileAABB(int, int);
   tileid_t& getTile(int, int);

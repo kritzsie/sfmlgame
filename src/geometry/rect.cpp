@@ -126,13 +126,13 @@ template<typename T>
 Rect<T>::Rect(T x, T y, T w, T h) : pos(x, y), size(w, h) {}
 
 template<typename T>
-Rect<T>::Rect(const Vector2<T>& v, T w, T h) : pos(v), size(w, h) {}
+Rect<T>::Rect(const Vec2<T>& v, T w, T h) : pos(v), size(w, h) {}
 
 template<typename T>
-Rect<T>::Rect(T x, T y, const Vector2<T>& v) : pos(x, y), size(v) {}
+Rect<T>::Rect(T x, T y, const Vec2<T>& v) : pos(x, y), size(v) {}
 
 template<typename T>
-Rect<T>::Rect(const Vector2<T>& v, const Vector2<T>& u) : pos(v), size(u) {}
+Rect<T>::Rect(const Vec2<T>& v, const Vec2<T>& u) : pos(v), size(u) {}
 
 template<typename T> template<typename U>
 Rect<T>::Rect(const Rect<U>& r) : pos(r.pos), size(r.size) {}

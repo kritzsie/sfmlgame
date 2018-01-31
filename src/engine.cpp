@@ -233,7 +233,7 @@ void Engine::doTick() {
     }
   }
 
-  world->camera.vel = (world->player.pos + Vector2f(0, world->player.height / 2) - world->camera.pos) * tickRate / 16;
+  world->camera.vel = (world->player.pos + Vec2f(0, world->player.height / 2) - world->camera.pos) * tickRate / 16;
 
   world->camera.pos += world->camera.vel / tickRate;
 
@@ -293,7 +293,7 @@ void Engine::drawBG(const sf::Texture& bg, float distx, float disty) {
   sf::Sprite sky(bg);
   for (int y = floor(min_y / disty); y < floor(max_y / disty) + 1; y++)
   for (int x = floor(min_x / distx); x < floor(max_x / distx) + 1; x++) {
-    sky.setPosition(World::toView(Vector2f(x * sky_w + left / distdivx, y * sky_h + sky_h + bottom / distdivy)));
+    sky.setPosition(World::toView(Vec2f(x * sky_w + left / distdivx, y * sky_h + sky_h + bottom / distdivy)));
     window->draw(sky);
   }
 }
@@ -314,7 +314,7 @@ void Engine::drawBGBottom(const sf::Texture& bg, float distx, float disty) {
 
   sf::Sprite sky(bg);
   for (int x = floor(min_x / distx); x < floor(max_x / distx) + 1; x++) {
-    sky.setPosition(World::toView(Vector2f(x * sky_w + left / distdivx, sky_h + bottom / distdivy)));
+    sky.setPosition(World::toView(Vec2f(x * sky_w + left / distdivx, sky_h + bottom / distdivy)));
     window->draw(sky);
   }
 }
@@ -334,7 +334,7 @@ void Engine::drawBGTop(const sf::Texture& bg, float distx, float disty) {
 
   sf::Sprite sky(bg);
   for (int x = floor(min_x / distx); x < floor(max_x / distx) + 1; x++) {
-    sky.setPosition(World::toView(Vector2f(x * sky_w + left / distdivx, world->size.y * 16 / disty + top / distdivy)));
+    sky.setPosition(World::toView(Vec2f(x * sky_w + left / distdivx, world->size.y * 16 / disty + top / distdivy)));
     window->draw(sky);
   }
 }
@@ -352,7 +352,7 @@ void Engine::drawTiles() {
   for (int y = bottom; y < top; y++)
   for (int x = left; x < right; x++) {
     if (world->getTile(x, y)) {
-      brick.setPosition(World::toView(Vector2f(x * 16, y * 16 + 16)));
+      brick.setPosition(World::toView(Vec2f(x * 16, y * 16 + 16)));
       window->draw(brick);
     }
   }
@@ -362,7 +362,7 @@ void Engine::doRender() {
   const auto win_w = window->getSize().x;
   const auto win_h = window->getSize().y;
 
-  sf::View view(Vector2f(), Vector2f(win_w, win_h) / 3);
+  sf::View view(Vec2f(), Vec2f(win_w, win_h) / 3);
   view.setCenter(World::toView(world->camera.pos));
   window->setView(view);
 
@@ -372,7 +372,7 @@ void Engine::doRender() {
   drawTiles();
 
   world->player.sprite.setPosition(world->player.toView());
-  world->player.sprite.setScale(Vector2f(
+  world->player.sprite.setScale(Vec2f(
     world->player.scale.x * world->player.getDirection(),
     world->player.scale.y
   ));

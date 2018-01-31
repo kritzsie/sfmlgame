@@ -1,16 +1,18 @@
 #ifndef GEOMETRY_RECT_HPP
 #define GEOMETRY_RECT_HPP
 
+#include "vec2.hpp"
+
 #include <SFML/Graphics.hpp>
 
 namespace geometry::rect {
-using keng::Vector2;
+using geometry::vec2::Vec2;
 
-template<typename T = double>
+template<typename T>
 class Rect {
 public:
-  Vector2<T> pos;
-  Vector2<T> size;
+  Vec2<T> pos;
+  Vec2<T> size;
 
   T& x = pos.x;
   T& y = pos.y;
@@ -42,9 +44,9 @@ public:
   Rect();
   Rect(T, T);
   Rect(T, T, T, T);
-  Rect(const Vector2<T>&, T, T);
-  Rect(T, T, const Vector2<T>&);
-  Rect(const Vector2<T>&, const Vector2<T>&);
+  Rect(const Vec2<T>&, T, T);
+  Rect(T, T, const Vec2<T>&);
+  Rect(const Vec2<T>&, const Vec2<T>&);
   template<typename U>
   Rect(const Rect<U>&);
 };

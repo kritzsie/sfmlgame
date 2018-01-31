@@ -3,6 +3,6 @@
 
 #include "geometry/matrix.hpp"
 #include "geometry/rect.hpp"
-#include "geometry/vector2.hpp"
+#include "geometry/vec2.hpp"
 
 #endif // GEOMETRY_HPP

@@ -1,32 +1,32 @@
 #ifndef GEOMETRY_MATRIX_HPP
 #define GEOMETRY_MATRIX_HPP
 
-#include "vector2.hpp"
+#include "vec2.hpp"
 
 #include <cstddef>
 
 namespace geometry::matrix {
-using geometry::vector2::Vector2;
+using geometry::vec2::Vec2;
 
-template<typename T = double>
+template<typename T>
 class Matrix {
 protected:
   class Proxy {
   private:
     const int x;
     const T* const data;
-    const Vector2<size_t>& size;
+    const Vec2<size_t>& size;
 
   public:
     T& operator[](int) const;
 
-    Proxy(const T* const, const Vector2<size_t>&, int);
+    Proxy(const T* const, const Vec2<size_t>&, int);
   };
 
   T* data;
 
 public:
-  const Vector2<size_t> size;
+  const Vec2<size_t> size;
 
   Proxy operator[](int);
   Matrix(size_t, size_t);

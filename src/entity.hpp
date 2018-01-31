@@ -10,18 +10,18 @@ namespace entity {
 using namespace types;
 
 using geometry::rect::Rect;
-using geometry::vector2::Vector2;
+using geometry::vec2::Vec2;
 
-using Vector2f = Vector2<float>;
-using Vector2u = Vector2<uint>;
+using Vec2f = Vec2<float>;
+using Vec2u = Vec2<uint>;
 
 using enttype_t = uint;
 
 class BaseEntity {
 public:
   enttype_t type;
-  Vector2f pos;
-  Vector2f vel;
+  Vec2f pos;
+  Vec2f vel;
 };
 
 class RenderEntity : public BaseEntity {
@@ -30,8 +30,8 @@ protected:
 
 public:
   sf::Sprite sprite;
-  Vector2f offset;
-  Vector2f scale;
+  Vec2f offset;
+  Vec2f scale;
 
   void flipX();
   void flipY();
@@ -39,10 +39,10 @@ public:
   byte getDirection() const;
   void setDirection(byte);
 
-  Vector2f toView();
+  Vec2f toView();
 
   RenderEntity();
-  RenderEntity(const Vector2f&, const Vector2f&);
+  RenderEntity(const Vec2f&, const Vec2f&);
 };
 
 class Entity : public RenderEntity {
@@ -53,7 +53,7 @@ public:
 
   Entity();
   Entity(float, float);
-  Entity(const Vector2f&, const Vector2f&, float, float);
+  Entity(const Vec2f&, const Vec2f&, float, float);
 };
 
 class PlayerEntity : public Entity {
@@ -70,8 +70,8 @@ public:
 
   PlayerEntity();
   PlayerEntity(float, float);
-  PlayerEntity(const Vector2f&, const Vector2f&);
-  PlayerEntity(const Vector2f&, const Vector2f&, float, float);
+  PlayerEntity(const Vec2f&, const Vec2f&);
+  PlayerEntity(const Vec2f&, const Vec2f&, float, float);
 };
 }
 

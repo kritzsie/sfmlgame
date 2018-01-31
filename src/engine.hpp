@@ -19,9 +19,9 @@ namespace engine {
 using namespace types;
 using arglist = std::vector<char*>;
 
-using geometry::vector2::Vector2;
-using Vector2f = Vector2<float>;
-using Vector2u = Vector2<uint>;
+using geometry::vec2::Vec2;
+using Vec2f = Vec2<float>;
+using Vec2u = Vec2<uint>;
 
 using world::World;
 
