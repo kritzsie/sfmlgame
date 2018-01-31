@@ -16,29 +16,29 @@
 #include <ctgmath>
 
 namespace engine {
-bool Engine::Keys::State::state() const {
-  return my_state;
+bool Engine::Keys::State::getState() const {
+  return state;
 }
 
-byte Engine::Keys::State::delta() const {
-  return my_delta;
+byte Engine::Keys::State::getDelta() const {
+  return delta;
 }
 
-void Engine::Keys::State::set(bool state) {
-  my_delta = (state ? 1 : 0) - my_state;
-  my_state = state ? true : false;
+void Engine::Keys::State::setState(bool pressed) {
+  delta = (pressed ? 1 : 0) - state;
+  state = pressed ? true : false;
 }
 
 void Engine::Keys::State::press() {
-  set(true);
+  setState(true);
 }
 
 void Engine::Keys::State::release() {
-  set(false);
+  setState(false);
 }
 
-void Engine::Keys::State::tick() {
-  my_delta = 0;
+void Engine::Keys::State::resetDelta() {
+  delta = 0;
 }
 
 bool Engine::init() {
@@ -69,34 +69,34 @@ void Engine::resize(size_t width, size_t height) {
 void Engine::onKeyEvent() {
   switch (event.key.code) {
   case sf::Keyboard::Up:
-    keys.up.set(sf::Keyboard::isKeyPressed(sf::Keyboard::Up));
+    keys.up.setState(sf::Keyboard::isKeyPressed(sf::Keyboard::Up));
     break;
   case sf::Keyboard::Left:
-    keys.left.set(sf::Keyboard::isKeyPressed(sf::Keyboard::Left));
+    keys.left.setState(sf::Keyboard::isKeyPressed(sf::Keyboard::Left));
     break;
   case sf::Keyboard::Down:
-    keys.down.set(sf::Keyboard::isKeyPressed(sf::Keyboard::Down));
+    keys.down.setState(sf::Keyboard::isKeyPressed(sf::Keyboard::Down));
     break;
   case sf::Keyboard::Right:
-    keys.right.set(sf::Keyboard::isKeyPressed(sf::Keyboard::Right));
+    keys.right.setState(sf::Keyboard::isKeyPressed(sf::Keyboard::Right));
     break;
   case sf::Keyboard::X:
-    keys.jump.set(sf::Keyboard::isKeyPressed(sf::Keyboard::X));
+    keys.jump.setState(sf::Keyboard::isKeyPressed(sf::Keyboard::X));
     break;
   case sf::Keyboard::Z:
-    keys.run.set(sf::Keyboard::isKeyPressed(sf::Keyboard::Z));
+    keys.run.setState(sf::Keyboard::isKeyPressed(sf::Keyboard::Z));
   default:
     break;
   }
 }
 
 void Engine::tickKeys() {
-  keys.up.tick();
-  keys.left.tick();
-  keys.down.tick();
-  keys.right.tick();
-  keys.jump.tick();
-  keys.run.tick();
+  keys.up.resetDelta();
+  keys.left.resetDelta();
+  keys.down.resetDelta();
+  keys.right.resetDelta();
+  keys.jump.resetDelta();
+  keys.run.resetDelta();
 }
 
 void Engine::doTick() {
@@ -105,12 +105,12 @@ void Engine::doTick() {
   static const float min_yvel = -16 * 16;
 
   // Handle keyboard input first
-  auto up = keys.up.state();
-  auto left = keys.left.state();
-  auto down = keys.down.state();
-  auto right = keys.right.state();
-  auto jump = keys.jump.state();
-  auto run = keys.run.state();
+  auto up = keys.up.getState();
+  auto left = keys.left.getState();
+  auto down = keys.down.getState();
+  auto right = keys.right.getState();
+  auto jump = keys.jump.getState();
+  auto run = keys.run.getState();
 
   auto direction = (right ? 1 : 0) + (left ? -1 : 0);
 
@@ -150,12 +150,12 @@ void Engine::doTick() {
   }
 
   if (not world->player.underwater) {
-    if (keys.jump.delta() == 1) {
+    if (keys.jump.getDelta() == 1) {
       if (not world->player.airborne) {
         world->player.jumptime = 0.3125;
       }
     }
-    else if (keys.jump.delta() == -1) {
+    else if (keys.jump.getDelta() == -1) {
       world->player.jumptime = 0;
     }
 

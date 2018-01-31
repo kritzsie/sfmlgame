@@ -38,17 +38,17 @@ protected:
   struct Keys {
     class State {
     private:
-      bool my_state = false;
-      byte my_delta = 0;
+      bool state = false;
+      byte delta = 0;
 
     public:
-      bool state() const;
-      byte delta() const;
+      bool getState() const;
+      byte getDelta() const;
 
-      void set(bool);
+      void setState(bool);
       void press();
       void release();
-      void tick();
+      void resetDelta();
     };
 
     State up, left, down, right;
