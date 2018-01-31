@@ -60,6 +60,7 @@ protected:
   void onKeyEvent();
   void tickKeys();
   void doTick();
+  void drawBG(const sf::Color&);
   void drawBG(const sf::Texture&, float, float);
   void drawBGBottom(const sf::Texture&, float, float);
   void drawBGTop(const sf::Texture&, float, float);

@@ -274,6 +274,10 @@ void Engine::doTick() {
   tick++;
 }
 
+void Engine::drawBG(const sf::Color& color) {
+  window->clear(color);
+}
+
 void Engine::drawBG(const sf::Texture& bg, float distx, float disty) {
   const auto win_w = window->getSize().x;
   const auto win_h = window->getSize().y;
@@ -366,7 +370,8 @@ void Engine::doRender() {
   view.setCenter(World::toView(world->camera.pos));
   window->setView(view);
 
-  drawBG(textures.at("overworld-blocks"), 1.5, 1.5);
+  drawBG(sf::Color(0x6898F8FF));
+  drawBGBottom(textures.at("overworld-blocks"), 1.5, 1.5);
   drawBGTop(textures.at("overworld-clouds"), 1.875, 1.125);
 
   drawTiles();
