@@ -36,31 +36,31 @@ void World::setTile(int x, int y, tileid_t tileid) {
 
 bool World::init() {
   // WARNING: Test world ahead
-  for (int x = 0; x < 8; x++) for (int y = 0; y < 2; y++) {
+  for (int x = 0; x < 8; x++) for (int y = 0; y < 1; y++) {
       setTile(x, y, 1);
   }
-  setTile(0, 2, 1);
+  setTile(0, 1, 1);
   for (int x = 15; x < 20; x++) {
-      setTile(x, 5, 1);
+      setTile(x, 4, 1);
   }
-  setTile(5, 2, 1);
+  setTile(5, 1, 1);
+  setTile(6, 1, 1);
   setTile(6, 2, 1);
-  setTile(6, 3, 1);
+  setTile(7, 1, 1);
   setTile(7, 2, 1);
   setTile(7, 3, 1);
-  setTile(7, 4, 1);
-  for (int x = 12; x < 24; x++) for (int y = 0; y < 2; y++) {
+  for (int x = 12; x < size.x; x++) for (int y = 0; y < 1; y++) {
     setTile(x, y, 1);
   }
-  setTile(23, 2, 1);
-  player.pos = Vector2f(32, 32);
+  setTile(23, 1, 1);
+  player.pos = Vector2f(32, 16);
   camera.pos = player.pos + Vector2f(0, player.height / 2);
   // End test world
 
   return true;
 }
 
-World::World(size_t x, size_t y) : player({7, 0}, {1, 1}, 5, 25) {
+World::World(int x, int y) : player({7, 0}, {1, 1}, 5, 25) {
   tiles = new tileid_t[x * y]();
   size.x = x;
   size.y = y;

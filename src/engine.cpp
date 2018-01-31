@@ -339,25 +339,37 @@ void Engine::drawBGTop(const sf::Texture& bg, float distx, float disty) {
   }
 }
 
-void Engine::doRender() {
-  const auto width = window->getSize().x;
-  const auto height = window->getSize().y;
+void Engine::drawTiles() {
+  const auto win_w = window->getSize().x;
+  const auto win_h = window->getSize().y;
 
-  sf::View view(Vector2f(), Vector2u(width, height) / 3);
-  view.setCenter(World::toView(world->camera.pos));
-  window->setView(view);
+  int left = std::max(0, std::min(int(floor((world->camera.pos.x - win_w / 6) / 16)), world->size.x));
+  int bottom = std::max(0, std::min(int(floor((world->camera.pos.y - win_h / 6) / 16)), world->size.y));
+  int right = std::max(0, std::min(int(floor((world->camera.pos.x + win_w / 6) / 16)) + 1, world->size.x));
+  int top = std::max(0, std::min(int(floor((world->camera.pos.y + win_h / 6) / 16)) + 1, world->size.y));
 
-  drawBGBottom(textures.at("overworld-blocks"), 1.5, 1.5);
-  drawBGTop(textures.at("overworld-clouds"), 1.875, 1.125);
-
-  sf::Sprite brick(textures.at("tiles"), sf::IntRect(255, 136, 16, 16));
-  for (int y = 0; y < world->size.y; y++)
-  for (int x = 0; x < world->size.x; x++) {
+  sf::Sprite brick(textures.at("tiles"), sf::IntRect(0, 17, 16, 16));
+  for (int y = bottom; y < top; y++)
+  for (int x = left; x < right; x++) {
     if (world->getTile(x, y)) {
       brick.setPosition(World::toView(Vector2f(x * 16, y * 16 + 16)));
       window->draw(brick);
     }
   }
+}
+
+void Engine::doRender() {
+  const auto win_w = window->getSize().x;
+  const auto win_h = window->getSize().y;
+
+  sf::View view(Vector2f(), Vector2f(win_w, win_h) / 3);
+  view.setCenter(World::toView(world->camera.pos));
+  window->setView(view);
+
+  drawBG(textures.at("overworld-blocks"), 1.5, 1.5);
+  drawBGTop(textures.at("overworld-clouds"), 1.875, 1.125);
+
+  drawTiles();
 
   world->player.sprite.setPosition(world->player.toView());
   world->player.sprite.setScale(Vector2f(

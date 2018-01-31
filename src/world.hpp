@@ -21,7 +21,7 @@ protected:
   tileid_t* tiles;
 
 public:
-  Vector2<size_t> size;
+  Vector2<int> size;
 
   BaseEntity camera;
   PlayerEntity player;
@@ -33,7 +33,7 @@ public:
   void setTile(int, int, tileid_t);
   bool init();
 
-  World(size_t, size_t);
+  World(int, int);
   ~World();
 };
 }

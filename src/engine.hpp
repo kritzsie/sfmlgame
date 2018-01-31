@@ -64,6 +64,7 @@ protected:
   void drawBG(const sf::Texture&, float, float);
   void drawBGBottom(const sf::Texture&, float, float);
   void drawBGTop(const sf::Texture&, float, float);
+  void drawTiles();
   void doRender();
 
 public:
