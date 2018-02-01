@@ -9,6 +9,9 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 find_package(SFML 2 REQUIRED audio graphics system window)
 include_directories(${SFML_INCLUDE_DIR})
 
+find_package(PhysFS)
+include_directories(${PHYSFS_INCLUDE_DIR})
+
 include_directories(fmt)
 include_directories(physfs-cpp/include)
 
