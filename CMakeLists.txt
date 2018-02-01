@@ -9,17 +9,21 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 find_package(SFML 2 REQUIRED audio graphics system window)
 include_directories(${SFML_INCLUDE_DIR})
 
+include_directories(fmt)
+include_directories(physfs-cpp/include)
+
 set(
   FMT_SOURCES
-  src/fmt/format.cc
-  src/fmt/ostream.cc
-  src/fmt/posix.cc
-  src/fmt/printf.cc
+  fmt/fmt/format.cc
+  fmt/fmt/ostream.cc
+  fmt/fmt/posix.cc
+  fmt/fmt/printf.cc
 )
 
 add_executable(
   sfmlgame
   ${FMT_SOURCES}
+  physfs-cpp/src/physfs.cpp
   src/engine.cpp
   src/entity.cpp
   src/music.cpp
@@ -31,4 +35,5 @@ add_executable(
 target_link_libraries(
   sfmlgame
   ${SFML_LIBRARIES}
+  physfs
 )
