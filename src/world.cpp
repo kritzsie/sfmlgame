@@ -1,6 +1,7 @@
-#include "fmt/format.h"
 #include "geometry.hpp"
 #include "world.hpp"
+
+#include <fmt/format.h>
 
 namespace world {
 Vec2f World::toView(const Vec2f& vector) {

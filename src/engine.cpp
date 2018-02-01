@@ -1,8 +1,9 @@
 #include "engine.hpp"
-#include "fmt/format.h"
 #include "geometry.hpp"
 #include "types.hpp"
 #include "world.hpp"
+
+#include <fmt/format.h>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
@@ -294,7 +295,7 @@ void Engine::doTick() {
     }
   }
 
-  world->camera.vel = (world->player.pos + Vec2f(0, world->player.height / 2) - world->camera.pos) * tickRate / 16;
+  world->camera.vel = (world->player.pos + Vec2f(0, world->player.height / 2) - world->camera.pos) * tickRate / 8;
 
   world->camera.pos += world->camera.vel / tickRate;
 

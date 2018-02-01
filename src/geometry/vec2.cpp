@@ -2,8 +2,6 @@
 
 #include <SFML/Graphics.hpp>
 
-#include <stdexcept>
-
 #include <cstddef>
 #include <ctgmath>
 

@@ -1,5 +1,7 @@
 #include "matrix.hpp"
 
+#include <fmt/format.h>
+
 #include <cstddef>
 
 namespace geometry::matrix {
