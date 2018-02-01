@@ -8,7 +8,9 @@ bool Sound::init() {
   sounds.emplace("brickshatter", sf::SoundBuffer());
 
   for (auto& it : sounds) {
-    it.second.loadFromFile(it.first + ".wav");
+    if (not it.second.loadFromFile("assets/sounds/" + it.first + ".wav")) {
+      return false;
+    }
   }
 
   return true;

@@ -16,6 +16,7 @@
 #include <vector>
 
 #include <cstddef>
+#include <cstdint>
 
 namespace engine {
 using namespace types;
@@ -37,7 +38,7 @@ protected:
   float tickTime, tickRate;
   sf::Event event;
   sf::RenderWindow* window;
-  std::map<std::string, sf::Texture> textures;
+  std::map<std::string, sf::Texture> backgrounds, sprites, tiles;
   Sound* sound;
   World* world;
 
@@ -66,10 +67,10 @@ protected:
   void onKeyEvent();
   void tickKeys();
   void doTick();
-  void drawBG(const sf::Color&);
-  void drawBG(const sf::Texture&, float, float);
-  void drawBGBottom(const sf::Texture&, float, float);
-  void drawBGTop(const sf::Texture&, float, float);
+  void drawBG(uint32_t);
+  void drawBG(const char*, float, float);
+  void drawBGBottom(const char*, float, float);
+  void drawBGTop(const char*, float, float);
   void drawTiles();
   void drawEntities();
   void doRender();

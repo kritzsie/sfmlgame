@@ -12,6 +12,7 @@
 #include <stdexcept>
 
 #include <cstddef>
+#include <cstdint>
 #include <cstdlib>
 #include <ctgmath>
 
@@ -42,21 +43,57 @@ void Engine::Keys::State::resetDelta() {
 }
 
 bool Engine::init() {
-  sound->init();
-  world->init();
-
-  textures.emplace("overworld-blocks", sf::Texture());
-  textures.emplace("overworld-clouds", sf::Texture());
-  textures.emplace("player.still", sf::Texture());
-  textures.emplace("player.duck", sf::Texture());
-  textures.emplace("player.jump", sf::Texture());
-  textures.emplace("tiles", sf::Texture());
-
-  for (auto& it : textures) {
-    it.second.loadFromFile(it.first + ".png");
+  if (not sound->init()) {
+    return false;
+  }
+  if (not world->init()) {
+    return false;
   }
 
-  world->player.sprite.setTexture(textures.at("player.still"));
+  backgrounds.emplace("overworldblocks", sf::Texture());
+  backgrounds.emplace("overworldclouds", sf::Texture());
+
+  for (auto& it : backgrounds) {
+    if (not it.second.loadFromFile("assets/backgrounds/" + it.first + ".png")) {
+      return false;
+    }
+  }
+
+  sprites.emplace("mariobigwalk_0", sf::Texture());
+  sprites.emplace("mariobigwalk_1", sf::Texture());
+  sprites.emplace("mariobigwalk_2", sf::Texture());
+  sprites.emplace("mariobigjump", sf::Texture());
+  sprites.emplace("mariobigduck", sf::Texture());
+  sprites.emplace("mariobigslip", sf::Texture());
+
+  for (auto& it : sprites) {
+    if (not it.second.loadFromFile("assets/sprites/" + it.first + ".png")) {
+      return false;
+    }
+  }
+
+  tiles.emplace("goldbrick_0", sf::Texture());
+  tiles.emplace("goldbrick_1", sf::Texture());
+  tiles.emplace("goldbrick_2", sf::Texture());
+  tiles.emplace("goldbrick_3", sf::Texture());
+  tiles.emplace("itemblock_0", sf::Texture());
+  tiles.emplace("itemblock_1", sf::Texture());
+  tiles.emplace("itemblock_2", sf::Texture());
+  tiles.emplace("itemblock_3", sf::Texture());
+  tiles.emplace("woodfloor_0", sf::Texture());
+  tiles.emplace("woodfloor_1", sf::Texture());
+  tiles.emplace("woodfloor_2", sf::Texture());
+  tiles.emplace("woodfloor_3", sf::Texture());
+  tiles.emplace("woodfloor_4", sf::Texture());
+  tiles.emplace("woodfloor_5", sf::Texture());
+
+  for (auto& it : tiles) {
+    if (not it.second.loadFromFile("assets/tiles/" + it.first + ".png")) {
+      return false;
+    }
+  }
+
+  world->player.sprite.setTexture(sprites.at("mariobigwalk_0"));
 
   tick = 0;
   tickClock.restart();
@@ -142,12 +179,12 @@ void Engine::doTick() {
     }
 
     if (down and not direction) {
-      world->player.sprite.setTexture(textures.at("player.duck"), true);
+      world->player.sprite.setTexture(sprites.at("mariobigduck"), true);
       world->player.offset.x = 7;
       world->player.duck();
     }
     else {
-      world->player.sprite.setTexture(textures.at("player.still"), true);
+      world->player.sprite.setTexture(sprites.at("mariobigwalk_0"), true);
       world->player.offset.x = 7;
       world->player.stand();
     }
@@ -164,7 +201,7 @@ void Engine::doTick() {
       }
     }
     if (not world->player.ducking) {
-      world->player.sprite.setTexture(textures.at("player.jump"), true);
+      world->player.sprite.setTexture(sprites.at("mariobigjump"), true);
       world->player.offset.x = 8;
     }
   }
@@ -298,27 +335,29 @@ void Engine::doTick() {
   tick++;
 }
 
-void Engine::drawBG(const sf::Color& color) {
-  window->clear(color);
+void Engine::drawBG(uint32_t color) {
+  window->clear(sf::Color(color));
 }
 
-void Engine::drawBG(const sf::Texture& bg, float distx, float disty) {
+void Engine::drawBG(const char* bg, float distx, float disty) {
   auto win_w = window->getSize().x;
   auto win_h = window->getSize().y;
+
+  const auto& texture = backgrounds.at(bg);
 
   float distdivx = distx / (distx - 1.0f);
   float distdivy = disty / (disty - 1.0f);
 
   float left = world->camera.pos.x - win_w / 6;
   float bottom = world->camera.pos.y - win_h / 6;
-  int sky_w = bg.getSize().x;
-  int sky_h = bg.getSize().y;
+  int sky_w = texture.getSize().x;
+  int sky_h = texture.getSize().y;
   int min_x = left / sky_w;
   int min_y = bottom / sky_h;
   int max_x = (world->camera.pos.x + win_w * (2 * distx - 1) / 6) / sky_w + distx;
   int max_y = (world->camera.pos.y + win_h * (2 * disty - 1) / 6) / sky_h + disty;
 
-  sf::Sprite sky(bg);
+  sf::Sprite sky(texture);
   for (int y = floor(min_y / disty); y < floor(max_y / disty) + 1; y++)
   for (int x = floor(min_x / distx); x < floor(max_x / distx) + 1; x++) {
     sky.setPosition(World::toView(Vec2f(x * sky_w + left / distdivx, y * sky_h + sky_h + bottom / distdivy)));
@@ -326,41 +365,45 @@ void Engine::drawBG(const sf::Texture& bg, float distx, float disty) {
   }
 }
 
-void Engine::drawBGBottom(const sf::Texture& bg, float distx, float disty) {
+void Engine::drawBGBottom(const char* bg, float distx, float disty) {
   auto win_w = window->getSize().x;
   auto win_h = window->getSize().y;
+
+  const auto& texture = backgrounds.at(bg);
 
   float distdivx = distx / (distx - 1.0f);
   float distdivy = disty / (disty - 1.0f);
 
   float left = world->camera.pos.x - win_w / 6;
   float bottom = world->camera.pos.y - win_h / 6;
-  int sky_w = bg.getSize().x;
-  int sky_h = bg.getSize().y;
+  int sky_w = texture.getSize().x;
+  int sky_h = texture.getSize().y;
   int min_x = left / sky_w;
   int max_x = (world->camera.pos.x + win_w * (2 * distx - 1) / 6) / sky_w + distx;
 
-  sf::Sprite sky(bg);
+  sf::Sprite sky(texture);
   for (int x = floor(min_x / distx); x < floor(max_x / distx) + 1; x++) {
     sky.setPosition(World::toView(Vec2f(x * sky_w + left / distdivx, sky_h + bottom / distdivy)));
     window->draw(sky);
   }
 }
 
-void Engine::drawBGTop(const sf::Texture& bg, float distx, float disty) {
+void Engine::drawBGTop(const char* bg, float distx, float disty) {
   auto win_w = window->getSize().x;
   auto win_h = window->getSize().y;
+
+  const auto& texture = backgrounds.at(bg);
 
   float distdivx = distx / (distx - 1.0f);
   float distdivy = disty / (disty - 1.0f);
 
   float left = world->camera.pos.x - win_w / 6;
   float top = world->camera.pos.y + win_h / 6;
-  int sky_w = bg.getSize().x;
+  int sky_w = texture.getSize().x;
   int min_x = left / sky_w;
   int max_x = (world->camera.pos.x + win_w * (2 * distx - 1) / 6) / sky_w + distx;
 
-  sf::Sprite sky(bg);
+  sf::Sprite sky(texture);
   for (int x = floor(min_x / distx); x < floor(max_x / distx) + 1; x++) {
     sky.setPosition(World::toView(Vec2f(x * sky_w + left / distdivx, world->size.y * 16 / disty + top / distdivy)));
     window->draw(sky);
@@ -376,7 +419,7 @@ void Engine::drawTiles() {
   int right = std::max(0, std::min(int(floor((world->camera.pos.x + win_w / 6) / 16)) + 1, world->size.x));
   int top = std::max(0, std::min(int(floor((world->camera.pos.y + win_h / 6) / 16)) + 1, world->size.y));
 
-  sf::Sprite brick(textures.at("tiles"), sf::IntRect(0, 17, 16, 16));
+  sf::Sprite brick(tiles.at("goldbrick_0"));
   for (int y = bottom; y < top; y++)
   for (int x = left; x < right; x++) {
     if (world->getTile(x, y)) {
@@ -403,9 +446,9 @@ void Engine::doRender() {
   view.setCenter(World::toView(world->camera.pos));
   window->setView(view);
 
-  drawBG(sf::Color(0x6898F8FF));
-  drawBGBottom(textures.at("overworld-blocks"), 1.625, 1.375);
-  drawBGTop(textures.at("overworld-clouds"), 2.625, 1.125);
+  drawBG(0x6898F8FF);
+  drawBGBottom("overworldblocks", 1.625, 1.375);
+  drawBGTop("overworldclouds", 2.625, 1.125);
   drawTiles();
   drawEntities();
 
@@ -413,7 +456,9 @@ void Engine::doRender() {
 }
 
 int Engine::exec() {
-  init();
+  if (not init()) {
+    return EXIT_FAILURE;
+  }
 
   float tickDelta = 0;
   while (window->isOpen()) {
