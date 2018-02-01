@@ -1,3 +1,7 @@
 [submodule "fmt"]
 	path = fmt
 	url = https://github.com/fmtlib/fmt.git
+[submodule "physfs-cpp"]
+	path = physfs-cpp
+	url = https://github.com/kahowell/physfs-cpp.git
+	branch = master
