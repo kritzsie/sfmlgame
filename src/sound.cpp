@@ -1,5 +1,7 @@
 #include "sound.hpp"
 
+#include <SFML/Audio.hpp>
+
 #include <cstddef>
 
 namespace sound {

@@ -39,6 +39,7 @@ protected:
   sf::Event event;
   sf::RenderWindow* window;
   std::map<std::string, sf::Texture> backgrounds, sprites, tiles;
+  Music* music;
   Sound* sound;
   World* world;
 

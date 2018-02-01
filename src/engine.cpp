@@ -44,6 +44,7 @@ void Engine::Keys::State::resetDelta() {
 }
 
 bool Engine::init() {
+  music->init();
   if (not sound->init()) {
     return false;
   }
@@ -443,7 +444,7 @@ void Engine::doRender() {
   auto win_w = window->getSize().x;
   auto win_h = window->getSize().y;
 
-  sf::View view(Vec2f(), Vec2f(win_w, win_h) / 3);
+  sf::View view(Vec2f(), Vec2f(floor(win_w / 3), floor(win_h / 3)));
   view.setCenter(World::toView(world->camera.pos));
   window->setView(view);
 
@@ -492,12 +493,14 @@ int Engine::exec() {
 Engine::Engine(const arglist& args) : args(args), tickRate(64) {
   window = new sf::RenderWindow(sf::VideoMode(768, 576), "Super Pixel Brawler");
   world = new World(176, 27);
+  music = new Music();
   sound = new Sound();
 }
 
 Engine::~Engine() {
   delete window;
   delete world;
+  delete music;
   delete sound;
 }
 }
