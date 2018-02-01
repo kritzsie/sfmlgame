@@ -155,12 +155,12 @@ void Engine::doTick() {
   else {
     if (direction) {
       if (direction > 0
-      and world->player.vel.x < max_xvel * 0.625f) {
-        world->player.vel.x = std::max(-8.0f * 16.0f, std::min(world->player.vel.x + direction * 8 * 16 / tickRate, max_xvel * 0.625f));
+      and world->player.vel.x < max_xvel) {
+        world->player.vel.x = std::min(world->player.vel.x + direction * 10 * 16 / tickRate, max_xvel);
       }
       else if (direction < 0
-      and world->player.vel.x > min_xvel * 0.625f) {
-        world->player.vel.x = std::max(min_xvel * 0.625f, std::min(world->player.vel.x + direction * 8 * 16 / tickRate, 8.0f * 16.0f));
+      and world->player.vel.x > min_xvel) {
+        world->player.vel.x = std::max(min_xvel, world->player.vel.x + direction * 10 * 16 / tickRate);
       }
     }
     if (not world->player.ducking) {
@@ -217,6 +217,7 @@ void Engine::doTick() {
           else {
             world->setTile(x, y, 0);
           }
+          sound->play("brickshatter");
           world->player.jumptime = 0;
           world->player.vel.y = 0;
           world->player.pos.y -= collBox.h;
