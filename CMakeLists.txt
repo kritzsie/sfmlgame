@@ -43,6 +43,7 @@ add_executable(
   src/entity.cpp
   src/music.cpp
   src/sound.cpp
+  src/util.cpp
   src/world.cpp
   src/main.cpp
 )

@@ -100,6 +100,9 @@ bool Engine::init() {
   tick = 0;
   tickClock.restart();
 
+  music->change("overworld");
+  music->play();
+
   return true;
 }
 

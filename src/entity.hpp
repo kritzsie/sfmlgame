@@ -7,7 +7,8 @@
 #include <SFML/Graphics.hpp>
 
 namespace entity {
-using namespace types;
+using types::byte;
+using types::uint;
 
 using geometry::rect::Rect;
 using geometry::vec2::Vec2;

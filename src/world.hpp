@@ -6,7 +6,9 @@
 
 namespace world {
 using namespace entity;
-using namespace types;
+
+using types::byte;
+using types::uint;
 
 using tileid_t = uint;
 

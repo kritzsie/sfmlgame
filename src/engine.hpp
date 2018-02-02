@@ -19,7 +19,8 @@
 #include <cstdint>
 
 namespace engine {
-using namespace types;
+using types::byte;
+using types::uint;
 
 using geometry::vec2::Vec2;
 using Vec2f = Vec2<float>;
