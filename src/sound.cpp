@@ -6,8 +6,10 @@
 
 namespace sound {
 bool Sound::init() {
-  sounds.emplace("jump", sf::SoundBuffer());
   sounds.emplace("brickshatter", sf::SoundBuffer());
+  sounds.emplace("jump", sf::SoundBuffer());
+  sounds.emplace("pause", sf::SoundBuffer());
+  sounds.emplace("slip", sf::SoundBuffer());
 
   for (auto& it : sounds) {
     if (not it.second.loadFromFile("assets/sounds/" + it.first + ".wav")) {

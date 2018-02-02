@@ -189,8 +189,36 @@ void Engine::doTick() {
       world->player.duck();
     }
     else {
-      world->player.sprite.setTexture(sprites.at("mariobigwalk_0"), true);
-      world->player.offset.x = 7;
+      if (world->player.vel.x > 0
+      and direction < 0) {
+        world->player.sprite.setTexture(sprites.at("mariobigslip"), true);
+        world->player.offset.x = 8;
+        if (world->player.sliptime == 0) {
+          world->player.sliptime = 0.09375;
+          sound->play("slip");
+        }
+        else {
+          world->player.sliptime = std::max(0.0f, world->player.sliptime - 1 / tickRate);
+        }
+      }
+      else if (world->player.vel.x < 0
+      and direction > 0) {
+        world->player.sprite.setTexture(sprites.at("mariobigslip"), true);
+        world->player.offset.x = 8;
+        if (world->player.sliptime == 0) {
+          world->player.sliptime = 0.09375;
+          sound->play("slip");
+        }
+        else {
+          world->player.sliptime = std::max(0.0f, world->player.sliptime - 1 / tickRate);
+        }
+      }
+      else {
+        world->player.sprite.setTexture(sprites.at("mariobigwalk_0"), true);
+        world->player.offset.x = 7;
+        world->player.sliptime = 0;
+      }
+
       world->player.stand();
     }
   }
@@ -233,13 +261,12 @@ void Engine::doTick() {
     world->player.vel.y = std::max(world->player.vel.y + gravity / tickRate, min_yvel);
   }
 
-  world->player.airborne = true;
-
-  auto range = World::tilesFromAABB(world->player.getAABB());
-
   if (world->player.vel.y) {
     world->player.pos.y += world->player.vel.y / tickRate;
   }
+  world->player.airborne = true;
+
+  auto range = World::tilesFromAABB(world->player.getAABB());
   for (int y = range.y; y < range.y + range.h; y++)
   for (int x = range.x; x < range.x + range.w; x++) {
     auto plyrBox = world->player.getAABB();
@@ -276,6 +303,7 @@ void Engine::doTick() {
   if (world->player.vel.x) {
     world->player.pos.x += world->player.vel.x / tickRate;
   }
+
   for (int y = range.y; y < range.y + range.h; y++)
   for (int x = range.x; x < range.x + range.w; x++) {
     auto plyrBox = world->player.getAABB();

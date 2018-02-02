@@ -63,6 +63,7 @@ public:
   bool underwater = false, on_ice = false;
 
   float jumptime = 0;
+  float sliptime = 0;
 
   void stand();
   void jump();
