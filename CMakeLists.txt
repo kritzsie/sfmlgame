@@ -11,8 +11,6 @@ include_directories(${SFML_INCLUDE_DIR})
 
 find_package(PhysFS)
 include_directories(${PHYSFS_INCLUDE_DIR})
-
-include_directories(fmt)
 include_directories(physfs-cpp/include)
 
 set(
@@ -22,10 +20,24 @@ set(
   fmt/fmt/posix.cc
   fmt/fmt/printf.cc
 )
+include_directories(fmt)
+
+set(
+  SNES_SPC_SOURCES
+  snes_spc-0.9.0/snes_spc/SPC_DSP.cpp
+  snes_spc-0.9.0/snes_spc/dsp.cpp
+  snes_spc-0.9.0/snes_spc/SNES_SPC.cpp
+  snes_spc-0.9.0/snes_spc/SPC_Filter.cpp
+  snes_spc-0.9.0/snes_spc/SNES_SPC_state.cpp
+  snes_spc-0.9.0/snes_spc/SNES_SPC_misc.cpp
+  snes_spc-0.9.0/snes_spc/spc.cpp
+)
+include_directories(snes_spc-0.9.0)
 
 add_executable(
   sfmlgame
   ${FMT_SOURCES}
+  ${SNES_SPC_SOURCES}
   physfs-cpp/src/physfs.cpp
   src/engine.cpp
   src/entity.cpp
