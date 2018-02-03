@@ -216,10 +216,10 @@ void Engine::doTick() {
       else {
         if (world->player.vel.x) {
           if (world->player.walktime) {
-            world->player.walktime = std::max(0.0f, world->player.walktime - std::max(1.0f, std::abs(world->player.vel.x) / 64) / tickRate);
+            world->player.walktime = std::max(0.0f, world->player.walktime - std::max(1.0f, std::abs(world->player.vel.x) / 32) / tickRate);
           }
           else {
-            world->player.walktime = 0.0625;
+            world->player.walktime = 0.125;
             world->player.walkcycle = (world->player.walkcycle + 1) % 4;
           }
         }
@@ -301,7 +301,7 @@ void Engine::doTick() {
           }
           sound->play("brickshatter");
           world->player.jumptime = 0;
-          world->player.vel.y = 0;
+          world->player.vel.y = -8 * 16;
           world->player.pos.y -= collBox.h;
         }
         else {
