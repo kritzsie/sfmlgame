@@ -228,7 +228,7 @@ void Engine::doTick() {
           world->player.walkcycle = 0;
         }
         world->player.sprite.setTexture(sprites.at("mariobigwalk_" + std::to_string(world->player.walkcycle < 3 ? world->player.walkcycle : 1)), true);
-        world->player.offset.x = 7;
+        world->player.offset.x = world->player.walkcycle ? 9 : 7;
         world->player.sliptime = 0;
       }
 
@@ -301,7 +301,7 @@ void Engine::doTick() {
           }
           sound->play("brickshatter");
           world->player.jumptime = 0;
-          world->player.vel.y = -8 * 16;
+          world->player.vel.y = 0;
           world->player.pos.y -= collBox.h;
         }
         else {
