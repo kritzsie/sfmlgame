@@ -29,7 +29,7 @@ using music::Music;
 using sound::Sound;
 using world::World;
 
-using arglist = std::vector<char*>;
+using arglist = std::vector<std::string>;
 
 class Engine {
 protected:

@@ -64,6 +64,8 @@ public:
 
   float jumptime = 0;
   float sliptime = 0;
+  float walktime = 0;
+  byte walkcycle = 0;
 
   void stand();
   void jump();

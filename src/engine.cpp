@@ -214,7 +214,20 @@ void Engine::doTick() {
         }
       }
       else {
-        world->player.sprite.setTexture(sprites.at("mariobigwalk_0"), true);
+        if (world->player.vel.x) {
+          if (world->player.walktime) {
+            world->player.walktime = std::max(0.0f, world->player.walktime - std::max(1.0f, std::abs(world->player.vel.x) / 64) / tickRate);
+          }
+          else {
+            world->player.walktime = 0.0625;
+            world->player.walkcycle = (world->player.walkcycle + 1) % 4;
+          }
+        }
+        else {
+          world->player.walktime = 0;
+          world->player.walkcycle = 0;
+        }
+        world->player.sprite.setTexture(sprites.at("mariobigwalk_" + std::to_string(world->player.walkcycle < 3 ? world->player.walkcycle : 1)), true);
         world->player.offset.x = 7;
         world->player.sliptime = 0;
       }
