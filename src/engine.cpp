@@ -44,8 +44,9 @@ void Engine::Keys::State::resetDelta() {
 }
 
 bool Engine::init() {
+  backgrounds.emplace("athletichills", sf::Texture());
+  backgrounds.emplace("cloudlayer", sf::Texture());
   backgrounds.emplace("overworldblocks", sf::Texture());
-  backgrounds.emplace("overworldclouds", sf::Texture());
 
   for (auto& it : backgrounds) {
     if (not it.second.loadFromFile("assets/backgrounds/" + it.first + ".png")) {
@@ -102,7 +103,7 @@ bool Engine::init() {
   tick = 0;
   tickClock.restart();
 
-  music->change("overworld");
+  music->change("athletic");
   music->play();
 
   return true;
@@ -495,8 +496,8 @@ void Engine::doRender() {
   window->setView(view);
 
   drawBG(0x6898F8FF);
-  drawBGBottom("overworldblocks", 1.625, 1.375);
-  drawBGTop("overworldclouds", 2.625, 1.125);
+  drawBGBottom("athletichills", 1.625, 1.375);
+  drawBGTop("cloudlayer", 2.625, 1.125);
   drawTiles();
   drawEntities();
 

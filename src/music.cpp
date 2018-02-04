@@ -48,8 +48,10 @@ SPCStream::SPCStream(std::size_t bufsize, std::size_t channels) : buffer(bufsize
 }
 
 bool Music::init() {
+  songs.emplace("athletic", std::vector<char>());
   songs.emplace("overworld", std::vector<char>());
   songs.emplace("playerdown", std::vector<char>());
+  songs.emplace("underworld", std::vector<char>());
 
   for (auto& it : songs) {
     std::vector<char> song = util::load_file("assets/music/" + it.first + ".spc");
