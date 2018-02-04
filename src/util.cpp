@@ -2,12 +2,17 @@
 
 #include <fstream>
 #include <ios>
+#include <iostream>
 #include <string>
 #include <vector>
 
 namespace util {
   std::vector<char> load_file(std::string name) {
     std::ifstream file(name, std::ios::binary | std::ios::ate);
+    if (file.fail()) {
+      std::cerr << "Failed to load file \"" + name + "\".\n";
+      return std::vector<char>(0);
+    }
     std::streamsize size = file.tellg();
     std::vector<char> buffer(size);
 

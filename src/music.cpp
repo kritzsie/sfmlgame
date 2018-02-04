@@ -52,7 +52,13 @@ bool Music::init() {
   songs.emplace("playerdown", std::vector<char>());
 
   for (auto& it : songs) {
-    it.second = util::load_file("assets/music/" + it.first + ".spc");
+    std::vector<char> song = util::load_file("assets/music/" + it.first + ".spc");
+    if (song.size()) {
+      it.second = song;
+    }
+    else {
+      return false;
+    }
   }
 
   return true;

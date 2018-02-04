@@ -44,14 +44,6 @@ void Engine::Keys::State::resetDelta() {
 }
 
 bool Engine::init() {
-  music->init();
-  if (not sound->init()) {
-    return false;
-  }
-  if (not world->init()) {
-    return false;
-  }
-
   backgrounds.emplace("overworldblocks", sf::Texture());
   backgrounds.emplace("overworldclouds", sf::Texture());
 
@@ -93,6 +85,16 @@ bool Engine::init() {
     if (not it.second.loadFromFile("assets/tiles/" + it.first + ".png")) {
       return false;
     }
+  }
+
+  if (not world->init()) {
+    return false;
+  }
+  if (not sound->init()) {
+    return false;
+  }
+  if (not music->init()) {
+    return false;
   }
 
   world->player.sprite.setTexture(sprites.at("mariobigwalk_0"));
