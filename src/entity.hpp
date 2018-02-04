@@ -6,6 +6,11 @@
 
 #include <SFML/Graphics.hpp>
 
+#include <map>
+#include <string>
+
+#include <cstddef>
+
 namespace entity {
 using types::byte;
 using types::uint;
@@ -39,7 +44,7 @@ public:
   byte getDirection() const;
   void setDirection(byte);
 
-  Vec2f toView();
+  Vec2f toView() const;
 
   RenderEntity();
   RenderEntity(const Vec2f&, const Vec2f&);
@@ -56,8 +61,19 @@ public:
   Entity(const Vec2f&, const Vec2f&, float, float);
 };
 
+class RenderState {
+public:
+  std::string sprite;
+  Vec2f offset;
+
+  RenderState(std::string, Vec2f);
+};
+
 class PlayerEntity : public Entity {
 public:
+  std::size_t state_counter = 0;
+  std::map<std::string, std::vector<RenderState>> states;
+
   bool airborne = false;
   bool ducking = false, p_speed = false;
   bool underwater = false, on_ice = false;

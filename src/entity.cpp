@@ -5,6 +5,10 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 
+#include <string>
+#include <utility>
+#include <vector>
+
 #include <ctgmath>
 
 namespace entity {
@@ -27,7 +31,7 @@ void RenderEntity::setDirection(byte d) {
 }
 
 // Helper method to transform from world to screen coordinates
-Vec2f RenderEntity::toView() {
+Vec2f RenderEntity::toView() const {
   return Vec2f(
     pos.x - (offset.x * scale.x * direction),
     -(pos.y - (offset.y * scale.y) + sprite.getTexture()->getSize().y * scale.y)
@@ -60,8 +64,26 @@ Entity::Entity(
   float height = 16
 ) : RenderEntity(offset, scale), radius(radius), height(height) {}
 
+RenderState::RenderState(std::string sprite, Vec2f offset) :
+  sprite(sprite), offset(offset)
+{}
+
 // Players inherit from Entity, but also hold states (jumping, crouching, etc.)
-PlayerEntity::PlayerEntity() : Entity() {}
+PlayerEntity::PlayerEntity() : Entity() {
+  std::vector<RenderState> walk_states;
+  walk_states.push_back(RenderState("mariobigwalk_0", Vec2f(7, 0)));
+  walk_states.push_back(RenderState("mariobigwalk_1", Vec2f(9, 0)));
+  walk_states.push_back(RenderState("mariobigwalk_2", Vec2f(9, 0)));
+  states.emplace("walk", std::move(walk_states));
+
+  std::vector<RenderState> jump_states;
+  jump_states.push_back(RenderState("mariobigjump", Vec2f(8, 0)));
+  states.emplace("jump", std::move(walk_states));
+
+  std::vector<RenderState> duck_states;
+  duck_states.push_back(RenderState("mariobigduck", Vec2f(7, 0)));
+  states.emplace("duck", std::move(walk_states));
+}
 
 void PlayerEntity::stand() {
   ducking = false;
