@@ -62,7 +62,7 @@ bool World::init() {
   return true;
 }
 
-World::World(int x, int y) : player({7, 0}, {1, 1}, 5, 25) {
+World::World(int x, int y) : player({7, -1}, {1, 1}, 5, 25) {
   tiles = new tileid_t[x * y]();
   size.x = x;
   size.y = y;

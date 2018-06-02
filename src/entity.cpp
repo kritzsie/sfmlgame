@@ -34,7 +34,7 @@ void RenderEntity::setDirection(byte d) {
 Vec2f RenderEntity::toView() const {
   return Vec2f(
     pos.x - (offset.x * scale.x * direction),
-    -(pos.y - (offset.y * scale.y) + sprite.getTexture()->getSize().y * scale.y)
+    -(pos.y + (offset.y * scale.y) + sprite.getTexture()->getSize().y * scale.y)
   );
 }
 
