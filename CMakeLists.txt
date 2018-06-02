@@ -6,8 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-find_package(SFML 2 REQUIRED audio graphics system window)
-include_directories(${SFML_INCLUDE_DIR})
+find_package(SFML 2.5 REQUIRED COMPONENTS audio graphics network system window)
 
 find_package(PhysFS)
 include_directories(${PHYSFS_INCLUDE_DIR})
@@ -50,6 +49,6 @@ add_executable(
 
 target_link_libraries(
   sfmlgame
-  ${SFML_LIBRARIES}
+  sfml-audio sfml-graphics sfml-network sfml-system sfml-window
   physfs
 )
