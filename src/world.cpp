@@ -10,8 +10,8 @@ Vec2f World::toView(const Vec2f& vector) {
 
 Rect<int> World::tilesFromAABB(const Rect<float>& bbox) {
   return Rect<int>(
-    floor(bbox.x / 16) - 1, floor(bbox.y / 16) - 1,
-    ceil(bbox.w / 16) + 2, ceil(bbox.h / 16) + 2
+    floor(bbox.x / 16 - 1), floor(bbox.y / 16 - 1),
+    ceil(bbox.w / 16 + 1), ceil(bbox.h / 16 + 1)
   );
 }
 
@@ -19,7 +19,6 @@ Rect<float> World::tileAABB(int x, int y) {
   return Rect<float>(x * 16, y * 16, 16, 16);
 }
 
-// TODO: Inherit from dedicated 2D vector class
 tileid_t& World::getTile(int x, int y) {
   if (x < size.x)
     if (y < size.y)
@@ -38,21 +37,31 @@ void World::setTile(int x, int y, tileid_t tileid) {
 
 bool World::init() {
   // WARNING: Test world ahead
-  for (int x = 0; x < 8; x++) for (int y = 0; y < 1; y++) {
-      setTile(x, y, 1);
+  setTile(0, 0, 5);
+  for (int x = 1; x <= 6; x++) {
+      setTile(x, 0, 6);
   }
-  setTile(0, 1, 1);
-  for (int x = 15; x < 20; x++) {
-      setTile(x, 4, 1);
-  }
-  setTile(5, 1, 1);
-  setTile(6, 1, 1);
-  setTile(6, 2, 1);
-  setTile(7, 1, 1);
-  setTile(7, 2, 1);
-  setTile(7, 3, 1);
+  setTile(7, 0, 7);
+  setTile(15, 4, 30);
+  setTile(16, 4, 2);
+  setTile(17, 4, 30);
+  setTile(18, 4, 2);
+  setTile(19, 4, 30);
+  setTile(5, 1, 37);
+  setTile(6, 1, 37);
+  setTile(6, 2, 37);
+  setTile(7, 1, 37);
+  setTile(7, 2, 37);
+  setTile(7, 3, 37);
   for (int x = 12; x < size.x; x++) for (int y = 0; y < 1; y++) {
     setTile(x, y, 1);
+  }
+  for (int x = 24; x < 40; x++) {
+    setTile(x, 1, 1);
+  }
+  for (int x = 28; x < 36; x++) {
+    setTile(x, 3, 1);
+    setTile(x, 4, 1);
   }
   setTile(23, 1, 1);
   player.pos = Vec2f(32, 16);

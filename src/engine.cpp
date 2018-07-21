@@ -46,28 +46,30 @@ void Engine::Keys::State::resetDelta() {
 bool Engine::init() {
   backgrounds.emplace("athletichills", sf::Texture());
   backgrounds.emplace("cloudlayer", sf::Texture());
-  backgrounds.emplace("overworldblocks", sf::Texture());
+  backgrounds.emplace("overworldblockstop", sf::Texture());
 
   for (auto& it : backgrounds) {
-    if (not it.second.loadFromFile("assets/backgrounds/" + it.first + ".png")) {
+    if (not it.second.loadFromFile("basesmb3/graphics/" + it.first + ".png")) {
       return false;
     }
+    it.second.setRepeated(true);
   }
 
-  sprites.emplace("mariobigwalk_0", sf::Texture());
-  sprites.emplace("mariobigwalk_1", sf::Texture());
-  sprites.emplace("mariobigwalk_2", sf::Texture());
-  sprites.emplace("mariobigjump", sf::Texture());
-  sprites.emplace("mariobigduck", sf::Texture());
-  sprites.emplace("mariobigslip", sf::Texture());
+  sprites.emplace("bigmariowalk_0", sf::Texture());
+  sprites.emplace("bigmariowalk_1", sf::Texture());
+  sprites.emplace("bigmariowalk_2", sf::Texture());
+  sprites.emplace("bigmariojump", sf::Texture());
+  sprites.emplace("bigmarioduck", sf::Texture());
+  sprites.emplace("bigmarioslip", sf::Texture());
 
   for (auto& it : sprites) {
-    if (not it.second.loadFromFile("assets/sprites/" + it.first + ".png")) {
+    if (not it.second.loadFromFile("basesmb3/sprites/" + it.first + ".png")) {
       return false;
     }
+    it.second.setRepeated(true);
   }
 
-  tiles.emplace("goldbrick_0", sf::Texture());
+  /*tiles.emplace("goldbrick_0", sf::Texture());
   tiles.emplace("goldbrick_1", sf::Texture());
   tiles.emplace("goldbrick_2", sf::Texture());
   tiles.emplace("goldbrick_3", sf::Texture());
@@ -80,12 +82,14 @@ bool Engine::init() {
   tiles.emplace("woodfloor_2", sf::Texture());
   tiles.emplace("woodfloor_3", sf::Texture());
   tiles.emplace("woodfloor_4", sf::Texture());
-  tiles.emplace("woodfloor_5", sf::Texture());
+  tiles.emplace("woodfloor_5", sf::Texture());*/
+  tiles.emplace("smb3_atlas", sf::Texture());
 
   for (auto& it : tiles) {
-    if (not it.second.loadFromFile("assets/tiles/" + it.first + ".png")) {
+    if (not it.second.loadFromFile("basesmb3/tiles/" + it.first + ".png")) {
       return false;
     }
+    it.second.setRepeated(true);
   }
 
   if (not world->init()) {
@@ -98,7 +102,7 @@ bool Engine::init() {
     return false;
   }
 
-  world->player.sprite.setTexture(sprites.at("mariobigwalk_0"));
+  world->player.sprite.setTexture(sprites.at("bigmariowalk_0"));
 
   tick = 0;
   tickClock.restart();
@@ -187,14 +191,14 @@ void Engine::doTick() {
     }
 
     if (down and not direction) {
-      world->player.sprite.setTexture(sprites.at("mariobigduck"), true);
+      world->player.sprite.setTexture(sprites.at("bigmarioduck"), true);
       world->player.offset.x = 7;
       world->player.duck();
     }
     else {
       if (world->player.vel.x > 0
       and direction < 0) {
-        world->player.sprite.setTexture(sprites.at("mariobigslip"), true);
+        world->player.sprite.setTexture(sprites.at("bigmarioslip"), true);
         world->player.offset.x = 8;
         if (world->player.sliptime == 0) {
           world->player.sliptime = 0.09375;
@@ -206,7 +210,7 @@ void Engine::doTick() {
       }
       else if (world->player.vel.x < 0
       and direction > 0) {
-        world->player.sprite.setTexture(sprites.at("mariobigslip"), true);
+        world->player.sprite.setTexture(sprites.at("bigmarioslip"), true);
         world->player.offset.x = 8;
         if (world->player.sliptime == 0) {
           world->player.sliptime = 0.09375;
@@ -230,7 +234,7 @@ void Engine::doTick() {
           world->player.walktime = 0;
           world->player.walkcycle = 0;
         }
-        world->player.sprite.setTexture(sprites.at("mariobigwalk_" + std::to_string(world->player.walkcycle < 3 ? world->player.walkcycle : 1)), true);
+        world->player.sprite.setTexture(sprites.at("bigmariowalk_" + std::to_string(world->player.walkcycle < 3 ? world->player.walkcycle : 1)), true);
         world->player.offset.x = world->player.walkcycle ? 9 : 7;
         world->player.sliptime = 0;
       }
@@ -250,7 +254,7 @@ void Engine::doTick() {
       }
     }
     if (not world->player.ducking) {
-      world->player.sprite.setTexture(sprites.at("mariobigjump"), true);
+      world->player.sprite.setTexture(sprites.at("bigmariojump"), true);
       world->player.offset.x = 8;
     }
   }
@@ -277,14 +281,15 @@ void Engine::doTick() {
     world->player.vel.y = std::max(world->player.vel.y + gravity / tickRate, min_yvel);
   }
 
+  auto range = World::tilesFromAABB(world->player.getAABB());
+
   if (world->player.vel.y) {
     world->player.pos.y += world->player.vel.y / tickRate;
   }
   world->player.airborne = true;
 
-  auto range = World::tilesFromAABB(world->player.getAABB());
-  for (int y = range.y; y < range.y + range.h; y++)
-  for (int x = range.x; x < range.x + range.w; x++) {
+  for (int x = range.x; x < range.x + range.w + 1; x++)
+  for (int y = range.y; y < range.y + range.h + 1; y++) {
     auto plyrBox = world->player.getAABB();
     auto tileBox = World::tileAABB(x, y);
 
@@ -295,14 +300,14 @@ void Engine::doTick() {
         auto collBox = plyrBox.intersection(tileBox);
 
         if (plyrBox.y + plyrBox.h / 2 < tileBox.y + tileBox.h / 2) {
-          if (world->player.pos.x > tileBox.x + tileBox.w
+          /*if (world->player.pos.x > tileBox.x + tileBox.w
           and world->getTile(x + 1, y) != 0) {
             world->setTile(x + 1, y, 0);
           }
           else {
             world->setTile(x, y, 0);
           }
-          sound->play("brickshatter");
+          sound->play("brickshatter");*/
           world->player.jumptime = 0;
           world->player.vel.y = 0;
           world->player.pos.y -= collBox.h;
@@ -320,8 +325,8 @@ void Engine::doTick() {
     world->player.pos.x += world->player.vel.x / tickRate;
   }
 
-  for (int y = range.y; y < range.y + range.h; y++)
-  for (int x = range.x; x < range.x + range.w; x++) {
+  for (int x = range.x; x < range.x + range.w + 1; x++)
+  for (int y = range.y; y < range.y + range.h + 1; y++) {
     auto plyrBox = world->player.getAABB();
     auto tileBox = World::tileAABB(x, y);
 
@@ -338,6 +343,10 @@ void Engine::doTick() {
         else {
           world->player.vel.x = 0;
           world->player.pos.x += collBox.w;
+        }
+
+        if (false) {
+          world->player.pos.x += 1;
         }
       }
     }
@@ -468,12 +477,16 @@ void Engine::drawTiles() {
   int right = std::max(0, std::min(int(floor((world->camera.pos.x + win_w / 6) / 16)) + 1, world->size.x));
   int top = std::max(0, std::min(int(floor((world->camera.pos.y + win_h / 6) / 16)) + 1, world->size.y));
 
-  sf::Sprite brick(tiles.at("goldbrick_0"));
   for (int y = bottom; y < top; y++)
   for (int x = left; x < right; x++) {
-    if (world->getTile(x, y)) {
-      brick.setPosition(World::toView(Vec2f(x * 16, y * 16 + 16)));
-      window->draw(brick);
+    auto tileid = world->getTile(x, y);
+    if (tileid) {
+      const sf::Texture& texture = tiles.at("smb3_atlas");
+      int xoffset = (tileid - 1) * 16;
+      int yoffset = ((tileid - 1) / (texture.getSize().x / 16)) * 16;
+      sf::Sprite tile(texture, sf::IntRect(xoffset, yoffset, 16, 16));
+      tile.setPosition(World::toView(Vec2f(x * 16, y * 16 + 16)));
+      window->draw(tile);
     }
   }
 }
