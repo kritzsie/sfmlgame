@@ -5,7 +5,7 @@
 #include <cstddef>
 #include <ctgmath>
 
-namespace geometry::vec2 {
+namespace ke {
 template<typename T>
 Vec2<T> Vec2<T>::operator+() const {
   return Vec2<T>(+x, +y);

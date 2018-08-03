@@ -4,7 +4,7 @@
 
 #include <cstddef>
 
-namespace geometry::matrix {
+namespace ke {
 template<typename T>
 T& Matrix<T>::Proxy::operator[](int y) const {
   if (y < size.y)

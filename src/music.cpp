@@ -7,7 +7,7 @@
 
 #include <vector>
 
-namespace music {
+namespace ke {
 spc_err_t SPC::load_spc(std::vector<char> spc) {
   return spc_load_spc(snes_spc, spc.data(), spc.size());
 }

@@ -3,7 +3,7 @@
 
 #include <fmt/format.h>
 
-namespace world {
+namespace ke {
 Vec2f World::toView(const Vec2f& vector) {
   return Vec2f(vector.x, -vector.y);
 }

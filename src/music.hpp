@@ -1,5 +1,4 @@
-#ifndef MUSIC_HPP
-#define MUSIC_HPP
+#pragma once
 
 #include <snes_spc/spc.h>
 
@@ -9,7 +8,7 @@
 #include <string>
 #include <vector>
 
-namespace music {
+namespace ke {
 class SPC {
 public:
   enum {
@@ -58,10 +57,3 @@ public:
   Music();
 };
 }
-
-namespace keng {
-  using namespace music;
-}
-
-#endif // MUSIC_HPP
-

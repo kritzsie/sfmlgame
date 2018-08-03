@@ -1,7 +1,7 @@
 #include "engine.hpp"
 
 int main(int argc, char* argv[]) {
-  keng::Engine engine(keng::arglist(argv, argc + argv));
+  ke::Engine engine(ke::arglist(argv, argc + argv));
 
   return engine.exec();
 }

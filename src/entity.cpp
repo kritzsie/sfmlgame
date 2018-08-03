@@ -11,7 +11,7 @@
 
 #include <ctgmath>
 
-namespace entity {
+namespace ke {
 // BaseEntity skipped; no methods
 // RenderEntity
 void RenderEntity::flipX() {
@@ -50,12 +50,12 @@ Rect<float> Entity::getAABB() const {
   return Rect<float>(pos.x - radius, pos.y, radius * 2, height);
 }
 
-Entity::Entity() : RenderEntity({8, 0}, {1, 1}), radius(8), height(16) {}
+Entity::Entity() : RenderEntity(Vec2f(8, 0), Vec2f(1, 1)), radius(8), height(16) {}
 
 Entity::Entity(
   float radius,
   float height
-) : RenderEntity({radius / 2, 0}, {1, 1}), radius(radius), height(height) {}
+) : RenderEntity(Vec2f(radius / 2, 0), Vec2f(1, 1)), radius(radius), height(height) {}
 
 Entity::Entity(
   const Vec2f& offset,
@@ -91,7 +91,7 @@ void PlayerEntity::stand() {
 }
 
 void PlayerEntity::jump() {
-  vel.y = 176 + abs(vel.x / 16);
+  vel.y = 176 + std::abs(vel.x / 16);
 }
 
 void PlayerEntity::duck() {

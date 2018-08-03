@@ -1,6 +1,6 @@
-#ifndef ENGINE_HPP
-#define ENGINE_HPP
+#pragma once
 
+#include "assetmanager.hpp"
 #include "geometry.hpp"
 #include "music.hpp"
 #include "sound.hpp"
@@ -18,20 +18,20 @@
 #include <cstddef>
 #include <cstdint>
 
-namespace engine {
-using types::byte;
-using types::uint;
-
-using geometry::vec2::Vec2;
+namespace ke {
 using Vec2f = Vec2<float>;
-
-using music::Music;
-using sound::Sound;
-using world::World;
 
 using arglist = std::vector<std::string>;
 
+struct PhysFSInfo {
+  std::string org;
+  std::string app;
+};
+
 class Engine {
+private:
+  static std::size_t instance_count;
+
 protected:
   const arglist& args;
   uint tick;
@@ -39,10 +39,12 @@ protected:
   float tickTime, tickRate;
   sf::Event event;
   sf::RenderWindow* window;
-  std::map<std::string, sf::Texture> backgrounds, sprites, tiles;
+  GFXAssetManager gfx;
+  SFXAssetManager sfx;
   Music* music;
   Sound* sound;
   World* world;
+  PhysFSInfo physfsinfo;
 
   struct Keys {
     class State {
@@ -75,7 +77,9 @@ protected:
   void drawBGTop(const char*, float, float);
   void drawTiles();
   void drawEntities();
+  void drawUI();
   void doRender();
+  bool setupPhysFS();
 
 public:
   int exec();
@@ -83,9 +87,3 @@ public:
   ~Engine();
 };
 }
-
-namespace keng {
-  using namespace engine;
-}
-
-#endif // ENGINE_HPP

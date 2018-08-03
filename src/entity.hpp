@@ -1,5 +1,4 @@
-#ifndef ENTITY_HPP
-#define ENTITY_HPP
+#pragma once
 
 #include "geometry.hpp"
 #include "types.hpp"
@@ -11,13 +10,7 @@
 
 #include <cstddef>
 
-namespace entity {
-using types::byte;
-using types::uint;
-
-using geometry::rect::Rect;
-using geometry::vec2::Vec2;
-
+namespace ke {
 using Vec2f = Vec2<float>;
 
 using enttype_t = uint;
@@ -93,9 +86,3 @@ public:
   PlayerEntity(const Vec2f&, const Vec2f&, float, float);
 };
 }
-
-namespace keng {
-  using namespace entity;
-}
-
-#endif // ENTITY_HPP

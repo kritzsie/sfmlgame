@@ -1,21 +1,12 @@
-#ifndef WORLD_HPP
-#define WORLD_HPP
+#pragma once
 
 #include "entity.hpp"
 #include "geometry.hpp"
 
-namespace world {
-using namespace entity;
-
-using types::byte;
-using types::uint;
-
+namespace ke {
 using tileid_t = uint;
 
-using geometry::vec2::Vec2;
 using Vec2f = Vec2<float>;
-
-using geometry::rect::Rect;
 
 class World {
 protected:
@@ -38,9 +29,3 @@ public:
   ~World();
 };
 }
-
-namespace keng {
-  using namespace world;
-}
-
-#endif // WORLD_HPP

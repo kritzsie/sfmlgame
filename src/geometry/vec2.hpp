@@ -1,9 +1,8 @@
-#ifndef GEOMETRY_VEC2_HPP
-#define GEOMETRY_VEC2_HPP
+#pragma once
 
 #include <SFML/Graphics.hpp>
 
-namespace geometry::vec2 {
+namespace ke {
 template<typename T>
 class Vec2 {
 public:
@@ -43,9 +42,3 @@ public:
 }
 
 #include "vec2.cpp"
-
-namespace keng {
-  using namespace geometry::vec2;
-}
-
-#endif // GEOMETRY_VEC2_HPP

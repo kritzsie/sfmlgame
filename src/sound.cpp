@@ -4,7 +4,7 @@
 
 #include <cstddef>
 
-namespace sound {
+namespace ke {
 bool Sound::init() {
   sounds.emplace("brickshatter", sf::SoundBuffer());
   sounds.emplace("jump", sf::SoundBuffer());

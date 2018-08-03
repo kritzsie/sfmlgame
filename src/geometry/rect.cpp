@@ -2,7 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 
-namespace geometry::rect {
+namespace ke {
 template<typename T>
 Rect<T> Rect<T>::operator+() const {
   return Rect(+pos, +size);

@@ -1,7 +1,10 @@
 #include "engine.hpp"
+#include "assetmanager.hpp"
 #include "geometry.hpp"
 #include "types.hpp"
 #include "world.hpp"
+
+#include <physfs.hpp>
 
 #include <fmt/format.h>
 
@@ -17,7 +20,9 @@
 #include <cstdlib>
 #include <ctgmath>
 
-namespace engine {
+namespace ke {
+std::size_t Engine::instance_count = 0;
+
 bool Engine::Keys::State::getState() const {
   return state;
 }
@@ -44,53 +49,9 @@ void Engine::Keys::State::resetDelta() {
 }
 
 bool Engine::init() {
-  backgrounds.emplace("athletichills", sf::Texture());
-  backgrounds.emplace("cloudlayer", sf::Texture());
-  backgrounds.emplace("overworldblockstop", sf::Texture());
+  PhysFS::init(args.at(0).c_str());
 
-  for (auto& it : backgrounds) {
-    if (not it.second.loadFromFile("basesmb3/graphics/" + it.first + ".png")) {
-      return false;
-    }
-    it.second.setRepeated(true);
-  }
-
-  sprites.emplace("bigmariowalk_0", sf::Texture());
-  sprites.emplace("bigmariowalk_1", sf::Texture());
-  sprites.emplace("bigmariowalk_2", sf::Texture());
-  sprites.emplace("bigmariojump", sf::Texture());
-  sprites.emplace("bigmarioduck", sf::Texture());
-  sprites.emplace("bigmarioslip", sf::Texture());
-
-  for (auto& it : sprites) {
-    if (not it.second.loadFromFile("basesmb3/sprites/" + it.first + ".png")) {
-      return false;
-    }
-    it.second.setRepeated(true);
-  }
-
-  /*tiles.emplace("goldbrick_0", sf::Texture());
-  tiles.emplace("goldbrick_1", sf::Texture());
-  tiles.emplace("goldbrick_2", sf::Texture());
-  tiles.emplace("goldbrick_3", sf::Texture());
-  tiles.emplace("itemblock_0", sf::Texture());
-  tiles.emplace("itemblock_1", sf::Texture());
-  tiles.emplace("itemblock_2", sf::Texture());
-  tiles.emplace("itemblock_3", sf::Texture());
-  tiles.emplace("woodfloor_0", sf::Texture());
-  tiles.emplace("woodfloor_1", sf::Texture());
-  tiles.emplace("woodfloor_2", sf::Texture());
-  tiles.emplace("woodfloor_3", sf::Texture());
-  tiles.emplace("woodfloor_4", sf::Texture());
-  tiles.emplace("woodfloor_5", sf::Texture());*/
-  tiles.emplace("smb3_atlas", sf::Texture());
-
-  for (auto& it : tiles) {
-    if (not it.second.loadFromFile("basesmb3/tiles/" + it.first + ".png")) {
-      return false;
-    }
-    it.second.setRepeated(true);
-  }
+  window->setTitle("Super Mario Bros. 3");
 
   if (not world->init()) {
     return false;
@@ -102,13 +63,13 @@ bool Engine::init() {
     return false;
   }
 
-  world->player.sprite.setTexture(sprites.at("bigmariowalk_0"));
-
   tick = 0;
   tickClock.restart();
 
-  music->change("athletic");
+  music->change("overworld");
   music->play();
+
+  world->player.sprite.setTexture(gfx["bigmariowalk_0"]);
 
   return true;
 }
@@ -191,14 +152,14 @@ void Engine::doTick() {
     }
 
     if (down and not direction) {
-      world->player.sprite.setTexture(sprites.at("bigmarioduck"), true);
+      world->player.sprite.setTexture(gfx["bigmarioduck"], true);
       world->player.offset.x = 7;
       world->player.duck();
     }
     else {
       if (world->player.vel.x > 0
       and direction < 0) {
-        world->player.sprite.setTexture(sprites.at("bigmarioslip"), true);
+        world->player.sprite.setTexture(gfx["bigmarioslip"], true);
         world->player.offset.x = 8;
         if (world->player.sliptime == 0) {
           world->player.sliptime = 0.09375;
@@ -210,7 +171,7 @@ void Engine::doTick() {
       }
       else if (world->player.vel.x < 0
       and direction > 0) {
-        world->player.sprite.setTexture(sprites.at("bigmarioslip"), true);
+        world->player.sprite.setTexture(gfx["bigmarioslip"], true);
         world->player.offset.x = 8;
         if (world->player.sliptime == 0) {
           world->player.sliptime = 0.09375;
@@ -234,7 +195,7 @@ void Engine::doTick() {
           world->player.walktime = 0;
           world->player.walkcycle = 0;
         }
-        world->player.sprite.setTexture(sprites.at("bigmariowalk_" + std::to_string(world->player.walkcycle < 3 ? world->player.walkcycle : 1)), true);
+        world->player.sprite.setTexture(gfx["bigmariowalk_" + std::to_string(world->player.walkcycle < 3 ? world->player.walkcycle : 1)], true);
         world->player.offset.x = world->player.walkcycle ? 9 : 7;
         world->player.sliptime = 0;
       }
@@ -254,7 +215,7 @@ void Engine::doTick() {
       }
     }
     if (not world->player.ducking) {
-      world->player.sprite.setTexture(sprites.at("bigmariojump"), true);
+      world->player.sprite.setTexture(gfx["bigmariojump"], true);
       world->player.offset.x = 8;
     }
   }
@@ -401,7 +362,7 @@ void Engine::drawBG(const char* bg, float distx, float disty) {
   auto win_w = window->getSize().x;
   auto win_h = window->getSize().y;
 
-  const auto& texture = backgrounds.at(bg);
+  const auto& texture = gfx[bg];
 
   float distdivx = distx / (distx - 1.0f);
   float distdivy = disty / (disty - 1.0f);
@@ -427,7 +388,7 @@ void Engine::drawBGBottom(const char* bg, float distx, float disty) {
   auto win_w = window->getSize().x;
   auto win_h = window->getSize().y;
 
-  const auto& texture = backgrounds.at(bg);
+  const auto& texture = gfx[bg];
 
   float distdivx = distx / (distx - 1.0f);
   float distdivy = disty / (disty - 1.0f);
@@ -450,7 +411,7 @@ void Engine::drawBGTop(const char* bg, float distx, float disty) {
   auto win_w = window->getSize().x;
   auto win_h = window->getSize().y;
 
-  const auto& texture = backgrounds.at(bg);
+  const auto& texture = gfx[bg];
 
   float distdivx = distx / (distx - 1.0f);
   float distdivy = disty / (disty - 1.0f);
@@ -481,9 +442,9 @@ void Engine::drawTiles() {
   for (int x = left; x < right; x++) {
     auto tileid = world->getTile(x, y);
     if (tileid) {
-      const sf::Texture& texture = tiles.at("smb3_atlas");
-      int xoffset = (tileid - 1) * 16;
-      int yoffset = ((tileid - 1) / (texture.getSize().x / 16)) * 16;
+      const sf::Texture& texture = gfx["smb3_atlas"];
+      int xoffset = (tileid - 1) * 16 % texture.getSize().x;
+      int yoffset = ((tileid - 1) / (texture.getSize().x / 16)) * 16 % texture.getSize().y;
       sf::Sprite tile(texture, sf::IntRect(xoffset, yoffset, 16, 16));
       tile.setPosition(World::toView(Vec2f(x * 16, y * 16 + 16)));
       window->draw(tile);
@@ -500,6 +461,9 @@ void Engine::drawEntities() {
   window->draw(world->player.sprite);
 }
 
+void Engine::drawUI() {
+}
+
 void Engine::doRender() {
   auto win_w = window->getSize().x;
   auto win_h = window->getSize().y;
@@ -509,10 +473,11 @@ void Engine::doRender() {
   window->setView(view);
 
   drawBG(0x6898F8FF);
-  drawBGBottom("athletichills", 1.625, 1.375);
+  drawBGBottom("overworldblockstop", 1.625, 1.375);
   drawBGTop("cloudlayer", 2.625, 1.125);
   drawTiles();
   drawEntities();
+  drawUI();
 
   window->display();
 }
@@ -550,17 +515,42 @@ int Engine::exec() {
   return EXIT_SUCCESS;
 }
 
+bool Engine::setupPhysFS() {
+  PHYSFS_permitSymbolicLinks(true);
+  if (PHYSFS_setSaneConfig("Kha0z", "smb3", nullptr, 0, 0) == 0) {
+    return false;
+  }
+  if (PHYSFS_mount("basesmb3", "", 1) == 0) {
+    return false;
+  }
+  return true;
+}
+
 Engine::Engine(const arglist& args) : args(args), tickRate(64) {
-  window = new sf::RenderWindow(sf::VideoMode(768, 576), "Super Pixel Brawler");
+  if (instance_count == 0) {
+    PHYSFS_init(args.at(0).c_str());
+  }
+  instance_count++;
+
+  setupPhysFS();
+
+  window = new sf::RenderWindow(sf::VideoMode(768, 576), "Starting Kha0z Engine...");
   world = new World(176, 27);
   music = new Music();
   sound = new Sound();
 }
 
 Engine::~Engine() {
-  delete window;
-  delete world;
-  delete music;
-  delete sound;
+  if (instance_count > 0) {
+    if (instance_count == 1) {
+      PHYSFS_deinit();
+    }
+    instance_count--;
+  }
+
+  if (window != nullptr) delete window;
+  if (world  != nullptr) delete world;
+  if (music  != nullptr) delete music;
+  if (sound  != nullptr) delete sound;
 }
 }

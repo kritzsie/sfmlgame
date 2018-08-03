@@ -1,13 +1,10 @@
-#ifndef GEOMETRY_RECT_HPP
-#define GEOMETRY_RECT_HPP
+#pragma once
 
 #include "vec2.hpp"
 
 #include <SFML/Graphics.hpp>
 
-namespace geometry::rect {
-using geometry::vec2::Vec2;
-
+namespace ke {
 template<typename T>
 class Rect {
 public:
@@ -49,9 +46,3 @@ public:
 }
 
 #include "rect.cpp"
-
-namespace keng {
-  using namespace geometry::rect;
-}
-
-#endif // GEOMETRY_RECT_HPP

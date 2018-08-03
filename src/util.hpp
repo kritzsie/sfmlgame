@@ -1,5 +1,4 @@
-#ifndef UTIL_HPP
-#define UTIL_HPP
+#pragma once
 
 #include <string>
 #include <vector>
@@ -11,5 +10,3 @@ namespace util {
 namespace keng {
   using namespace util;
 }
-
-#endif // UTIL_HPP

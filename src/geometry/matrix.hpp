@@ -1,13 +1,10 @@
-#ifndef GEOMETRY_MATRIX_HPP
-#define GEOMETRY_MATRIX_HPP
+#pragma once
 
 #include "vec2.hpp"
 
 #include <cstddef>
 
-namespace geometry::matrix {
-using geometry::vec2::Vec2;
-
+namespace ke {
 template<typename T>
 class Matrix {
 protected:
@@ -33,9 +30,3 @@ public:
   ~Matrix();
 };
 }
-
-namespace keng {
-  using namespace geometry::matrix;
-}
-
-#endif // GEOMETRY_MATRIX_HPP

@@ -1,12 +1,11 @@
-#ifndef SOUND_HPP
-#define SOUND_HPP
+#pragma once
 
 #include <SFML/Audio.hpp>
 
 #include <map>
 #include <string>
 
-namespace sound {
+namespace ke {
 class Sound {
 public:
   static const size_t MAX_VOICES = 32;
@@ -21,9 +20,3 @@ public:
   void stop(const char*);
 };
 }
-
-namespace keng {
-  using namespace sound;
-}
-
-#endif // SOUND_HPP
