@@ -23,11 +23,6 @@ using Vec2f = Vec2<float>;
 
 using arglist = std::vector<std::string>;
 
-struct PhysFSInfo {
-  std::string org;
-  std::string app;
-};
-
 class Engine {
 private:
   static std::size_t instance_count;
@@ -39,12 +34,11 @@ protected:
   float tickTime, tickRate;
   sf::Event event;
   sf::RenderWindow* window;
-  GFXAssetManager gfx;
-  SFXAssetManager sfx;
+  GFXAssetManager gfxassets;
+  SFXAssetManager sfxassets;
   Music* music;
   Sound* sound;
   World* world;
-  PhysFSInfo physfsinfo;
 
   struct Keys {
     class State {

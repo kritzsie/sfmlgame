@@ -69,7 +69,7 @@ bool Engine::init() {
   music->change("overworld");
   music->play();
 
-  world->player.sprite.setTexture(gfx["bigmariowalk_0"]);
+  world->player.sprite.setTexture(gfxassets["bigmariowalk_0"]);
 
   return true;
 }
@@ -152,14 +152,14 @@ void Engine::doTick() {
     }
 
     if (down and not direction) {
-      world->player.sprite.setTexture(gfx["bigmarioduck"], true);
+      world->player.sprite.setTexture(gfxassets["bigmarioduck"], true);
       world->player.offset.x = 7;
       world->player.duck();
     }
     else {
       if (world->player.vel.x > 0
       and direction < 0) {
-        world->player.sprite.setTexture(gfx["bigmarioslip"], true);
+        world->player.sprite.setTexture(gfxassets["bigmarioslip"], true);
         world->player.offset.x = 8;
         if (world->player.sliptime == 0) {
           world->player.sliptime = 0.09375;
@@ -171,7 +171,7 @@ void Engine::doTick() {
       }
       else if (world->player.vel.x < 0
       and direction > 0) {
-        world->player.sprite.setTexture(gfx["bigmarioslip"], true);
+        world->player.sprite.setTexture(gfxassets["bigmarioslip"], true);
         world->player.offset.x = 8;
         if (world->player.sliptime == 0) {
           world->player.sliptime = 0.09375;
@@ -195,7 +195,7 @@ void Engine::doTick() {
           world->player.walktime = 0;
           world->player.walkcycle = 0;
         }
-        world->player.sprite.setTexture(gfx["bigmariowalk_" + std::to_string(world->player.walkcycle < 3 ? world->player.walkcycle : 1)], true);
+        world->player.sprite.setTexture(gfxassets["bigmariowalk_" + std::to_string(world->player.walkcycle < 3 ? world->player.walkcycle : 1)], true);
         world->player.offset.x = world->player.walkcycle ? 9 : 7;
         world->player.sliptime = 0;
       }
@@ -215,7 +215,7 @@ void Engine::doTick() {
       }
     }
     if (not world->player.ducking) {
-      world->player.sprite.setTexture(gfx["bigmariojump"], true);
+      world->player.sprite.setTexture(gfxassets["bigmariojump"], true);
       world->player.offset.x = 8;
     }
   }
@@ -362,7 +362,7 @@ void Engine::drawBG(const char* bg, float distx, float disty) {
   auto win_w = window->getSize().x;
   auto win_h = window->getSize().y;
 
-  const auto& texture = gfx[bg];
+  const auto& texture = gfxassets[bg];
 
   float distdivx = distx / (distx - 1.0f);
   float distdivy = disty / (disty - 1.0f);
@@ -388,7 +388,7 @@ void Engine::drawBGBottom(const char* bg, float distx, float disty) {
   auto win_w = window->getSize().x;
   auto win_h = window->getSize().y;
 
-  const auto& texture = gfx[bg];
+  const auto& texture = gfxassets[bg];
 
   float distdivx = distx / (distx - 1.0f);
   float distdivy = disty / (disty - 1.0f);
@@ -411,7 +411,7 @@ void Engine::drawBGTop(const char* bg, float distx, float disty) {
   auto win_w = window->getSize().x;
   auto win_h = window->getSize().y;
 
-  const auto& texture = gfx[bg];
+  const auto& texture = gfxassets[bg];
 
   float distdivx = distx / (distx - 1.0f);
   float distdivy = disty / (disty - 1.0f);
@@ -442,7 +442,7 @@ void Engine::drawTiles() {
   for (int x = left; x < right; x++) {
     auto tileid = world->getTile(x, y);
     if (tileid) {
-      const sf::Texture& texture = gfx["smb3_atlas"];
+      const sf::Texture& texture = gfxassets["smb3_atlas"];
       int xoffset = (tileid - 1) * 16 % texture.getSize().x;
       int yoffset = ((tileid - 1) / (texture.getSize().x / 16)) * 16 % texture.getSize().y;
       sf::Sprite tile(texture, sf::IntRect(xoffset, yoffset, 16, 16));
