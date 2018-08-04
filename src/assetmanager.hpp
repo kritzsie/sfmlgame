@@ -12,6 +12,9 @@ class AssetManager {
 private:
   std::map<std::string, T> assets;
 
+protected:
+  void onLoad(T&);
+
 public:
   bool load(std::string);
   T& operator [](std::string);

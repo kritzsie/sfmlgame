@@ -11,44 +11,30 @@
 
 namespace ke {
 template<>
-inline bool AssetManager<sf::Texture>::load(std::string key) {
-  std::list<std::string> folders = {"tiles", "sprites", "graphics"};
-  std::list<std::string> extensions = {"png", "bmp", "jpg"};
-  for (auto& dir : folders)
-  for (auto& ext : extensions) {
-    std::string filename = "/" + dir + "/" + key + "." + ext;
-    if (PhysFS::exists(filename)) {
-      sf::Texture texture;
-      PhysFS::ifstream fin(filename);
-      std::size_t size = fin.length();
-      char* data = new char[size];
-      fin.read(data, size);
-      texture.loadFromMemory(data, size);
-      delete[] data;
-      texture.setRepeated(true);
-      assets.emplace(key, texture);
-      return true;
-    }
-  }
-  return false;
+inline void AssetManager<sf::Texture>::onLoad(sf::Texture& texture) {
+  texture.setRepeated(true);
 }
 
 template<>
-inline bool AssetManager<sf::SoundBuffer>::load(std::string key) {
-  std::list<std::string> folders = {"tiles", "sprites", "graphics"};
-  std::list<std::string> extensions = {"png", "bmp", "jpg"};
+inline void AssetManager<sf::SoundBuffer>::onLoad(sf::SoundBuffer& texture) {}
+
+template<typename T>
+bool AssetManager<T>::load(std::string key) {
+  const std::string folders[] = {"tiles", "sprites", "graphics"};
+  const std::string extensions[] = {"png", "bmp", "jpg"};
   for (auto& dir : folders)
   for (auto& ext : extensions) {
     std::string filename = "/" + dir + "/" + key + "." + ext;
     if (PhysFS::exists(filename)) {
-      sf::SoundBuffer sound;
+      T asset;
       PhysFS::ifstream fin(filename);
       std::size_t size = fin.length();
       char* data = new char[size];
       fin.read(data, size);
-      sound.loadFromMemory(data, size);
+      asset.loadFromMemory(data, size);
       delete[] data;
-      assets.emplace(key, sound);
+      onLoad(asset);
+      assets.emplace(key, asset);
       return true;
     }
   }
@@ -67,40 +53,4 @@ T& AssetManager<T>::operator [](std::string key) {
     return assets.at("None");
   }
 }
-
-/*
-bool GFXAssetManager::load(std::string key) {
-  std::list<std::string> folders = {"tiles", "sprites", "graphics"};
-  std::list<std::string> extensions = {"png", "bmp", "jpg"};
-  for (auto& dir : folders)
-  for (auto& ext : extensions) {
-    std::string filename = "/" + dir + "/" + key + "." + ext;
-    if (PhysFS::exists(filename)) {
-      sf::Texture texture;
-      PhysFS::ifstream fin(filename);
-      std::size_t size = fin.length();
-      char* data = new char[size];
-      fin.read(data, size);
-      texture.loadFromMemory(data, size);
-      delete[] data;
-      //texture.setRepeated(true);
-      assets.emplace(key, texture);
-      return true;
-    }
-  }
-  return false;
-}
-
-sf::Texture& GFXAssetManager::operator [](std::string key) {
-  try {
-    return assets.at(key);
-  }
-  catch (std::out_of_range& e) {
-    if (load(key)) {
-      return assets.at(key);
-    }
-    return assets.at("None");
-  }
-}
-*/
 }

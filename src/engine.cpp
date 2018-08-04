@@ -526,7 +526,7 @@ bool Engine::setupPhysFS() {
   return true;
 }
 
-Engine::Engine(const arglist& args) : args(args), tickRate(64) {
+Engine::Engine(arglist args) : args(args), tickRate(64) {
   if (instance_count == 0) {
     PHYSFS_init(args.at(0).c_str());
   }

@@ -77,7 +77,7 @@ protected:
 
 public:
   int exec();
-  Engine(const arglist&);
+  Engine(arglist);
   ~Engine();
 };
 }
