@@ -6,11 +6,8 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+find_package(PhysFS REQUIRED)
 find_package(SFML 2.5 REQUIRED COMPONENTS audio graphics network system window)
-
-find_package(PhysFS)
-include_directories(${PHYSFS_INCLUDE_DIR})
-include_directories(physfs-cpp/include)
 
 set(
   FMT_SOURCES
@@ -19,7 +16,6 @@ set(
   fmt/fmt/posix.cc
   fmt/fmt/printf.cc
 )
-include_directories(fmt)
 
 set(
   SNES_SPC_SOURCES
@@ -31,6 +27,10 @@ set(
   snes_spc-0.9.0/snes_spc/SNES_SPC_misc.cpp
   snes_spc-0.9.0/snes_spc/spc.cpp
 )
+
+include_directories(fmt)
+include_directories(json/include)
+include_directories(physfs-cpp/include)
 include_directories(snes_spc-0.9.0)
 
 add_executable(
@@ -49,6 +49,6 @@ add_executable(
 
 target_link_libraries(
   sfmlgame
-  sfml-audio sfml-graphics sfml-network sfml-system sfml-window
   physfs
+  sfml-audio sfml-graphics sfml-network sfml-system sfml-window
 )
