@@ -28,18 +28,6 @@ private:
   static std::size_t instance_count;
 
 protected:
-  arglist args;
-  uint tick;
-  sf::Clock tickClock;
-  float tickTime, tickRate;
-  sf::Event event;
-  sf::RenderWindow* window;
-  GFXAssetManager gfxassets;
-  SFXAssetManager sfxassets;
-  Music* music;
-  Sound* sound;
-  World* world;
-
   struct Keys {
     class State {
     private:
@@ -60,7 +48,18 @@ protected:
     State jump, run;
   } keys;
 
-  bool init();
+  arglist args;
+  uint tick;
+  sf::Clock tickClock;
+  float tickTime, tickRate;
+  sf::Event event;
+  sf::RenderWindow* window;
+  GFXAssetManager gfxassets;
+  SFXAssetManager sfxassets;
+  Music* music;
+  Sound* sound;
+  World* world;
+
   void resize(Vec2<std::size_t>);
   void onKeyEvent();
   void tickKeys();
@@ -74,10 +73,11 @@ protected:
   void drawUI();
   void doRender();
   bool setupPhysFS();
+  bool init();
 
 public:
   int exec();
-  Engine(arglist);
+  Engine(const arglist&);
   ~Engine();
 };
 }

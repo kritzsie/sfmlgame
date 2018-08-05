@@ -46,32 +46,6 @@ void Engine::Keys::State::resetDelta() {
   delta = 0;
 }
 
-bool Engine::init() {
-  PhysFS::init(args.at(0).c_str());
-
-  window->setTitle("Super Mario Bros. 3");
-
-  if (not world->init()) {
-    return false;
-  }
-  if (not sound->init()) {
-    return false;
-  }
-  if (not music->init()) {
-    return false;
-  }
-
-  tick = 0;
-  tickClock.restart();
-
-  music->change("overworld");
-  music->play();
-
-  world->player.sprite.setTexture(gfxassets["bigmariowalk_0"]);
-
-  return true;
-}
-
 void Engine::resize(Vec2<std::size_t> size) {
   auto width = size.x;
   auto height = size.y;
@@ -482,6 +456,32 @@ void Engine::doRender() {
   window->display();
 }
 
+bool Engine::init() {
+  PhysFS::init(args.at(0).c_str());
+
+  window->create(sf::VideoMode(768, 576), "Super Mario Bros. 3");
+
+  if (not world->init()) {
+    return false;
+  }
+  if (not sound->init()) {
+    return false;
+  }
+  if (not music->init()) {
+    return false;
+  }
+
+  tick = 0;
+  tickClock.restart();
+
+  music->change("overworld");
+  music->play();
+
+  world->player.sprite.setTexture(gfxassets["bigmariowalk_0"]);
+
+  return true;
+}
+
 int Engine::exec() {
   if (not init()) {
     return EXIT_FAILURE;
@@ -526,7 +526,7 @@ bool Engine::setupPhysFS() {
   return true;
 }
 
-Engine::Engine(arglist args) : args(args), tickRate(64) {
+Engine::Engine(const arglist& args) : args(args), tickRate(64) {
   if (instance_count == 0) {
     PHYSFS_init(args.at(0).c_str());
   }
@@ -534,10 +534,10 @@ Engine::Engine(arglist args) : args(args), tickRate(64) {
 
   setupPhysFS();
 
-  window = new sf::RenderWindow(sf::VideoMode(768, 576), "Starting Kha0z Engine...");
+  window = new sf::RenderWindow;
   world = new World(176, 27);
-  music = new Music();
-  sound = new Sound();
+  music = new Music;
+  sound = new Sound;
 }
 
 Engine::~Engine() {
