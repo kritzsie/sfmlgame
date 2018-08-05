@@ -72,7 +72,9 @@ bool Engine::init() {
   return true;
 }
 
-void Engine::resize(size_t width, size_t height) {
+void Engine::resize(Vec2<std::size_t> size) {
+  auto width = size.x;
+  auto height = size.y;
   window->setSize(sf::Vector2u(width, height));
 }
 
@@ -356,14 +358,14 @@ void Engine::drawBG(uint32_t color) {
   window->clear(sf::Color(color));
 }
 
-void Engine::drawBG(const char* bg, float distx, float disty) {
+void Engine::drawBG(std::string bg, Vec2f dist) {
   auto win_w = window->getSize().x;
   auto win_h = window->getSize().y;
 
   const auto& texture = gfxassets[bg];
 
-  float distdivx = distx / (distx - 1.0f);
-  float distdivy = disty / (disty - 1.0f);
+  float distdivx = dist.x / (dist.x - 1.0f);
+  float distdivy = dist.y / (dist.y - 1.0f);
 
   float left = world->camera.pos.x - win_w / 6;
   float bottom = world->camera.pos.y - win_h / 6;
@@ -371,58 +373,58 @@ void Engine::drawBG(const char* bg, float distx, float disty) {
   int sky_h = texture.getSize().y;
   int min_x = left / sky_w;
   int min_y = bottom / sky_h;
-  int max_x = (world->camera.pos.x + win_w * (2 * distx - 1) / 6) / sky_w + distx;
-  int max_y = (world->camera.pos.y + win_h * (2 * disty - 1) / 6) / sky_h + disty;
+  int max_x = (world->camera.pos.x + win_w * (2 * dist.x - 1) / 6) / sky_w + dist.x;
+  int max_y = (world->camera.pos.y + win_h * (2 * dist.y - 1) / 6) / sky_h + dist.y;
 
   sf::Sprite sky(texture);
-  for (int y = floor(min_y / disty); y < floor(max_y / disty) + 1; y++)
-  for (int x = floor(min_x / distx); x < floor(max_x / distx) + 1; x++) {
+  for (int y = floor(min_y / dist.y); y < floor(max_y / dist.y) + 1; y++)
+  for (int x = floor(min_x / dist.x); x < floor(max_x / dist.x) + 1; x++) {
     sky.setPosition(World::toView(Vec2f(x * sky_w + left / distdivx, y * sky_h + sky_h + bottom / distdivy)));
     window->draw(sky);
   }
 }
 
-void Engine::drawBGBottom(const char* bg, float distx, float disty) {
+void Engine::drawBGBottom(std::string bg, Vec2f dist) {
   auto win_w = window->getSize().x;
   auto win_h = window->getSize().y;
 
   const auto& texture = gfxassets[bg];
 
-  float distdivx = distx / (distx - 1.0f);
-  float distdivy = disty / (disty - 1.0f);
+  float distdivx = dist.x / (dist.x - 1.0f);
+  float distdivy = dist.y / (dist.y - 1.0f);
 
   float left = world->camera.pos.x - win_w / 6;
   float bottom = world->camera.pos.y - win_h / 6;
   int sky_w = texture.getSize().x;
   int sky_h = texture.getSize().y;
   int min_x = left / sky_w;
-  int max_x = (world->camera.pos.x + win_w * (2 * distx - 1) / 6) / sky_w + distx;
+  int max_x = (world->camera.pos.x + win_w * (2 * dist.x - 1) / 6) / sky_w + dist.x;
 
   sf::Sprite sky(texture);
-  for (int x = floor(min_x / distx); x < floor(max_x / distx) + 1; x++) {
+  for (int x = floor(min_x / dist.x); x < floor(max_x / dist.x) + 1; x++) {
     sky.setPosition(World::toView(Vec2f(x * sky_w + left / distdivx, sky_h + bottom / distdivy)));
     window->draw(sky);
   }
 }
 
-void Engine::drawBGTop(const char* bg, float distx, float disty) {
+void Engine::drawBGTop(std::string bg, Vec2f dist) {
   auto win_w = window->getSize().x;
   auto win_h = window->getSize().y;
 
   const auto& texture = gfxassets[bg];
 
-  float distdivx = distx / (distx - 1.0f);
-  float distdivy = disty / (disty - 1.0f);
+  float distdivx = dist.x / (dist.x - 1.0f);
+  float distdivy = dist.y / (dist.y - 1.0f);
 
   float left = world->camera.pos.x - win_w / 6;
   float top = world->camera.pos.y + win_h / 6;
   int sky_w = texture.getSize().x;
   int min_x = left / sky_w;
-  int max_x = (world->camera.pos.x + win_w * (2 * distx - 1) / 6) / sky_w + distx;
+  int max_x = (world->camera.pos.x + win_w * (2 * dist.x - 1) / 6) / sky_w + dist.x;
 
   sf::Sprite sky(texture);
-  for (int x = floor(min_x / distx); x < floor(max_x / distx) + 1; x++) {
-    sky.setPosition(World::toView(Vec2f(x * sky_w + left / distdivx, world->size.y * 16 / disty + top / distdivy)));
+  for (int x = floor(min_x / dist.x); x < floor(max_x / dist.x) + 1; x++) {
+    sky.setPosition(World::toView(Vec2f(x * sky_w + left / distdivx, world->size.y * 16 / dist.y + top / distdivy)));
     window->draw(sky);
   }
 }
@@ -471,8 +473,8 @@ void Engine::doRender() {
   window->setView(view);
 
   drawBG(0x6898F8FF);
-  drawBGBottom("overworldblockstop", 1.625, 1.375);
-  drawBGTop("cloudlayer", 2.625, 1.125);
+  drawBGBottom("overworldblockstop", Vec2f(1.625, 1.375));
+  drawBGTop("cloudlayer", Vec2f(2.625, 1.125));
   drawTiles();
   drawEntities();
   drawUI();
@@ -495,7 +497,7 @@ int Engine::exec() {
         window->close();
       }
       else if (event.type == sf::Event::Resized) {
-        resize(event.size.width, event.size.height);
+        resize(Vec2<std::size_t>(event.size.width, event.size.height));
       }
       else if (event.type == sf::Event::KeyPressed
            or  event.type == sf::Event::KeyReleased) {

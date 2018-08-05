@@ -28,7 +28,7 @@ private:
   static std::size_t instance_count;
 
 protected:
-  const arglist& args;
+  arglist args;
   uint tick;
   sf::Clock tickClock;
   float tickTime, tickRate;
@@ -61,14 +61,14 @@ protected:
   } keys;
 
   bool init();
-  void resize(size_t, size_t);
+  void resize(Vec2<std::size_t>);
   void onKeyEvent();
   void tickKeys();
   void doTick();
   void drawBG(uint32_t);
-  void drawBG(const char*, float, float);
-  void drawBGBottom(const char*, float, float);
-  void drawBGTop(const char*, float, float);
+  void drawBG(std::string, Vec2f);
+  void drawBGBottom(std::string, Vec2f);
+  void drawBGTop(std::string, Vec2f);
   void drawTiles();
   void drawEntities();
   void drawUI();
