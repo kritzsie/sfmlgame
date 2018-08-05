@@ -1,7 +1,8 @@
 #include "geometry.hpp"
 #include "world.hpp"
 
-#include <fmt/format.h>
+#include <sstream>
+#include <string>
 
 namespace ke {
 Vec2f World::toView(const Vec2f& vector) {
@@ -20,19 +21,39 @@ Rect<float> World::tileAABB(int x, int y) {
 }
 
 tileid_t& World::getTile(int x, int y) {
-  if (x < size.x)
-    if (y < size.y)
+  if (x < size.x) {
+    if (y < size.y) {
       return tiles[x * size.y + y];
-    else throw std::out_of_range(fmt::format("y index out of bounds ({0} >= {1})", y, size.y));
-  else throw std::out_of_range(fmt::format("x index out of bounds ({0} >= {1})", x, size.x));
+    }
+    else {
+      std::stringstream ss;
+      ss << "y index out of bounds (" << y << " >= " << size.y << ")";
+      throw ss.str();
+    }
+  }
+  else {
+    std::stringstream ss;
+    ss << "x index out of bounds (" << x << " >= " << size.x << ")";
+    throw ss.str();
+  }
 }
 
 void World::setTile(int x, int y, tileid_t tileid) {
-  if (x < size.x)
-    if (y < size.y)
+  if (x < size.x) {
+    if (y < size.y) {
       getTile(x, y) = tileid;
-    else throw std::out_of_range(fmt::format("y index out of bounds ({0} >= {1})", y, size.y));
-  else throw std::out_of_range(fmt::format("x index out of bounds ({0} >= {1})", x, size.x));
+    }
+    else {
+      std::stringstream ss;
+      ss << "y index out of bounds (" << y << " >= " << size.y << ")";
+      throw ss.str();
+    }
+  }
+  else {
+    std::stringstream ss;
+    ss << "x index out of bounds (" << x << " >= " << size.x << ")";
+    throw ss.str();
+  }
 }
 
 bool World::init() {

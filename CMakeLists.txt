@@ -28,14 +28,12 @@ set(
   snes_spc-0.9.0/snes_spc/spc.cpp
 )
 
-include_directories(fmt)
 include_directories(json/include)
 include_directories(physfs-cpp/include)
 include_directories(snes_spc-0.9.0)
 
 add_executable(
   sfmlgame
-  ${FMT_SOURCES}
   ${SNES_SPC_SOURCES}
   physfs-cpp/src/physfs.cpp
   src/engine.cpp
