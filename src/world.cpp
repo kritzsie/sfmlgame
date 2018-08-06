@@ -1,5 +1,6 @@
-#include "geometry.hpp"
 #include "world.hpp"
+
+#include "geometry.hpp"
 
 #include <sstream>
 #include <string>

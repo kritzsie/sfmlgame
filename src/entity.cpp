@@ -1,4 +1,5 @@
 #include "entity.hpp"
+
 #include "geometry.hpp"
 #include "types.hpp"
 

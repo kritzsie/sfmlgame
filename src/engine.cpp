@@ -1,4 +1,5 @@
 #include "engine.hpp"
+
 #include "assetmanager.hpp"
 #include "geometry.hpp"
 #include "types.hpp"
@@ -287,7 +288,7 @@ void Engine::doTick() {
     }
   }
 
-  world->camera.vel = (world->player.pos + Vec2f(0, world->player.height / 2) - world->camera.pos) * tickRate / 8;
+  world->camera.vel = (world->player.pos + Vec2f(0, world->player.height / 2) - world->camera.pos) * tickRate / 8.0f;
 
   world->camera.pos += world->camera.vel / tickRate;
 
