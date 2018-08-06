@@ -5,28 +5,37 @@
 #include <cstddef>
 
 namespace ke {
+using Vec2i = Vec2<int>;
 template<typename T>
 class Matrix {
 protected:
   class Proxy {
   private:
+    T* const data;
+    const Vec2i& size;
     const int x;
-    const T* const data;
-    const Vec2<size_t>& size;
 
   public:
-    T& operator[](int) const;
+    T& operator[](int);
 
-    Proxy(const T* const, const Vec2<size_t>&, int);
+    Proxy(T* const, const Vec2i&, int);
   };
 
+public:
+  const Vec2i size;
+
+private:
   T* data;
 
 public:
-  const Vec2<size_t> size;
-
   Proxy operator[](int);
-  Matrix(size_t, size_t);
+
+  operator bool();
+
+  Matrix(Vec2i);
+  Matrix(int, int);
   ~Matrix();
 };
 }
+
+#include "matrix.cpp"
