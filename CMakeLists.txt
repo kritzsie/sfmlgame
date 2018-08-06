@@ -36,10 +36,12 @@ add_executable(
   sfmlgame
   ${SNES_SPC_SOURCES}
   physfs-cpp/src/physfs.cpp
+  src/assetmanager.cpp
   src/engine.cpp
   src/entity.cpp
   src/music.cpp
   src/sound.cpp
+  src/tile.cpp
   src/util.cpp
   src/world.cpp
   src/main.cpp

@@ -20,8 +20,9 @@ public:
   T& operator [](std::string);
 };
 
+template class AssetManager<sf::Texture>;
+template class AssetManager<sf::SoundBuffer>;
+
 using GFXAssetManager = AssetManager<sf::Texture>;
 using SFXAssetManager = AssetManager<sf::SoundBuffer>;
 }
-
-#include "assetmanager.cpp"
