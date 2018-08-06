@@ -89,6 +89,11 @@ Rect<T>& Rect<T>::operator/=(T n) {
 }
 
 template<typename T>
+Rect<T>::operator bool() const {
+  return static_cast<bool>(pos) and static_cast<bool>(size);
+}
+
+template<typename T>
 Rect<T>::operator sf::Rect<T>() const {
   return sf::Rect<T>(pos, size);
 }

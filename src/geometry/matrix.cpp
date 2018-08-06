@@ -1,7 +1,5 @@
 #include "matrix.hpp"
 
-#include "vec2.hpp"
-
 #include <cstddef>
 
 namespace ke {

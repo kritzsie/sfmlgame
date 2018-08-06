@@ -117,6 +117,11 @@ Vec2<T> Vec2<T>::map(T (&f)(T, T), T rhs) {
 }
 
 template<typename T>
+Vec2<T>::operator bool() const {
+  return static_cast<bool>(x) or static_cast<bool>(y);
+}
+
+template<typename T>
 Vec2<T>::operator sf::Vector2<T>() const {
   return sf::Vector2<T>(x, y);
 }

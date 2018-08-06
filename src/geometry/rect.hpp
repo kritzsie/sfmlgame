@@ -32,6 +32,7 @@ public:
   Rect<T>& operator*=(T);
   Rect<T>& operator/=(T);
 
+  operator bool() const;
   operator sf::Rect<T>() const;
 
   bool intersects(const Rect<T>&) const;

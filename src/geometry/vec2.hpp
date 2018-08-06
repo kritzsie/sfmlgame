@@ -31,6 +31,7 @@ public:
   Vec2 map(T (&)(T));
   Vec2 map(T (&)(T, T), T);
 
+  operator bool() const;
   operator sf::Vector2<T>() const;
 
   Vec2();
