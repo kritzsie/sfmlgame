@@ -36,10 +36,11 @@ public:
   SPC spc;
   std::vector<short> buffer;
 
-  virtual bool onGetData(Chunk&);
-  virtual void onSeek(sf::Time);
+  bool onGetData(Chunk&);
+  void onSeek(sf::Time);
 
   SPCStream(std::size_t, std::size_t);
+  ~SPCStream();
 };
 
 class Music {
@@ -48,7 +49,7 @@ public:
   std::map<std::string, std::vector<char>> songs;
 
   bool init();
-  bool change(const char*);
+  bool change(std::string);
   void play();
   void pause();
   void resume();

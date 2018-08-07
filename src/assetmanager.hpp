@@ -1,5 +1,7 @@
 #pragma once
 
+#include <physfs.h>
+
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
 
@@ -7,22 +9,42 @@
 #include <string>
 
 namespace ke {
-template<typename T>
-class AssetManager {
-private:
-  std::map<std::string, T> assets;
+std::vector<char> readfile(std::string);
 
-protected:
-  void onLoad(T&);
+class GFXAssetManager {
+public:
+  static const std::string extensions[];
+  static sf::Texture none;
+
+private:
+  std::map<std::string, sf::Texture> sprites, textures, tiles;
+
+  bool load(std::string, std::string);
+  bool load(std::string, std::string, std::map<std::string, sf::Texture>&);
 
 public:
-  bool load(std::string);
-  T& operator [](std::string);
+  bool loadSprite(std::string);
+  bool loadTexture(std::string);
+  bool loadTile(std::string);
+
+  sf::Texture& getSprite(std::string);
+  sf::Texture& getTexture(std::string);
+  sf::Texture& getTile(std::string);
 };
 
-template class AssetManager<sf::Texture>;
-template class AssetManager<sf::SoundBuffer>;
+class SFXAssetManager {
+public:
+  static const std::string extensions[];
+  static sf::SoundBuffer none;
 
-using GFXAssetManager = AssetManager<sf::Texture>;
-using SFXAssetManager = AssetManager<sf::SoundBuffer>;
+private:
+  std::map<std::string, sf::SoundBuffer> sounds;
+
+  bool load(std::string, std::string);
+
+public:
+  bool loadSound(std::string);
+
+  sf::SoundBuffer& getSound(std::string);
+};
 }

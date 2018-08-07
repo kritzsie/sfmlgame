@@ -127,14 +127,14 @@ void Engine::doTick() {
     }
 
     if (down and not direction) {
-      world->player.sprite.setTexture(gfxassets["bigmarioduck"], true);
+      world->player.sprite.setTexture(gfxassets.getSprite("bigmarioduck"), true);
       world->player.offset.x = 7;
       world->player.duck();
     }
     else {
       if (world->player.vel.x > 0
       and direction < 0) {
-        world->player.sprite.setTexture(gfxassets["bigmarioslip"], true);
+        world->player.sprite.setTexture(gfxassets.getSprite("bigmarioslip"), true);
         world->player.offset.x = 8;
         if (world->player.sliptime == 0) {
           world->player.sliptime = 0.09375;
@@ -146,7 +146,7 @@ void Engine::doTick() {
       }
       else if (world->player.vel.x < 0
       and direction > 0) {
-        world->player.sprite.setTexture(gfxassets["bigmarioslip"], true);
+        world->player.sprite.setTexture(gfxassets.getSprite("bigmarioslip"), true);
         world->player.offset.x = 8;
         if (world->player.sliptime == 0) {
           world->player.sliptime = 0.09375;
@@ -170,7 +170,7 @@ void Engine::doTick() {
           world->player.walktime = 0;
           world->player.walkcycle = 0;
         }
-        world->player.sprite.setTexture(gfxassets["bigmariowalk_" + std::to_string(world->player.walkcycle < 3 ? world->player.walkcycle : 1)], true);
+        world->player.sprite.setTexture(gfxassets.getSprite("bigmariowalk_" + std::to_string(world->player.walkcycle < 3 ? world->player.walkcycle : 1)), true);
         world->player.offset.x = world->player.walkcycle ? 9 : 7;
         world->player.sliptime = 0;
       }
@@ -190,7 +190,7 @@ void Engine::doTick() {
       }
     }
     if (not world->player.ducking) {
-      world->player.sprite.setTexture(gfxassets["bigmariojump"], true);
+      world->player.sprite.setTexture(gfxassets.getSprite("bigmariojump"), true);
       world->player.offset.x = 8;
     }
   }
@@ -337,7 +337,7 @@ void Engine::drawBG(std::string bg, Vec2f dist) {
   auto win_w = window->getSize().x;
   auto win_h = window->getSize().y;
 
-  const auto& texture = gfxassets[bg];
+  const auto& texture = gfxassets.getTexture(bg);
 
   float distdivx = dist.x / (dist.x - 1.0f);
   float distdivy = dist.y / (dist.y - 1.0f);
@@ -363,7 +363,7 @@ void Engine::drawBGBottom(std::string bg, Vec2f dist) {
   auto win_w = window->getSize().x;
   auto win_h = window->getSize().y;
 
-  const auto& texture = gfxassets[bg];
+  const auto& texture = gfxassets.getTexture(bg);
 
   float distdivx = dist.x / (dist.x - 1.0f);
   float distdivy = dist.y / (dist.y - 1.0f);
@@ -386,7 +386,7 @@ void Engine::drawBGTop(std::string bg, Vec2f dist) {
   auto win_w = window->getSize().x;
   auto win_h = window->getSize().y;
 
-  const auto& texture = gfxassets[bg];
+  const auto& texture = gfxassets.getTexture(bg);
 
   float distdivx = dist.x / (dist.x - 1.0f);
   float distdivy = dist.y / (dist.y - 1.0f);
@@ -417,7 +417,7 @@ void Engine::drawTiles() {
   for (int x = left; x < right; x++) {
     auto tileid = world->getTile(x, y);
     if (tileid) {
-      const sf::Texture& texture = gfxassets["smb3_atlas"];
+      const sf::Texture& texture = gfxassets.getTile("smb3_atlas");
       int xoffset = (tileid - 1) * 16 % texture.getSize().x;
       int yoffset = ((tileid - 1) / (texture.getSize().x / 16)) * 16 % texture.getSize().y;
       sf::Sprite tile(texture, sf::IntRect(xoffset, yoffset, 16, 16));
@@ -478,7 +478,7 @@ bool Engine::init() {
   music->change("overworld");
   music->play();
 
-  world->player.sprite.setTexture(gfxassets["bigmariowalk_0"]);
+  world->player.sprite.setTexture(gfxassets.getSprite("bigmariowalk_0"));
 
   return true;
 }
@@ -521,7 +521,15 @@ bool Engine::setupPhysFS() {
   if (PHYSFS_setSaneConfig("Kha0z", "smb3", nullptr, 0, 0) == 0) {
     return false;
   }
-  if (PHYSFS_mount("basesmb3", "", 1) == 0) {
+  if (PHYSFS_mount("basesmb3", "/games/basesmb3", 1)) {
+    PHYSFS_mount("basesmb3/maps", "/maps", 1);
+    PHYSFS_mount("basesmb3/music", "/music", 1);
+    PHYSFS_mount("basesmb3/sound", "/sounds", 1);
+    PHYSFS_mount("basesmb3/sprites", "/sprites", 1);
+    PHYSFS_mount("basesmb3/textures", "/textures", 1);
+    PHYSFS_mount("basesmb3/tiles", "/tiles", 1);
+  }
+  else {
     return false;
   }
   return true;
@@ -531,7 +539,12 @@ Engine::Engine(const arglist& args) : args(args), tickRate(64) {
   if (instance_count == 0) {
     PHYSFS_init(args.at(0).c_str());
   }
-  instance_count++;
+  if (PHYSFS_isInit()) {
+    instance_count++;
+  }
+  else {
+    throw std::runtime_error(PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
+  }
 
   setupPhysFS();
 

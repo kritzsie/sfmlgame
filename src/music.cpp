@@ -47,6 +47,12 @@ SPCStream::SPCStream(std::size_t bufsize, std::size_t channels) : buffer(bufsize
   initialize(channels, 32000);
 }
 
+SPCStream::~SPCStream() {
+  if (getStatus() == sf::SoundSource::Status::Playing) {
+    stop();
+  }
+}
+
 bool Music::init() {
   songs.emplace("athletic", std::vector<char>());
   songs.emplace("overworld", std::vector<char>());
@@ -66,7 +72,7 @@ bool Music::init() {
   return true;
 }
 
-bool Music::change(const char* song_id) {
+bool Music::change(std::string song_id) {
   if (stream.spc.load_spc(songs.at(song_id))) {
     return false;
   }
