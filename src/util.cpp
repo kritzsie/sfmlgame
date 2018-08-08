@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-namespace util {
+namespace ke::util {
   std::vector<char> load_file(std::string name) {
     std::ifstream file(name, std::ios::binary | std::ios::ate);
     if (file.fail()) {

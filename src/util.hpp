@@ -3,10 +3,6 @@
 #include <string>
 #include <vector>
 
-namespace util {
+namespace ke::util {
   std::vector<char> load_file(std::string);
-}
-
-namespace keng {
-  using namespace util;
 }
