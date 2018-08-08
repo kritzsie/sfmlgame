@@ -1,6 +1,6 @@
 #include "assetmanager.hpp"
 
-#include <physfs.hpp>
+#include <physfs.h>
 
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
@@ -10,8 +10,13 @@
 #include <string>
 
 namespace ke {
-const std::string GFXAssetManager::extensions[] = {"hdr", "png", "psd", "tga", "gif", "bmp", "pic", "jpg", "jpeg"};
-const std::string SFXAssetManager::extensions[] = {"flac", "wav", "ogg"};
+const std::string GFXAssetManager::extensions[] = {
+  "hdr", "png", "psd", "tga", "gif", "bmp", "pic", "jpg", "jpeg"
+};
+
+const std::string SFXAssetManager::extensions[] = {
+  "flac", "wav", "ogg"
+};
 
 sf::Texture     GFXAssetManager::none = sf::Texture();
 sf::SoundBuffer SFXAssetManager::none = sf::SoundBuffer();
@@ -30,9 +35,7 @@ std::vector<char> readfile(std::string path) {
   return std::vector<char>(data, data + size);
 }
 
-bool GFXAssetManager::load(std::string dir, std::string name,
-                           std::map<std::string, sf::Texture>& container)
-{
+bool GFXAssetManager::load(std::string dir, std::string name, std::map<std::string, sf::Texture>& container) {
   for (auto& ext : extensions) {
     std::string path = dir + "/" + name + "." + ext;
     if (PHYSFS_exists(path.c_str())) {

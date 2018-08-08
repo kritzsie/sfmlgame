@@ -60,7 +60,7 @@ bool Music::init() {
   songs.emplace("underworld", std::vector<char>());
 
   for (auto& it : songs) {
-    std::vector<char> song = util::load_file("assets/music/" + it.first + ".spc");
+    std::vector<char> song = util::load_file("basesmb3/music/" + it.first + ".spc");
     if (song.size()) {
       it.second = song;
     }

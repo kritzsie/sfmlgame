@@ -5,7 +5,7 @@
 #include "types.hpp"
 #include "world.hpp"
 
-#include <physfs.hpp>
+#include <physfs.h>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
@@ -436,8 +436,7 @@ void Engine::drawEntities() {
   window->draw(world->player.sprite);
 }
 
-void Engine::drawUI() {
-}
+void Engine::drawUI() {}
 
 void Engine::doRender() {
   auto win_w = window->getSize().x;
@@ -458,8 +457,6 @@ void Engine::doRender() {
 }
 
 bool Engine::init() {
-  PhysFS::init(args.at(0).c_str());
-
   window->create(sf::VideoMode(768, 576), "Super Mario Bros. 3");
 
   if (not world->init()) {
