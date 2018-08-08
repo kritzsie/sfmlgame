@@ -9,8 +9,6 @@
 #include <string>
 
 namespace ke {
-std::vector<char> readfile(std::string);
-
 class GFXAssetManager {
 public:
   static const std::string extensions[];

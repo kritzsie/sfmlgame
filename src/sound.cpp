@@ -5,64 +5,97 @@
 #include <cstddef>
 
 namespace ke {
-bool Sound::init() {
-  sounds.emplace("brickshatter", sf::SoundBuffer());
-  sounds.emplace("jump", sf::SoundBuffer());
-  sounds.emplace("pause", sf::SoundBuffer());
-  sounds.emplace("slip", sf::SoundBuffer());
+bool Sound::play(std::size_t voice_id, std::string name) {
+  const sf::SoundBuffer& sound = sfxassets.getSound(name);
+  sf::Sound& voice = voices[voice_id];
 
-  for (auto& it : sounds) {
-    if (not it.second.loadFromFile("assets/sounds/" + it.first + ".wav")) {
-      return false;
-    }
+  if (voice.getBuffer() == &sound) {
+    voice.play();
+    return true;
+  }
+  else if (voice.getStatus() == sf::SoundSource::Status::Stopped) {
+    voice.setBuffer(sound);
+    voice.play();
+    return true;
   }
 
-  return true;
+  return false;
 }
 
-void Sound::play(const char* snd_id) {
-  const auto& cur_snd = sounds.at(snd_id);
+std::size_t Sound::play(std::string name) {
+  const sf::SoundBuffer& sound = sfxassets.getSound(name);
 
-  for (size_t i = 0; i < MAX_VOICES - 1; i++) {
-    if (voices[i].getBuffer() == &cur_snd) {
-      voices[i].play();
-      return;
-    }
-    else if (voices[i].getStatus() == sf::SoundSource::Status::Stopped) {
-      voices[i].setBuffer(cur_snd);
-      voices[i].play();
-      return;
+  for (std::size_t i = 0; i < MAX_VOICES - 1; i++) {
+    if (play(i, name)) {
+      return i;
     }
   }
 
-  if (voices[MAX_VOICES - 1].getBuffer() != &cur_snd) {
-    voices[MAX_VOICES - 1].setBuffer(cur_snd);
+  if (voices[MAX_VOICES - 1].getBuffer() != &sound) {
+    voices[MAX_VOICES - 1].setBuffer(sound);
   }
   voices[MAX_VOICES - 1].play();
+  return MAX_VOICES - 1;
 }
 
-void Sound::pause() {
-  for (size_t i = 0; i < MAX_VOICES; i++) {
-    voices[i].pause();
+bool Sound::pause(std::size_t voice_id) {
+  sf::Sound& voice = voices[voice_id];
+  if (voice.getStatus() != sf::SoundSource::Status::Paused) {
+    voice.pause();
+    return true;
   }
+  return false;
 }
 
-void Sound::resume() {
-  for (size_t i = 0; i < MAX_VOICES; i++) {
-    if (voices[i].getStatus() == sf::SoundSource::Status::Paused) {
-      voices[i].play();
+std::size_t Sound::pause() {
+  std::size_t count = 0;
+  for (std::size_t i = 0; i < MAX_VOICES; i++) {
+    if (pause(i)) {
+      count++;
     }
   }
+  return count;
 }
 
-void Sound::stop(const char* snd_id) {
-  const auto& cur_snd = sounds.at(snd_id);
+bool Sound::resume(std::size_t voice_id) {
+  sf::Sound& voice = voices[voice_id];
+  if (voice.getStatus() == sf::SoundSource::Status::Paused) {
+    voice.play();
+    return true;
+  }
+  return false;
+}
 
-  for (size_t i = 0; i < MAX_VOICES; i++) {
-    if (voices[i].getBuffer() == &cur_snd) {
-      voices[i].stop();
-      break;
+std::size_t Sound::resume() {
+  std::size_t count = 0;
+  for (std::size_t i = 0; i < MAX_VOICES; i++) {
+    if (resume(i)) {
+      count++;
     }
   }
+  return count;
 }
+
+bool Sound::stop(std::size_t voice_id) {
+  sf::Sound& voice = voices[voice_id];
+  if (voice.getStatus() != sf::SoundSource::Status::Stopped) {
+    voice.stop();
+    return true;
+  }
+  return false;
+}
+
+std::size_t Sound::stop() {
+  std::size_t count = 0;
+  for (std::size_t i = 0; i < MAX_VOICES; i++) {
+    if (stop(i)) {
+      count++;
+    }
+  }
+  return count;
+}
+
+Sound::Sound(SFXAssetManager& assetmanager) :
+  sfxassets(assetmanager)
+{}
 }

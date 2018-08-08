@@ -1,5 +1,7 @@
 #include "assetmanager.hpp"
 
+#include "util.hpp"
+
 #include <physfs.h>
 
 #include <SFML/Audio.hpp>
@@ -21,25 +23,11 @@ const std::string SFXAssetManager::extensions[] = {
 sf::Texture     GFXAssetManager::none = sf::Texture();
 sf::SoundBuffer SFXAssetManager::none = sf::SoundBuffer();
 
-std::vector<char> readfile(std::string path) {
-  PHYSFS_File* file = PHYSFS_openRead(path.c_str());
-  std::size_t size = PHYSFS_fileLength(file);
-  char* data = new char[size];
-  if (file == nullptr) {
-    std::stringstream ss;
-    ss << PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode());
-    throw std::runtime_error(ss.str());
-  }
-  PHYSFS_readBytes(file, data, size);
-  PHYSFS_close(file);
-  return std::vector<char>(data, data + size);
-}
-
 bool GFXAssetManager::load(std::string dir, std::string name, std::map<std::string, sf::Texture>& container) {
   for (auto& ext : extensions) {
     std::string path = dir + "/" + name + "." + ext;
     if (PHYSFS_exists(path.c_str())) {
-      std::vector<char> file = readfile(path);
+      std::vector<char> file = util::readFile(path);
       sf::Texture texture;
       texture.loadFromMemory(file.data(), file.size());
       container.emplace(name, texture);
@@ -135,7 +123,7 @@ bool SFXAssetManager::load(std::string dir, std::string name) {
   for (auto& ext : extensions) {
     std::string path = dir + "/" + name + "." + ext;
     if (PHYSFS_exists(path.c_str())) {
-      std::vector<char> file = readfile(path);
+      std::vector<char> file = util::readFile(path);
       sf::SoundBuffer sound;
       sound.loadFromMemory(file.data(), file.size());
       sounds.emplace(name, sound);

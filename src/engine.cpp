@@ -462,12 +462,6 @@ bool Engine::init() {
   if (not world->init()) {
     return false;
   }
-  if (not sound->init()) {
-    return false;
-  }
-  if (not music->init()) {
-    return false;
-  }
 
   tick = 0;
   tickClock.restart();
@@ -521,7 +515,7 @@ bool Engine::setupPhysFS() {
   if (PHYSFS_mount("basesmb3", "/games/basesmb3", 1)) {
     PHYSFS_mount("basesmb3/maps", "/maps", 1);
     PHYSFS_mount("basesmb3/music", "/music", 1);
-    PHYSFS_mount("basesmb3/sound", "/sounds", 1);
+    PHYSFS_mount("basesmb3/sounds", "/sounds", 1);
     PHYSFS_mount("basesmb3/sprites", "/sprites", 1);
     PHYSFS_mount("basesmb3/textures", "/textures", 1);
     PHYSFS_mount("basesmb3/tiles", "/tiles", 1);
@@ -545,10 +539,10 @@ Engine::Engine(const arglist& args) : args(args), tickRate(64) {
 
   setupPhysFS();
 
-  window = new sf::RenderWindow;
+  window = new sf::RenderWindow();
   world = new World(176, 27);
-  music = new Music;
-  sound = new Sound;
+  music = new Music();
+  sound = new Sound(sfxassets);
 }
 
 Engine::~Engine() {

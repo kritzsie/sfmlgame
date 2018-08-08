@@ -22,7 +22,7 @@ private:
   SNES_SPC* snes_spc;
 
 public:
-  spc_err_t load_spc(std::vector<char>);
+  spc_err_t load_spc(const std::vector<char>&);
   spc_err_t play(std::vector<short>&);
   void reset();
   void soft_reset();
@@ -32,23 +32,25 @@ public:
 };
 
 class SPCStream : public sf::SoundStream {
+private:
+  std::vector<short> buffer;
+
 public:
   SPC spc;
-  std::vector<short> buffer;
 
   bool onGetData(Chunk&);
   void onSeek(sf::Time);
 
+  SPCStream();
   SPCStream(std::size_t, std::size_t);
   ~SPCStream();
 };
 
 class Music {
-public:
+private:
   SPCStream stream;
-  std::map<std::string, std::vector<char>> songs;
 
-  bool init();
+public:
   bool change(std::string);
   void play();
   void pause();

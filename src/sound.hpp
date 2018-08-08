@@ -1,5 +1,7 @@
 #pragma once
 
+#include "assetmanager.hpp"
+
 #include <SFML/Audio.hpp>
 
 #include <map>
@@ -8,15 +10,22 @@
 namespace ke {
 class Sound {
 public:
-  static const size_t MAX_VOICES = 32;
+  static const std::size_t MAX_VOICES = 32;
 
+private:
+  SFXAssetManager& sfxassets;
   sf::Sound voices[MAX_VOICES];
-  std::map<std::string, sf::SoundBuffer> sounds;
 
-  bool init();
-  void play(const char*);
-  void pause();
-  void resume();
-  void stop(const char*);
+public:
+  bool play(std::size_t, std::string);
+  std::size_t play(std::string);
+  bool pause(std::size_t);
+  std::size_t pause();
+  bool resume(std::size_t);
+  std::size_t resume();
+  bool stop(std::size_t);
+  std::size_t stop();
+
+  Sound(SFXAssetManager&);
 };
 }

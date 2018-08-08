@@ -1,4 +1,5 @@
 #include "music.hpp"
+
 #include "util.hpp"
 
 #include <snes_spc/spc.h>
@@ -8,7 +9,7 @@
 #include <vector>
 
 namespace ke {
-spc_err_t SPC::load_spc(std::vector<char> spc) {
+spc_err_t SPC::load_spc(const std::vector<char>& spc) {
   return spc_load_spc(snes_spc, spc.data(), spc.size());
 }
 
@@ -47,33 +48,18 @@ SPCStream::SPCStream(std::size_t bufsize, std::size_t channels) : buffer(bufsize
   initialize(channels, 32000);
 }
 
+SPCStream::SPCStream() : SPCStream(2048, 2) {}
+
 SPCStream::~SPCStream() {
   if (getStatus() == sf::SoundSource::Status::Playing) {
     stop();
   }
 }
 
-bool Music::init() {
-  songs.emplace("athletic", std::vector<char>());
-  songs.emplace("overworld", std::vector<char>());
-  songs.emplace("playerdown", std::vector<char>());
-  songs.emplace("underworld", std::vector<char>());
+bool Music::change(std::string name) {
+  std::string path = "/music/" + name + ".spc";
 
-  for (auto& it : songs) {
-    std::vector<char> song = util::load_file("basesmb3/music/" + it.first + ".spc");
-    if (song.size()) {
-      it.second = song;
-    }
-    else {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-bool Music::change(std::string song_id) {
-  if (stream.spc.load_spc(songs.at(song_id))) {
+  if (stream.spc.load_spc(util::readFile(path))) {
     return false;
   }
 
@@ -98,5 +84,5 @@ void Music::stop() {
   stream.stop();
 }
 
-Music::Music() : stream(2048, 2) {}
+Music::Music() : stream() {}
 }

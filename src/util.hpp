@@ -4,5 +4,5 @@
 #include <vector>
 
 namespace ke::util {
-  std::vector<char> load_file(std::string);
+std::vector<char> readFile(std::string);
 }
