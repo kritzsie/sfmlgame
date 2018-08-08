@@ -1,6 +1,3 @@
 [submodule "json"]
 	path = json
 	url = https://github.com/taocpp/json.git
-[submodule "physfs-cpp"]
-	path = physfs-cpp
-	url = https://github.com/kahowell/physfs-cpp.git
