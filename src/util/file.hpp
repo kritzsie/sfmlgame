@@ -17,12 +17,12 @@ private:
 
 public:
   bool open(std::string);
-  virtual sf::Int64 read(void*, sf::Int64);
-  virtual sf::Int64 seek(sf::Int64);
-  virtual sf::Int64 tell();
-  virtual sf::Int64 getSize();
+  virtual sf::Int64 read(void*, sf::Int64) override;
+  virtual sf::Int64 seek(sf::Int64) override;
+  virtual sf::Int64 tell() override;
+  virtual sf::Int64 getSize() override;
 
   FileInputStream();
-  virtual ~FileInputStream();
+  virtual ~FileInputStream() override;
 };
 }
