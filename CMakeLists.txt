@@ -34,13 +34,13 @@ include_directories(snes_spc-0.9.0)
 add_executable(
   sfmlgame
   ${SNES_SPC_SOURCES}
+  src/util/file.cpp
   src/assetmanager.cpp
   src/engine.cpp
   src/entity.cpp
   src/music.cpp
   src/renderer.cpp
   src/sound.cpp
-  src/util.cpp
   src/world.cpp
   src/main.cpp
 )

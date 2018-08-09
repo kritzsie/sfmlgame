@@ -27,14 +27,18 @@ bool GFXAssetManager::load(std::string dir, std::string name, std::map<std::stri
   for (auto& ext : extensions) {
     std::string path = dir + "/" + (ext.size() ? name + "." + ext : name);
     if (PHYSFS_exists(path.c_str())) {
-      std::vector<char> file = util::readFile(path);
       sf::Texture texture;
-      texture.loadFromMemory(file.data(), file.size());
+      util::FileInputStream filestream;
+
+      filestream.open(path);
+      texture.loadFromStream(filestream);
       texture.setRepeated(true);
       container.emplace(name, texture);
+
       return true;
     }
   }
+
   return false;
 }
 
@@ -124,13 +128,17 @@ bool SFXAssetManager::load(std::string dir, std::string name) {
   for (auto& ext : extensions) {
     std::string path = dir + "/" + (ext.size() ? name + "." + ext : name);
     if (PHYSFS_exists(path.c_str())) {
-      std::vector<char> file = util::readFile(path);
+      util::FileInputStream filestream;
       sf::SoundBuffer sound;
-      sound.loadFromMemory(file.data(), file.size());
+
+      filestream.open(path);
+      sound.loadFromStream(filestream);
       sounds.emplace(name, sound);
+
       return true;
     }
   }
+
   return false;
 }
 
