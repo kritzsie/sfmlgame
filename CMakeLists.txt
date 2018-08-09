@@ -40,7 +40,6 @@ add_executable(
   src/music.cpp
   src/renderer.cpp
   src/sound.cpp
-  src/tile.cpp
   src/util.cpp
   src/world.cpp
   src/main.cpp
