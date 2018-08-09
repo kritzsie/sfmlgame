@@ -13,11 +13,11 @@
 
 namespace ke {
 const std::string GFXAssetManager::extensions[] = {
-  "hdr", "png", "psd", "tga", "gif", "bmp", "pic", "jpg", "jpeg"
+  "hdr", "png", "psd", "tga", "gif", "bmp", "pic", "jpg", "jpeg", ""
 };
 
 const std::string SFXAssetManager::extensions[] = {
-  "flac", "wav", "ogg"
+  "flac", "wav", "ogg", ""
 };
 
 sf::Texture     GFXAssetManager::none = sf::Texture();
@@ -25,11 +25,12 @@ sf::SoundBuffer SFXAssetManager::none = sf::SoundBuffer();
 
 bool GFXAssetManager::load(std::string dir, std::string name, std::map<std::string, sf::Texture>& container) {
   for (auto& ext : extensions) {
-    std::string path = dir + "/" + name + "." + ext;
+    std::string path = dir + "/" + (ext.size() ? name + "." + ext : name);
     if (PHYSFS_exists(path.c_str())) {
       std::vector<char> file = util::readFile(path);
       sf::Texture texture;
       texture.loadFromMemory(file.data(), file.size());
+      texture.setRepeated(true);
       container.emplace(name, texture);
       return true;
     }
@@ -121,7 +122,7 @@ sf::Texture& GFXAssetManager::getTile(std::string name) {
 
 bool SFXAssetManager::load(std::string dir, std::string name) {
   for (auto& ext : extensions) {
-    std::string path = dir + "/" + name + "." + ext;
+    std::string path = dir + "/" + (ext.size() ? name + "." + ext : name);
     if (PHYSFS_exists(path.c_str())) {
       std::vector<char> file = util::readFile(path);
       sf::SoundBuffer sound;
