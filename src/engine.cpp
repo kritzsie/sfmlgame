@@ -417,7 +417,7 @@ void Engine::drawTiles() {
   for (int x = left; x < right; x++) {
     auto tileid = world->getTile(x, y);
     if (tileid) {
-      const sf::Texture& texture = gfxassets.getTile("smb3_atlas");
+      const sf::Texture& texture = gfxassets.getTile("smb3_tile_atlas");
       int xoffset = (tileid - 1) * 16 % texture.getSize().x;
       int yoffset = ((tileid - 1) / (texture.getSize().x / 16)) * 16 % texture.getSize().y;
       sf::Sprite tile(texture, sf::IntRect(xoffset, yoffset, 16, 16));
