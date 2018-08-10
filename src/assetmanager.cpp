@@ -59,6 +59,10 @@ bool GFXAssetManager::loadTile(std::string name) {
 }
 
 sf::Texture& GFXAssetManager::getSprite(std::string name) {
+  if (name == "") {
+    return none;
+  }
+
   try {
     return sprites.at(name);
   }
@@ -90,6 +94,10 @@ sf::Texture& GFXAssetManager::getSprite(std::string name) {
 }
 
 sf::Texture& GFXAssetManager::getTexture(std::string name) {
+  if (name == "") {
+    return none;
+  }
+
   try {
     return textures.at(name);
   }
@@ -103,6 +111,10 @@ sf::Texture& GFXAssetManager::getTexture(std::string name) {
 }
 
 sf::Texture& GFXAssetManager::getTile(std::string name) {
+  if (name == "") {
+    return none;
+  }
+
   try {
     return tiles.at(name);
   }
@@ -147,6 +159,10 @@ bool SFXAssetManager::loadSound(std::string name) {
 }
 
 sf::SoundBuffer& SFXAssetManager::getSound(std::string name) {
+  if (name == "") {
+    return none;
+  }
+
   try {
     return sounds.at(name);
   }
