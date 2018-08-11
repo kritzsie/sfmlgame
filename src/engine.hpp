@@ -4,6 +4,7 @@
 #include "geometry.hpp"
 #include "music.hpp"
 #include "sound.hpp"
+#include "states.hpp"
 #include "types.hpp"
 #include "world.hpp"
 
@@ -27,7 +28,7 @@ class Engine {
 private:
   static std::size_t instance_count;
 
-protected:
+public:
   struct Keys {
     class State {
     private:
@@ -48,6 +49,7 @@ protected:
     State jump, run;
   } keys;
 
+protected:
   arglist args;
   uint tick;
   sf::Clock tickClock;
@@ -60,6 +62,7 @@ protected:
   Sound* sound;
   World* world;
 
+public:
   void resize(Vec2<std::size_t>);
   void onKeyEvent();
   void tickKeys();
@@ -74,9 +77,8 @@ protected:
   void doRender();
   bool setupPhysFS();
   bool init();
-
-public:
   int exec();
+
   Engine(const arglist&);
   ~Engine();
 };
