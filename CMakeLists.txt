@@ -10,14 +10,6 @@ find_package(PhysFS REQUIRED)
 find_package(SFML 2.5 REQUIRED COMPONENTS audio graphics network system window)
 
 set(
-  FMT_SOURCES
-  fmt/fmt/format.cc
-  fmt/fmt/ostream.cc
-  fmt/fmt/posix.cc
-  fmt/fmt/printf.cc
-)
-
-set(
   SNES_SPC_SOURCES
   snes_spc-0.9.0/snes_spc/SPC_DSP.cpp
   snes_spc-0.9.0/snes_spc/dsp.cpp
