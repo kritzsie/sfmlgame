@@ -15,7 +15,7 @@ public:
     sample_rate = spc_sample_rate,
     rom_size = spc_rom_size,
     clock_rate = spc_clock_rate,
-    clocks_per_sample = spc_clocks_per_sample,
+    clocks_per_sample = spc_clocks_per_sample
   };
 
 private:

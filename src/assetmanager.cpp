@@ -8,7 +8,6 @@
 #include <SFML/Graphics.hpp>
 
 #include <stdexcept>
-#include <sstream>
 #include <string>
 
 namespace ke {
@@ -20,8 +19,8 @@ const std::string SFXAssetManager::extensions[] = {
   "flac", "wav", "ogg", ""
 };
 
-sf::Texture     GFXAssetManager::none = sf::Texture();
-sf::SoundBuffer SFXAssetManager::none = sf::SoundBuffer();
+sf::Texture     GFXAssetManager::none;
+sf::SoundBuffer SFXAssetManager::none;
 
 bool GFXAssetManager::load(std::string dir, std::string name, std::map<std::string, sf::Texture>& container) {
   for (auto& ext : extensions) {

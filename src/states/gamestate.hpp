@@ -1,6 +1,10 @@
 #pragma once
 
+#include "../engine.hpp"
+
 namespace ke {
+struct TimeInfo;
+
 class GameState {
 public:
   virtual void enter() = 0;
@@ -9,9 +13,10 @@ public:
   virtual void pause() = 0;
   virtual void resume() = 0;
 
-  virtual void update() = 0;
-  virtual void draw() = 0;
+  virtual void update(const TimeInfo&) = 0;
+  virtual void draw(const TimeInfo&) = 0;
 
+  GameState() = delete;
   virtual ~GameState() = default;
 };
 }

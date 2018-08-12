@@ -10,11 +10,10 @@
 
 namespace ke {
 class GFXAssetManager {
-public:
+private:
   static const std::string extensions[];
   static sf::Texture none;
 
-private:
   std::map<std::string, sf::Texture> sprites, textures, tiles;
 
   bool load(std::string, std::string);
@@ -31,11 +30,10 @@ public:
 };
 
 class SFXAssetManager {
-public:
+private:
   static const std::string extensions[];
   static sf::SoundBuffer none;
 
-private:
   std::map<std::string, sf::SoundBuffer> sounds;
 
   bool load(std::string, std::string);

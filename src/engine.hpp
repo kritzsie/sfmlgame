@@ -12,6 +12,7 @@
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
 
+#include <chrono>
 #include <map>
 #include <string>
 #include <vector>
@@ -22,51 +23,70 @@
 namespace ke {
 using Vec2f = Vec2<float>;
 
-using arglist = std::vector<std::string>;
+using arglist_t = std::vector<std::string>;
+
+struct Keys {
+  class State {
+  private:
+    bool state = false;
+    byte delta = 0;
+
+  public:
+    bool getState() const;
+    byte getDelta() const;
+
+    void setState(bool);
+    void press();
+    void release();
+    void resetDelta();
+  };
+
+  State up, left, down, right;
+  State jump, run;
+};
+
+struct TimeInfo {
+public:
+  float rate;
+  float delta = 0;
+
+  TimeInfo();
+  TimeInfo(float);
+};
 
 class Engine {
 private:
-  static std::size_t instance_count;
+  bool deinitPhysFS = false;
 
-public:
-  struct Keys {
-    class State {
-    private:
-      bool state = false;
-      byte delta = 0;
+  arglist_t args;
 
-    public:
-      bool getState() const;
-      byte getDelta() const;
+  Keys keys;
 
-      void setState(bool);
-      void press();
-      void release();
-      void resetDelta();
-    };
+  TimeInfo ticktime;
+  TimeInfo rendertime;
 
-    State up, left, down, right;
-    State jump, run;
-  } keys;
-
-protected:
-  arglist args;
-  uint tick;
-  sf::Clock tickClock;
-  float tickTime, tickRate;
-  sf::Event event;
-  sf::RenderWindow* window;
   GFXAssetManager gfxassets;
   SFXAssetManager sfxassets;
-  Music* music;
-  Sound* sound;
-  World* world;
+
+  sf::RenderTexture viewport;
+  sf::RenderWindow* window = nullptr;
+
+  Music* music = nullptr;
+  Sound* sound = nullptr;
+  World* world = nullptr;
+
+  std::vector<GameState*> gamestates;
+
+protected:
+  void onKeyEvent(sf::Event&);
+  void onResize(Vec2<std::size_t>);
+
+  void tickKeys();
 
 public:
-  void resize(Vec2<std::size_t>);
-  void onKeyEvent();
-  void tickKeys();
   void doTick();
+  void doRender();
+
   void drawBG(uint32_t);
   void drawBG(std::string, Vec2f);
   void drawBGBottom(std::string, Vec2f);
@@ -74,12 +94,16 @@ public:
   void drawTiles();
   void drawEntities();
   void drawUI();
-  void doRender();
-  bool setupPhysFS();
-  bool init();
-  int exec();
 
-  Engine(const arglist&);
+  bool init();
+  bool setupPhysFS(std::string, std::string, std::string);
+
+  void update();
+  void draw();
+
+  int main();
+
+  Engine(const arglist_t&);
   ~Engine();
 };
 }

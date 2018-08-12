@@ -57,7 +57,11 @@ void World::setTile(int x, int y, tileid_t tileid) {
   }
 }
 
-bool World::init() {
+World::World(int x, int y) : player({7, -1}, {1, 1}, 5, 25) {
+  tiles = new tileid_t[x * y]();
+  size.x = x;
+  size.y = y;
+
   // WARNING: Test world ahead
   setTile(0, 0, 5);
   for (int x = 1; x <= 6; x++) {
@@ -89,14 +93,6 @@ bool World::init() {
   player.pos = Vec2f(32, 16);
   camera.pos = player.pos + Vec2f(0, player.height / 2);
   // End test world
-
-  return true;
-}
-
-World::World(int x, int y) : player({7, -1}, {1, 1}, 5, 25) {
-  tiles = new tileid_t[x * y]();
-  size.x = x;
-  size.y = y;
 }
 
 World::~World() {

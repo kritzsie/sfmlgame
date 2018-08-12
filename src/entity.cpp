@@ -65,9 +65,7 @@ Entity::Entity(
   float height = 16
 ) : RenderEntity(offset, scale), radius(radius), height(height) {}
 
-RenderState::RenderState(std::string sprite, Vec2f offset) :
-  sprite(sprite), offset(offset)
-{}
+RenderState::RenderState(std::string sprite, Vec2f offset) : sprite(sprite), offset(offset) {}
 
 // Players inherit from Entity, but also hold states (jumping, crouching, etc.)
 PlayerEntity::PlayerEntity() : Entity() {

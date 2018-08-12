@@ -95,7 +95,5 @@ std::size_t Sound::stop() {
   return count;
 }
 
-Sound::Sound(SFXAssetManager& assetmanager) :
-  sfxassets(assetmanager)
-{}
+Sound::Sound(SFXAssetManager& assetmanager) : sfxassets(assetmanager) {}
 }

@@ -49,10 +49,6 @@ sf::Int64 FileInputStream::getSize() {
   return PHYSFS_fileLength(filehandle);
 }
 
-FileInputStream::FileInputStream() :
-  filehandle(nullptr)
-{}
-
 FileInputStream::~FileInputStream() {
   PHYSFS_close(filehandle);
 }

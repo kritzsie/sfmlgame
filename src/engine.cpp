@@ -20,40 +20,42 @@
 #include <ctgmath>
 
 namespace ke {
-std::size_t Engine::instance_count = 0;
+TimeInfo::TimeInfo(float rate) : rate(rate) {}
 
-bool Engine::Keys::State::getState() const {
+TimeInfo::TimeInfo() : TimeInfo(60) {}
+
+bool Keys::State::getState() const {
   return state;
 }
 
-byte Engine::Keys::State::getDelta() const {
+byte Keys::State::getDelta() const {
   return delta;
 }
 
-void Engine::Keys::State::setState(bool pressed) {
+void Keys::State::setState(bool pressed) {
   delta = (pressed ? 1 : 0) - state;
   state = pressed ? true : false;
 }
 
-void Engine::Keys::State::press() {
+void Keys::State::press() {
   setState(true);
 }
 
-void Engine::Keys::State::release() {
+void Keys::State::release() {
   setState(false);
 }
 
-void Engine::Keys::State::resetDelta() {
+void Keys::State::resetDelta() {
   delta = 0;
 }
 
-void Engine::resize(Vec2<std::size_t> size) {
+void Engine::onResize(Vec2<std::size_t> size) {
   auto width = size.x;
   auto height = size.y;
   window->setSize(sf::Vector2u(width, height));
 }
 
-void Engine::onKeyEvent() {
+void Engine::onKeyEvent(sf::Event& event) {
   switch (event.key.code) {
   case sf::Keyboard::Up:
     keys.up.setState(sf::Keyboard::isKeyPressed(sf::Keyboard::Up));
@@ -112,18 +114,18 @@ void Engine::doTick() {
     if (direction and not world->player.ducking) {
       if (direction > 0
       and world->player.vel.x < max_xvel) {
-        world->player.vel.x = std::max(-8.0f * 16.0f, std::min(world->player.vel.x + direction * 16 * 16 / tickRate, max_xvel));
+        world->player.vel.x = std::max(-8.0f * 16.0f, std::min(world->player.vel.x + direction * 16 * 16 / ticktime.rate, max_xvel));
       }
       else if (direction < 0
       and world->player.vel.x > min_xvel) {
-        world->player.vel.x = std::max(min_xvel, std::min(world->player.vel.x + direction * 16 * 16 / tickRate, 8.0f * 16.0f));
+        world->player.vel.x = std::max(min_xvel, std::min(world->player.vel.x + direction * 16 * 16 / ticktime.rate, 8.0f * 16.0f));
       }
     }
     else if (world->player.vel.x > 0) {
-      world->player.vel.x = std::max(world->player.vel.x - 12 * 16 / tickRate, 0.0f);
+      world->player.vel.x = std::max(world->player.vel.x - 12 * 16 / ticktime.rate, 0.0f);
     }
     else if (world->player.vel.x < 0) {
-      world->player.vel.x = std::min(world->player.vel.x + 12 * 16 / tickRate, 0.0f);
+      world->player.vel.x = std::min(world->player.vel.x + 12 * 16 / ticktime.rate, 0.0f);
     }
 
     if (down and not direction) {
@@ -141,7 +143,7 @@ void Engine::doTick() {
           sound->play("slip");
         }
         else {
-          world->player.sliptime = std::max(0.0f, world->player.sliptime - 1 / tickRate);
+          world->player.sliptime = std::max(0.0f, world->player.sliptime - 1 / ticktime.rate);
         }
       }
       else if (world->player.vel.x < 0
@@ -153,13 +155,13 @@ void Engine::doTick() {
           sound->play("slip");
         }
         else {
-          world->player.sliptime = std::max(0.0f, world->player.sliptime - 1 / tickRate);
+          world->player.sliptime = std::max(0.0f, world->player.sliptime - 1 / ticktime.rate);
         }
       }
       else {
         if (world->player.vel.x) {
           if (world->player.walktime) {
-            world->player.walktime = std::max(0.0f, world->player.walktime - std::max(1.0f, std::abs(world->player.vel.x) / 32) / tickRate);
+            world->player.walktime = std::max(0.0f, world->player.walktime - std::max(1.0f, std::abs(world->player.vel.x) / 32) / ticktime.rate);
           }
           else {
             world->player.walktime = 0.125;
@@ -182,11 +184,11 @@ void Engine::doTick() {
     if (direction) {
       if (direction > 0
       and world->player.vel.x < max_xvel) {
-        world->player.vel.x = std::min(world->player.vel.x + direction * 10 * 16 / tickRate, max_xvel);
+        world->player.vel.x = std::min(world->player.vel.x + direction * 10 * 16 / ticktime.rate, max_xvel);
       }
       else if (direction < 0
       and world->player.vel.x > min_xvel) {
-        world->player.vel.x = std::max(min_xvel, world->player.vel.x + direction * 10 * 16 / tickRate);
+        world->player.vel.x = std::max(min_xvel, world->player.vel.x + direction * 10 * 16 / ticktime.rate);
       }
     }
     if (not world->player.ducking) {
@@ -207,20 +209,20 @@ void Engine::doTick() {
     }
 
     if (jump and world->player.jumptime > 0) {
-      world->player.jumptime = std::max(world->player.jumptime - 1 / tickRate, 0.0f);
+      world->player.jumptime = std::max(world->player.jumptime - 1 / ticktime.rate, 0.0f);
       world->player.jump();
     }
   }
 
   if (world->player.vel.y > min_yvel
   and world->player.jumptime == 0) {
-    world->player.vel.y = std::max(world->player.vel.y + gravity / tickRate, min_yvel);
+    world->player.vel.y = std::max(world->player.vel.y + gravity / ticktime.rate, min_yvel);
   }
 
   auto range = World::tilesFromAABB(world->player.getAABB());
 
   if (world->player.vel.y) {
-    world->player.pos.y += world->player.vel.y / tickRate;
+    world->player.pos.y += world->player.vel.y / ticktime.rate;
   }
   world->player.airborne = true;
 
@@ -258,7 +260,7 @@ void Engine::doTick() {
   }
 
   if (world->player.vel.x) {
-    world->player.pos.x += world->player.vel.x / tickRate;
+    world->player.pos.x += world->player.vel.x / ticktime.rate;
   }
 
   for (int x = range.x; x < range.x + range.w + 1; x++)
@@ -288,9 +290,9 @@ void Engine::doTick() {
     }
   }
 
-  world->camera.vel = (world->player.pos + Vec2f(0, world->player.height / 2) - world->camera.pos) * tickRate / 8.0f;
+  world->camera.vel = (world->player.pos + Vec2f(0, world->player.height / 2) - world->camera.pos) * ticktime.rate / 8.0f;
 
-  world->camera.pos += world->camera.vel / tickRate;
+  world->camera.pos += world->camera.vel / ticktime.rate;
 
   auto camLeft = window->getSize().x / 6;
   auto camRight = world->size.x * 16 - window->getSize().x / 6;
@@ -326,7 +328,6 @@ void Engine::doTick() {
   }
 
   tickKeys();
-  tick++;
 }
 
 void Engine::drawBG(uint32_t color) {
@@ -456,15 +457,41 @@ void Engine::doRender() {
   window->display();
 }
 
-bool Engine::init() {
-  window->create(sf::VideoMode(768, 576), "Super Mario Bros. 3");
-
-  if (not world->init()) {
+bool Engine::setupPhysFS(std::string org, std::string appname, std::string basegame) {
+  PHYSFS_permitSymbolicLinks(true);
+  if (PHYSFS_setSaneConfig(org.c_str(), appname.c_str(), nullptr, 0, 0) == 0) {
     return false;
   }
 
-  tick = 0;
-  tickClock.restart();
+  if (PHYSFS_mount(basegame.c_str(), ("/games/" + basegame).c_str(), 1)) {
+    PHYSFS_mount((basegame + "/maps").c_str(), "/maps", 1);
+    PHYSFS_mount((basegame + "/music").c_str(), "/music", 1);
+    PHYSFS_mount((basegame + "/sounds").c_str(), "/sounds", 1);
+    PHYSFS_mount((basegame + "/sprites").c_str(), "/sprites", 1);
+    PHYSFS_mount((basegame + "/textures").c_str(), "/textures", 1);
+    PHYSFS_mount((basegame + "/tiles").c_str(), "/tiles", 1);
+  }
+  else {
+    return false;
+  }
+
+  return true;
+}
+
+void Engine::update() {
+  for (auto& state : gamestates) {
+    state->update(ticktime);
+  }
+}
+
+void Engine::draw() {
+  for (auto& state : gamestates) {
+    state->draw(ticktime);
+  }
+}
+
+bool Engine::init() {
+  window->create(sf::VideoMode(768, 576), "Super Mario Bros. 3");
 
   music->change("overworld");
   music->play();
@@ -474,70 +501,58 @@ bool Engine::init() {
   return true;
 }
 
-int Engine::exec() {
-  if (not init()) {
+int Engine::main() {
+  setupPhysFS("Kha0z", "smb3", "basesmb3");
+
+  if (init() == false) {
     return EXIT_FAILURE;
   }
 
-  float tickDelta = 0;
+  sf::Clock tickclock;
+  sf::Event event;
+
+  float delta = 0;
+
   while (window->isOpen()) {
-    tickDelta = tickClock.getElapsedTime().asSeconds() - tickTime;
-    tickTime = tickClock.getElapsedTime().asSeconds();
+    delta = tickclock.getElapsedTime().asSeconds() - ticktime.delta;
+    ticktime.delta = tickclock.getElapsedTime().asSeconds();
 
     while (window->pollEvent(event)) {
       if (event.type == sf::Event::Closed) {
         window->close();
       }
       else if (event.type == sf::Event::Resized) {
-        resize(Vec2<std::size_t>(event.size.width, event.size.height));
+        onResize(Vec2<std::size_t>(event.size.width, event.size.height));
       }
       else if (event.type == sf::Event::KeyPressed
            or  event.type == sf::Event::KeyReleased) {
-        onKeyEvent();
+        onKeyEvent(event);
       }
     }
 
-    if (int((tickTime - tickDelta) * tickRate) < int(tickTime * tickRate)) {
+    if (int((ticktime.delta - delta) * ticktime.rate) < int(ticktime.delta * ticktime.rate)) {
       doTick();
     }
 
+    if (true) {
+      update();
+    }
+
     doRender();
+
+    if (true) {
+      draw();
+    }
   }
 
   return EXIT_SUCCESS;
 }
 
-bool Engine::setupPhysFS() {
-  PHYSFS_permitSymbolicLinks(true);
-  if (PHYSFS_setSaneConfig("Kha0z", "smb3", nullptr, 0, 0) == 0) {
-    return false;
-  }
-  if (PHYSFS_mount("basesmb3", "/games/basesmb3", 1)) {
-    PHYSFS_mount("basesmb3/maps", "/maps", 1);
-    PHYSFS_mount("basesmb3/music", "/music", 1);
-    PHYSFS_mount("basesmb3/sounds", "/sounds", 1);
-    PHYSFS_mount("basesmb3/sprites", "/sprites", 1);
-    PHYSFS_mount("basesmb3/textures", "/textures", 1);
-    PHYSFS_mount("basesmb3/tiles", "/tiles", 1);
-  }
-  else {
-    return false;
-  }
-  return true;
-}
-
-Engine::Engine(const arglist& args) : args(args), tickRate(64) {
-  if (instance_count == 0) {
+Engine::Engine(const arglist_t& args) : args(args), ticktime(64) {
+  if (PHYSFS_isInit() == 0) {
     PHYSFS_init(args.at(0).c_str());
+    deinitPhysFS = true;
   }
-  if (PHYSFS_isInit()) {
-    instance_count++;
-  }
-  else {
-    throw std::runtime_error(PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
-  }
-
-  setupPhysFS();
 
   window = new sf::RenderWindow();
   world = new World(176, 27);
@@ -546,12 +561,7 @@ Engine::Engine(const arglist& args) : args(args), tickRate(64) {
 }
 
 Engine::~Engine() {
-  if (instance_count > 0) {
-    if (instance_count == 1) {
-      PHYSFS_deinit();
-    }
-    instance_count--;
-  }
+  if (deinitPhysFS) PHYSFS_deinit();
 
   if (window != nullptr) delete window;
   if (world  != nullptr) delete world;

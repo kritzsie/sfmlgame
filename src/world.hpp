@@ -21,9 +21,12 @@ public:
   static Vec2f toView(const Vec2f&);
   static Rect<int> tilesFromAABB(const Rect<float>&);
   static Rect<float> tileAABB(int, int);
+
+  void enter();
+  void exit();
+
   tileid_t& getTile(int, int);
   void setTile(int, int, tileid_t);
-  bool init();
 
   World(int, int);
   ~World();

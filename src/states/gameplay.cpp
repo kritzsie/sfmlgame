@@ -13,9 +13,9 @@ void Gameplay::pause() {
 void Gameplay::resume() {
 }
 
-void Gameplay::update() {
+void Gameplay::update(const TimeInfo& ticktime) {
 }
 
-void Gameplay::draw() {
+void Gameplay::draw(const TimeInfo& rendertime) {
 }
 }
