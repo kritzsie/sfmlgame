@@ -284,10 +284,6 @@ void Engine::doTick() {
           world->player.vel.x = 0;
           world->player.pos.x += collBox.w;
         }
-
-        if (false) {
-          world->player.pos.x += 1;
-        }
       }
     }
   }
