@@ -23,7 +23,8 @@
 namespace ke {
 using Vec2f = Vec2<float>;
 
-using arglist_t = std::vector<std::string>;
+using Clock = std::chrono::steady_clock;
+using ArgList = std::vector<std::string>;
 
 struct Keys {
   class State {
@@ -48,7 +49,7 @@ struct Keys {
 struct TimeInfo {
 public:
   float rate;
-  float delta = 0;
+  float delta;
 
   TimeInfo();
   TimeInfo(float);
@@ -58,7 +59,7 @@ class Engine {
 private:
   bool deinitPhysFS = false;
 
-  arglist_t args;
+  ArgList args;
 
   Keys keys;
 
@@ -98,12 +99,14 @@ public:
   bool init();
   bool setupPhysFS(std::string, std::string, std::string);
 
+  void handleEvents();
   void update();
   void draw();
 
+  bool loop();
   int main();
 
-  Engine(const arglist_t&);
+  Engine(const ArgList&);
   ~Engine();
 };
 }

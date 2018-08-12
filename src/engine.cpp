@@ -12,7 +12,9 @@
 #include <SFML/Window.hpp>
 
 #include <algorithm>
+#include <chrono>
 #include <stdexcept>
+#include <thread>
 
 #include <cstddef>
 #include <cstdint>
@@ -20,7 +22,7 @@
 #include <ctgmath>
 
 namespace ke {
-TimeInfo::TimeInfo(float rate) : rate(rate) {}
+TimeInfo::TimeInfo(float rate) : rate(rate), delta(1 / rate) {}
 
 TimeInfo::TimeInfo() : TimeInfo(60) {}
 
@@ -478,19 +480,39 @@ bool Engine::setupPhysFS(std::string org, std::string appname, std::string baseg
   return true;
 }
 
+void Engine::handleEvents() {
+  sf::Event event;
+  while (window->pollEvent(event)) {
+    if (event.type == sf::Event::Closed) {
+      window->close();
+    }
+    else if (event.type == sf::Event::Resized) {
+      onResize(Vec2<std::size_t>(event.size.width, event.size.height));
+    }
+    else if (event.type == sf::Event::KeyPressed
+    or       event.type == sf::Event::KeyReleased) {
+      onKeyEvent(event);
+    }
+  }
+}
+
 void Engine::update() {
+  doTick();
   for (auto& state : gamestates) {
     state->update(ticktime);
   }
 }
 
 void Engine::draw() {
+  doRender();
   for (auto& state : gamestates) {
     state->draw(ticktime);
   }
 }
 
 bool Engine::init() {
+  setupPhysFS("Kha0z", "smb3", "basesmb3");
+
   window->create(sf::VideoMode(768, 576), "Super Mario Bros. 3");
 
   music->change("overworld");
@@ -501,54 +523,45 @@ bool Engine::init() {
   return true;
 }
 
-int Engine::main() {
-  setupPhysFS("Kha0z", "smb3", "basesmb3");
+bool Engine::loop() {
+  using namespace std::literals::chrono_literals;
 
+  Clock::time_point starttime = Clock::now();
+  Clock::time_point prevtime = starttime;
+  auto nexttick = prevtime + 1s / ticktime.rate;
+  auto nextrender = prevtime + 1s / rendertime.rate;
+
+  while (window->isOpen()) {
+    Clock::time_point curtime = Clock::now();
+    Clock::duration deltatime = curtime - prevtime;
+
+    handleEvents();
+
+    if (nexttick < curtime) {
+      update();
+      nexttick += 1s / ticktime.rate;
+    }
+
+    if (nextrender < curtime) {
+      draw();
+      nextrender += 1s / ticktime.rate;
+    }
+
+    std::this_thread::sleep_until(std::min(nexttick, nextrender));
+
+    prevtime = curtime;
+  }
+}
+
+int Engine::main() {
   if (init() == false) {
     return EXIT_FAILURE;
   }
 
-  sf::Clock tickclock;
-  sf::Event event;
-
-  float delta = 0;
-
-  while (window->isOpen()) {
-    delta = tickclock.getElapsedTime().asSeconds() - ticktime.delta;
-    ticktime.delta = tickclock.getElapsedTime().asSeconds();
-
-    while (window->pollEvent(event)) {
-      if (event.type == sf::Event::Closed) {
-        window->close();
-      }
-      else if (event.type == sf::Event::Resized) {
-        onResize(Vec2<std::size_t>(event.size.width, event.size.height));
-      }
-      else if (event.type == sf::Event::KeyPressed
-           or  event.type == sf::Event::KeyReleased) {
-        onKeyEvent(event);
-      }
-    }
-
-    if (int((ticktime.delta - delta) * ticktime.rate) < int(ticktime.delta * ticktime.rate)) {
-      doTick();
-    }
-
-    if (true) {
-      update();
-    }
-
-    doRender();
-
-    if (true) {
-      draw();
-    }
-  }
-
-  return EXIT_SUCCESS;
+  return loop() ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-Engine::Engine(const arglist_t& args) : args(args), ticktime(64) {
+Engine::Engine(const ArgList& args) : args(args), ticktime(64) {
   if (PHYSFS_isInit() == 0) {
     PHYSFS_init(args.at(0).c_str());
     deinitPhysFS = true;
