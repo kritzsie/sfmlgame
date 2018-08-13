@@ -22,7 +22,11 @@ const std::string SFXAssetManager::extensions[] = {
 sf::Texture     GFXAssetManager::none;
 sf::SoundBuffer SFXAssetManager::none;
 
-bool GFXAssetManager::load(std::string dir, std::string name, std::map<std::string, sf::Texture>& container) {
+bool GFXAssetManager::load(
+  std::string dir,
+  std::string name,
+  std::map<std::string, sf::Texture>& container
+) {
   for (auto& ext : extensions) {
     std::string path = dir + "/" + (ext.size() ? name + "." + ext : name);
     if (PHYSFS_exists(path.c_str())) {

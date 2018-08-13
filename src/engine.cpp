@@ -55,6 +55,7 @@ void Engine::onResize(Vec2<std::size_t> size) {
   auto width = size.x;
   auto height = size.y;
   window->setSize(sf::Vector2u(width, height));
+  viewport->create(width / 3, height / 3);
 }
 
 void Engine::onKeyEvent(sf::Event& event) {
@@ -506,19 +507,6 @@ void Engine::draw() {
   }
 }
 
-bool Engine::init() {
-  setupPhysFS("Kha0z", "smb3", "basesmb3");
-
-  window->create(sf::VideoMode(768, 576), "Super Mario Bros. 3");
-
-  music->change("overworld");
-  music->play();
-
-  world->player.sprite.setTexture(gfxassets.getSprite("bigmariowalk_0"));
-
-  return true;
-}
-
 bool Engine::loop() {
   using namespace std::literals::chrono_literals;
 
@@ -547,6 +535,23 @@ bool Engine::loop() {
 
     prevtime = curtime;
   }
+
+  return true;
+}
+
+bool Engine::init() {
+  setupPhysFS("Kha0z", "smb3", "basesmb3");
+
+  window->create(sf::VideoMode(768, 576), "Super Mario Bros. 3");
+
+  viewport->create(window->getSize().x / 3, window->getSize().y / 3);
+
+  music->change("overworld");
+  music->play();
+
+  world->player.sprite.setTexture(gfxassets.getSprite("bigmariowalk_0"));
+
+  return true;
 }
 
 int Engine::main() {
@@ -563,6 +568,7 @@ Engine::Engine(const ArgList& args) : args(args), ticktime(64) {
     deinitPhysFS = true;
   }
 
+  viewport = new sf::RenderTexture();
   window = new sf::RenderWindow();
   world = new World(176, 27);
   music = new Music();

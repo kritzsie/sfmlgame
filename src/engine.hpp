@@ -26,6 +26,8 @@ using Vec2f = Vec2<float>;
 using Clock = std::chrono::steady_clock;
 using ArgList = std::vector<std::string>;
 
+class GameState;
+
 struct Keys {
   class State {
   private:
@@ -69,7 +71,7 @@ private:
   GFXAssetManager gfxassets;
   SFXAssetManager sfxassets;
 
-  sf::RenderTexture viewport;
+  sf::RenderTexture* viewport = nullptr;
   sf::RenderWindow* window = nullptr;
 
   Music* music = nullptr;
@@ -102,8 +104,8 @@ public:
   void handleEvents();
   void update();
   void draw();
-
   bool loop();
+
   int main();
 
   Engine(const ArgList&);

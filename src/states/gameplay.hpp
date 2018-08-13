@@ -10,8 +10,7 @@
 namespace ke {
 class Gameplay : public GameState {
 private:
-  std::vector<World> world;
-  std::vector<BaseEntity*> entities;
+  World* world;
 
 public:
   void enter() override;

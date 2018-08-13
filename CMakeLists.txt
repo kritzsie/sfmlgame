@@ -26,6 +26,8 @@ include_directories(snes_spc-0.9.0)
 add_executable(
   sfmlgame
   ${SNES_SPC_SOURCES}
+  src/states/gameplay.cpp
+  src/states/gamestate.cpp
   src/util/file.cpp
   src/assetmanager.cpp
   src/engine.cpp
