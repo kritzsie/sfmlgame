@@ -1,9 +1,12 @@
 #pragma once
 
 namespace ke {
-struct TimeInfo;
+class Engine;
 
 class GameState {
+protected:
+  Engine* const engine;
+
 public:
   virtual void enter() = 0;
   virtual void exit() = 0;
@@ -11,10 +14,11 @@ public:
   virtual void pause() = 0;
   virtual void resume() = 0;
 
-  virtual void update(const TimeInfo&) = 0;
-  virtual void draw(const TimeInfo&) = 0;
+  virtual void update() = 0;
+  virtual void draw() = 0;
 
   GameState() = delete;
+  GameState(Engine*);
   virtual ~GameState() = default;
 };
 }

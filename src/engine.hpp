@@ -24,7 +24,7 @@ namespace ke {
 using Vec2f = Vec2<float>;
 
 using Clock = std::chrono::steady_clock;
-using ArgList = std::vector<std::string>;
+using StringList = std::vector<std::string>;
 
 class GameState;
 
@@ -61,42 +61,34 @@ class Engine {
 private:
   bool deinitPhysFS = false;
 
-  ArgList args;
+  StringList args;
 
+  sf::RenderWindow* window = nullptr;
+
+  World* world = nullptr;
+
+public:
   Keys keys;
 
   TimeInfo ticktime;
   TimeInfo rendertime;
 
-  GFXAssetManager gfxassets;
-  SFXAssetManager sfxassets;
-
-  sf::RenderTexture* viewport = nullptr;
-  sf::RenderWindow* window = nullptr;
+  GFXAssetManager gfx;
+  SFXAssetManager sfx;
 
   Music* music = nullptr;
   Sound* sound = nullptr;
-  World* world = nullptr;
 
-  std::vector<GameState*> gamestates;
+  sf::RenderTexture* viewport = nullptr;
+
+  std::vector<GameState*> states;
 
 protected:
   void onKeyEvent(sf::Event&);
   void onResize(Vec2<std::size_t>);
 
-  void tickKeys();
-
 public:
-  void doTick();
-  void doRender();
-
-  void drawBG(uint32_t);
-  void drawBG(std::string, Vec2f);
-  void drawBGBottom(std::string, Vec2f);
-  void drawBGTop(std::string, Vec2f);
-  void drawTiles();
-  void drawEntities();
-  void drawUI();
+  void tickKeys();
 
   bool init();
   bool setupPhysFS(std::string, std::string, std::string);
@@ -108,7 +100,7 @@ public:
 
   int main();
 
-  Engine(const ArgList&);
+  Engine(const StringList&);
   ~Engine();
 };
 }

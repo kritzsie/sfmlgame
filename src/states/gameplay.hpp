@@ -10,16 +10,28 @@
 namespace ke {
 class Gameplay : public GameState {
 private:
-  World* world;
+  World* world = nullptr;
+  std::vector<Entity*> entities;
+
+  void drawBG(uint32_t);
+  void drawBG(std::string, Vec2f);
+  void drawBGBottom(std::string, Vec2f);
+  void drawBGTop(std::string, Vec2f);
+  void drawTiles();
+  void drawEntities();
+  void drawUI();
 
 public:
-  void enter() override;
-  void exit() override;
+  void enter() final;
+  void exit() final;
 
-  void pause() override;
-  void resume() override;
+  void pause() final;
+  void resume() final;
 
-  void update(const TimeInfo&) override;
-  void draw(const TimeInfo&) override;
+  void update() final;
+  void draw() final;
+
+  Gameplay(Engine*);
+  ~Gameplay() final;
 };
 }

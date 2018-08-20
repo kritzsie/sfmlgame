@@ -52,10 +52,8 @@ void Keys::State::resetDelta() {
 }
 
 void Engine::onResize(Vec2<std::size_t> size) {
-  auto width = size.x;
-  auto height = size.y;
-  window->setSize(sf::Vector2u(width, height));
-  viewport->create(width / 3, height / 3);
+  window->setSize(sf::Vector2u(size.x, size.y));
+  //viewport->create(size.x, size.y);
 }
 
 void Engine::onKeyEvent(sf::Event& event) {
@@ -89,371 +87,6 @@ void Engine::tickKeys() {
   keys.right.resetDelta();
   keys.jump.resetDelta();
   keys.run.resetDelta();
-}
-
-void Engine::doTick() {
-  // TODO: Send these to a better place
-  const float gravity = -48 * 16;
-  const float min_yvel = -16 * 16;
-
-  // Handle keyboard input first
-  auto up = keys.up.getState();
-  auto left = keys.left.getState();
-  auto down = keys.down.getState();
-  auto right = keys.right.getState();
-  auto jump = keys.jump.getState();
-  auto run = keys.run.getState();
-
-  auto direction = (right ? 1 : 0) + (left ? -1 : 0);
-
-  float max_xvel = (run ? (world->player.p_speed ? 12 : 10) : 6) * 16;
-  float min_xvel = -max_xvel;
-
-  if (direction) {
-    world->player.setDirection(direction);
-  }
-
-  if (not world->player.airborne) {
-    if (direction and not world->player.ducking) {
-      if (direction > 0
-      and world->player.vel.x < max_xvel) {
-        world->player.vel.x = std::max(-8.0f * 16.0f, std::min(world->player.vel.x + direction * 16 * 16 / ticktime.rate, max_xvel));
-      }
-      else if (direction < 0
-      and world->player.vel.x > min_xvel) {
-        world->player.vel.x = std::max(min_xvel, std::min(world->player.vel.x + direction * 16 * 16 / ticktime.rate, 8.0f * 16.0f));
-      }
-    }
-    else if (world->player.vel.x > 0) {
-      world->player.vel.x = std::max(world->player.vel.x - 12 * 16 / ticktime.rate, 0.0f);
-    }
-    else if (world->player.vel.x < 0) {
-      world->player.vel.x = std::min(world->player.vel.x + 12 * 16 / ticktime.rate, 0.0f);
-    }
-
-    if (down and not direction) {
-      world->player.sprite.setTexture(gfxassets.getSprite("bigmarioduck"), true);
-      world->player.offset.x = 7;
-      world->player.duck();
-    }
-    else {
-      if (world->player.vel.x > 0
-      and direction < 0) {
-        world->player.sprite.setTexture(gfxassets.getSprite("bigmarioslip"), true);
-        world->player.offset.x = 8;
-        if (world->player.sliptime == 0) {
-          world->player.sliptime = 0.09375;
-          sound->play("slip");
-        }
-        else {
-          world->player.sliptime = std::max(0.0f, world->player.sliptime - 1 / ticktime.rate);
-        }
-      }
-      else if (world->player.vel.x < 0
-      and direction > 0) {
-        world->player.sprite.setTexture(gfxassets.getSprite("bigmarioslip"), true);
-        world->player.offset.x = 8;
-        if (world->player.sliptime == 0) {
-          world->player.sliptime = 0.09375;
-          sound->play("slip");
-        }
-        else {
-          world->player.sliptime = std::max(0.0f, world->player.sliptime - 1 / ticktime.rate);
-        }
-      }
-      else {
-        if (world->player.vel.x) {
-          if (world->player.walktime) {
-            world->player.walktime = std::max(0.0f, world->player.walktime - std::max(1.0f, std::abs(world->player.vel.x) / 32) / ticktime.rate);
-          }
-          else {
-            world->player.walktime = 0.125;
-            world->player.walkcycle = (world->player.walkcycle + 1) % 4;
-          }
-        }
-        else {
-          world->player.walktime = 0;
-          world->player.walkcycle = 0;
-        }
-        world->player.sprite.setTexture(gfxassets.getSprite("bigmariowalk_" + std::to_string(world->player.walkcycle < 3 ? world->player.walkcycle : 1)), true);
-        world->player.offset.x = world->player.walkcycle ? 9 : 7;
-        world->player.sliptime = 0;
-      }
-
-      world->player.stand();
-    }
-  }
-  else {
-    if (direction) {
-      if (direction > 0
-      and world->player.vel.x < max_xvel) {
-        world->player.vel.x = std::min(world->player.vel.x + direction * 10 * 16 / ticktime.rate, max_xvel);
-      }
-      else if (direction < 0
-      and world->player.vel.x > min_xvel) {
-        world->player.vel.x = std::max(min_xvel, world->player.vel.x + direction * 10 * 16 / ticktime.rate);
-      }
-    }
-    if (not world->player.ducking) {
-      world->player.sprite.setTexture(gfxassets.getSprite("bigmariojump"), true);
-      world->player.offset.x = 8;
-    }
-  }
-
-  if (not world->player.underwater) {
-    if (keys.jump.getDelta() == 1) {
-      if (not world->player.airborne) {
-        world->player.jumptime = 0.3125;
-        sound->play("jump");
-      }
-    }
-    else if (keys.jump.getDelta() == -1) {
-      world->player.jumptime = 0;
-    }
-
-    if (jump and world->player.jumptime > 0) {
-      world->player.jumptime = std::max(world->player.jumptime - 1 / ticktime.rate, 0.0f);
-      world->player.jump();
-    }
-  }
-
-  if (world->player.vel.y > min_yvel
-  and world->player.jumptime == 0) {
-    world->player.vel.y = std::max(world->player.vel.y + gravity / ticktime.rate, min_yvel);
-  }
-
-  auto range = World::tilesFromAABB(world->player.getAABB());
-
-  if (world->player.vel.y) {
-    world->player.pos.y += world->player.vel.y / ticktime.rate;
-  }
-  world->player.airborne = true;
-
-  for (int x = range.x; x < range.x + range.w + 1; x++)
-  for (int y = range.y; y < range.y + range.h + 1; y++) {
-    auto plyrBox = world->player.getAABB();
-    auto tileBox = World::tileAABB(x, y);
-
-    if (x >= 0 and x < world->size.x
-    and y >= 0 and y < world->size.y) {
-      if (world->getTile(x, y) != 0
-      and plyrBox.intersects(tileBox)) {
-        auto collBox = plyrBox.intersection(tileBox);
-
-        if (plyrBox.y + plyrBox.h / 2 < tileBox.y + tileBox.h / 2) {
-          /*if (world->player.pos.x > tileBox.x + tileBox.w
-          and world->getTile(x + 1, y) != 0) {
-            world->setTile(x + 1, y, 0);
-          }
-          else {
-            world->setTile(x, y, 0);
-          }
-          sound->play("brickshatter");*/
-          world->player.jumptime = 0;
-          world->player.vel.y = 0;
-          world->player.pos.y -= collBox.h;
-        }
-        else {
-          world->player.airborne = false;
-          world->player.vel.y = 0;
-          world->player.pos.y += collBox.h;
-        }
-      }
-    }
-  }
-
-  if (world->player.vel.x) {
-    world->player.pos.x += world->player.vel.x / ticktime.rate;
-  }
-
-  for (int x = range.x; x < range.x + range.w + 1; x++)
-  for (int y = range.y; y < range.y + range.h + 1; y++) {
-    auto plyrBox = world->player.getAABB();
-    auto tileBox = World::tileAABB(x, y);
-
-    if (x >= 0 and x < world->size.x
-    and y >= 0 and y < world->size.y) {
-      if (world->getTile(x, y) != 0
-      and plyrBox.intersects(tileBox)) {
-        auto collBox = plyrBox.intersection(tileBox);
-
-        if (plyrBox.x + plyrBox.w / 2 < tileBox.x + tileBox.w / 2) {
-          world->player.vel.x = 0;
-          world->player.pos.x -= collBox.w;
-        }
-        else {
-          world->player.vel.x = 0;
-          world->player.pos.x += collBox.w;
-        }
-      }
-    }
-  }
-
-  world->camera.vel = (world->player.pos + Vec2f(0, world->player.height / 2) - world->camera.pos) * ticktime.rate / 8.0f;
-
-  world->camera.pos += world->camera.vel / ticktime.rate;
-
-  auto camLeft = window->getSize().x / 6;
-  auto camRight = world->size.x * 16 - window->getSize().x / 6;
-  auto camUp = world->size.y * 16 - window->getSize().y / 6;
-  auto camDown = window->getSize().y / 6;
-
-  if (world->camera.pos.x < camLeft
-  and world->camera.pos.x > camRight) {
-    world->camera.pos.x = (camLeft + camRight) / 2;
-  }
-  else {
-    if (world->camera.pos.x < camLeft) {
-      world->camera.pos.x = camLeft;
-    }
-    else if (world->camera.pos.x > camRight) {
-      world->camera.pos.x = camRight;
-    }
-  }
-
-  if (world->camera.pos.y > camUp
-  and world->camera.pos.y < camDown) {
-    world->camera.pos.y = (camUp + camDown) / 2;
-  }
-  else {
-    if (world->camera.pos.y > camUp) {
-      world->camera.vel.y = 0;
-      world->camera.pos.y = camUp;
-    }
-    else if (world->camera.pos.y < camDown) {
-      world->camera.vel.y = 0;
-      world->camera.pos.y = camDown;
-    }
-  }
-
-  tickKeys();
-}
-
-void Engine::drawBG(uint32_t color) {
-  window->clear(sf::Color(color));
-}
-
-void Engine::drawBG(std::string bg, Vec2f dist) {
-  auto win_w = window->getSize().x;
-  auto win_h = window->getSize().y;
-
-  const auto& texture = gfxassets.getTexture(bg);
-
-  float distdivx = dist.x / (dist.x - 1.0f);
-  float distdivy = dist.y / (dist.y - 1.0f);
-
-  float left = world->camera.pos.x - win_w / 6;
-  float bottom = world->camera.pos.y - win_h / 6;
-  int sky_w = texture.getSize().x;
-  int sky_h = texture.getSize().y;
-  int min_x = left / sky_w;
-  int min_y = bottom / sky_h;
-  int max_x = (world->camera.pos.x + win_w * (2 * dist.x - 1) / 6) / sky_w + dist.x;
-  int max_y = (world->camera.pos.y + win_h * (2 * dist.y - 1) / 6) / sky_h + dist.y;
-
-  sf::Sprite sky(texture);
-  for (int y = floor(min_y / dist.y); y < floor(max_y / dist.y) + 1; y++)
-  for (int x = floor(min_x / dist.x); x < floor(max_x / dist.x) + 1; x++) {
-    sky.setPosition(World::toView(Vec2f(x * sky_w + left / distdivx, y * sky_h + sky_h + bottom / distdivy)));
-    window->draw(sky);
-  }
-}
-
-void Engine::drawBGBottom(std::string bg, Vec2f dist) {
-  auto win_w = window->getSize().x;
-  auto win_h = window->getSize().y;
-
-  const auto& texture = gfxassets.getTexture(bg);
-
-  float distdivx = dist.x / (dist.x - 1.0f);
-  float distdivy = dist.y / (dist.y - 1.0f);
-
-  float left = world->camera.pos.x - win_w / 6;
-  float bottom = world->camera.pos.y - win_h / 6;
-  int sky_w = texture.getSize().x;
-  int sky_h = texture.getSize().y;
-  int min_x = left / sky_w;
-  int max_x = (world->camera.pos.x + win_w * (2 * dist.x - 1) / 6) / sky_w + dist.x;
-
-  sf::Sprite sky(texture);
-  for (int x = floor(min_x / dist.x); x < floor(max_x / dist.x) + 1; x++) {
-    sky.setPosition(World::toView(Vec2f(x * sky_w + left / distdivx, sky_h + bottom / distdivy)));
-    window->draw(sky);
-  }
-}
-
-void Engine::drawBGTop(std::string bg, Vec2f dist) {
-  auto win_w = window->getSize().x;
-  auto win_h = window->getSize().y;
-
-  const auto& texture = gfxassets.getTexture(bg);
-
-  float distdivx = dist.x / (dist.x - 1.0f);
-  float distdivy = dist.y / (dist.y - 1.0f);
-
-  float left = world->camera.pos.x - win_w / 6;
-  float top = world->camera.pos.y + win_h / 6;
-  int sky_w = texture.getSize().x;
-  int min_x = left / sky_w;
-  int max_x = (world->camera.pos.x + win_w * (2 * dist.x - 1) / 6) / sky_w + dist.x;
-
-  sf::Sprite sky(texture);
-  for (int x = floor(min_x / dist.x); x < floor(max_x / dist.x) + 1; x++) {
-    sky.setPosition(World::toView(Vec2f(x * sky_w + left / distdivx, world->size.y * 16 / dist.y + top / distdivy)));
-    window->draw(sky);
-  }
-}
-
-void Engine::drawTiles() {
-  auto win_w = window->getSize().x;
-  auto win_h = window->getSize().y;
-
-  int left = std::max(0, std::min(int(floor((world->camera.pos.x - win_w / 6) / 16)), world->size.x));
-  int bottom = std::max(0, std::min(int(floor((world->camera.pos.y - win_h / 6) / 16)), world->size.y));
-  int right = std::max(0, std::min(int(floor((world->camera.pos.x + win_w / 6) / 16)) + 1, world->size.x));
-  int top = std::max(0, std::min(int(floor((world->camera.pos.y + win_h / 6) / 16)) + 1, world->size.y));
-
-  for (int y = bottom; y < top; y++)
-  for (int x = left; x < right; x++) {
-    auto tileid = world->getTile(x, y);
-    if (tileid) {
-      const sf::Texture& texture = gfxassets.getTile("smb3_tile_atlas");
-      int xoffset = (tileid - 1) * 16 % texture.getSize().x;
-      int yoffset = ((tileid - 1) / (texture.getSize().x / 16)) * 16 % texture.getSize().y;
-      sf::Sprite tile(texture, sf::IntRect(xoffset, yoffset, 16, 16));
-      tile.setPosition(World::toView(Vec2f(x * 16, y * 16 + 16)));
-      window->draw(tile);
-    }
-  }
-}
-
-void Engine::drawEntities() {
-  world->player.sprite.setPosition(world->player.toView());
-  world->player.sprite.setScale(Vec2f(
-    world->player.scale.x * world->player.getDirection(),
-    world->player.scale.y
-  ));
-  window->draw(world->player.sprite);
-}
-
-void Engine::drawUI() {}
-
-void Engine::doRender() {
-  auto win_w = window->getSize().x;
-  auto win_h = window->getSize().y;
-
-  sf::View view(Vec2f(), Vec2f(floor(win_w / 3), floor(win_h / 3)));
-  view.setCenter(World::toView(world->camera.pos));
-  window->setView(view);
-
-  drawBG(0x6898F8FF);
-  drawBGBottom("overworldblockstop", Vec2f(1.625, 1.375));
-  drawBGTop("cloudlayer", Vec2f(2.625, 1.125));
-  drawTiles();
-  drawEntities();
-  drawUI();
-
-  window->display();
 }
 
 bool Engine::setupPhysFS(std::string org, std::string appname, std::string basegame) {
@@ -494,17 +127,18 @@ void Engine::handleEvents() {
 }
 
 void Engine::update() {
-  doTick();
-  for (auto& state : gamestates) {
-    state->update(ticktime);
+  for (auto& state : states) {
+    state->update();
   }
 }
 
 void Engine::draw() {
-  doRender();
-  for (auto& state : gamestates) {
-    state->draw(ticktime);
+  for (auto& state : states) {
+    state->draw();
   }
+
+  window->draw(sf::Sprite(viewport->getTexture()));
+  window->display();
 }
 
 bool Engine::loop() {
@@ -512,23 +146,23 @@ bool Engine::loop() {
 
   Clock::time_point starttime = Clock::now();
   Clock::time_point prevtime = starttime;
-  auto nexttick = prevtime + 1s / ticktime.rate;
-  auto nextrender = prevtime + 1s / rendertime.rate;
+  auto nexttick = prevtime + 1.0s / ticktime.rate;
+  auto nextrender = prevtime + 1.0s / rendertime.rate;
 
   while (window->isOpen()) {
     Clock::time_point curtime = Clock::now();
-    Clock::duration deltatime = curtime - prevtime;
+    //Clock::duration deltatime = curtime - prevtime;
 
     handleEvents();
 
     if (nexttick < curtime) {
       update();
-      nexttick += 1s / ticktime.rate;
+      nexttick += 1.0s / ticktime.rate;
     }
 
     if (nextrender < curtime) {
       draw();
-      nextrender += 1s / ticktime.rate;
+      nextrender += 1.0s / rendertime.rate;
     }
 
     std::this_thread::sleep_until(std::min(nexttick, nextrender));
@@ -544,12 +178,14 @@ bool Engine::init() {
 
   window->create(sf::VideoMode(768, 576), "Super Mario Bros. 3");
 
-  viewport->create(window->getSize().x / 3, window->getSize().y / 3);
+  viewport->create(window->getSize().x, window->getSize().y);
 
   music->change("overworld");
   music->play();
 
-  world->player.sprite.setTexture(gfxassets.getSprite("bigmariowalk_0"));
+  world->player.sprite.setTexture(gfx.getSprite("bigmariowalk_0"));
+
+  states.push_back(new Gameplay(this));
 
   return true;
 }
@@ -562,17 +198,17 @@ int Engine::main() {
   return loop() ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-Engine::Engine(const ArgList& args) : args(args), ticktime(64) {
+Engine::Engine(const StringList& args) : args(args), ticktime(64) {
   if (PHYSFS_isInit() == 0) {
     PHYSFS_init(args.at(0).c_str());
     deinitPhysFS = true;
   }
 
   viewport = new sf::RenderTexture();
-  window = new sf::RenderWindow();
-  world = new World(176, 27);
-  music = new Music();
-  sound = new Sound(sfxassets);
+  window   = new sf::RenderWindow();
+  world    = new World(176, 27);
+  music    = new Music();
+  sound    = new Sound(sfx);
 }
 
 Engine::~Engine() {
