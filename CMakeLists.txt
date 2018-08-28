@@ -1,13 +1,13 @@
-cmake_minimum_required(VERSION 3.8.2)
+cmake_minimum_required(VERSION 3.5)
 
 project(sfmlgame)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 find_package(PhysFS REQUIRED)
-find_package(SFML 2.5 REQUIRED COMPONENTS audio graphics network system window)
+#find_package(SFML 2.5 REQUIRED COMPONENTS audio graphics network system window)
 
 set(
   SNES_SPC_SOURCES

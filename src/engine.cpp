@@ -127,7 +127,7 @@ void Engine::handleEvents() {
       window->close();
       break;
     case sf::Event::Resized:
-      onResize(Vec2(event.size.width, event.size.height));
+      onResize(Vec2<uint>(event.size.width, event.size.height));
       break;
     case sf::Event::KeyPressed:
     case sf::Event::KeyReleased:
