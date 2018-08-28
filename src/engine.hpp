@@ -82,6 +82,7 @@ public:
   sf::RenderTexture* viewport = nullptr;
   Vec2<uint> fbsize;
   uint fbscale = 1;
+  std::string prefdir;
 
   std::vector<GameState*> states;
 

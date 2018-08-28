@@ -100,17 +100,20 @@ void Engine::tickKeys() {
 
 bool Engine::setupPhysFS(std::string org, std::string appname, std::string basegame) {
   PHYSFS_permitSymbolicLinks(true);
+
+  prefdir = PHYSFS_getPrefDir(org.c_str(), appname.c_str());
+
   if (PHYSFS_setSaneConfig(org.c_str(), appname.c_str(), nullptr, 0, 0) == 0) {
     return false;
   }
 
-  if (PHYSFS_mount(basegame.c_str(), ("/games/" + basegame).c_str(), 1)) {
-    PHYSFS_mount((basegame + "/maps").c_str(), "/maps", 1);
-    PHYSFS_mount((basegame + "/music").c_str(), "/music", 1);
-    PHYSFS_mount((basegame + "/sounds").c_str(), "/sounds", 1);
-    PHYSFS_mount((basegame + "/sprites").c_str(), "/sprites", 1);
-    PHYSFS_mount((basegame + "/textures").c_str(), "/textures", 1);
-    PHYSFS_mount((basegame + "/tiles").c_str(), "/tiles", 1);
+  if (PHYSFS_mount((prefdir + basegame).c_str(), ("/games/" + basegame).c_str(), 1)) {
+    PHYSFS_mount((prefdir + basegame + "/maps").c_str(), "/maps", 1);
+    PHYSFS_mount((prefdir + basegame + "/music").c_str(), "/music", 1);
+    PHYSFS_mount((prefdir + basegame + "/sounds").c_str(), "/sounds", 1);
+    PHYSFS_mount((prefdir + basegame + "/sprites").c_str(), "/sprites", 1);
+    PHYSFS_mount((prefdir + basegame + "/textures").c_str(), "/textures", 1);
+    PHYSFS_mount((prefdir + basegame + "/tiles").c_str(), "/tiles", 1);
   }
   else {
     return false;
