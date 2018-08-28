@@ -2,7 +2,8 @@
 
 #include <stdexcept>
 
-namespace ke::util {
+namespace ke {
+namespace util {
 std::vector<char> readFile(std::string path) {
   if (PHYSFS_isInit() == 0) {
     throw std::runtime_error(PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
@@ -51,5 +52,6 @@ sf::Int64 FileInputStream::getSize() {
 
 FileInputStream::~FileInputStream() {
   PHYSFS_close(filehandle);
+}
 }
 }
