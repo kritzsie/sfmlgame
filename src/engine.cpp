@@ -52,10 +52,10 @@ void Keys::State::resetDelta() {
 }
 
 void Engine::onResize(Vec2<uint> size) {
-  scale = std::max<uint>(1, std::min(size.x / fbsize.x, size.y / fbsize.y));
+  fbscale = std::max<uint>(1, std::min(size.x / fbsize.x, size.y / fbsize.y));
 
-  uint width = fbsize.x * scale;
-  uint height = fbsize.y * scale;
+  uint width = fbsize.x * fbscale;
+  uint height = fbsize.y * fbscale;
 
   window->setView(sf::View(
     sf::Vector2f(width / 2.0f, height / 2.0f),
@@ -190,9 +190,13 @@ bool Engine::loop() {
 bool Engine::init() {
   setupPhysFS("Kha0z", "smb3", "basesmb3");
 
-  window->create(sf::VideoMode(fbsize.x * 2, fbsize.y * 2), "Super Mario Bros. 3");
+  auto videomode = sf::VideoMode::getDesktopMode();
+  uint scale = std::max<uint>(1, std::min(videomode.width / fbsize.x, videomode.height / fbsize.y));
+  uint width = fbsize.x * scale;
+  uint height = fbsize.y * scale;
 
-  viewport->create(window->getSize().x, window->getSize().y);
+  window->create(sf::VideoMode(width, height), "Super Mario Bros. 3");
+  window->setPosition(sf::Vector2i((videomode.width - width) / 2, (videomode.height - height) / 2));
 
   music->change("overworld");
   music->play();

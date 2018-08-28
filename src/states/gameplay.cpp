@@ -14,14 +14,14 @@ void Gameplay::drawBG(std::string bg, Vec2f dist) {
   float distdivx = dist.x / (dist.x - 1.0f);
   float distdivy = dist.y / (dist.y - 1.0f);
 
-  float left = world->camera.pos.x - win_w / 2 / engine->scale;
-  float bottom = world->camera.pos.y - win_h / 2 / engine->scale;
+  float left = world->camera.pos.x - win_w / 2 / engine->fbscale;
+  float bottom = world->camera.pos.y - win_h / 2 / engine->fbscale;
   int sky_w = texture.getSize().x;
   int sky_h = texture.getSize().y;
   int min_x = left / sky_w;
   int min_y = bottom / sky_h;
-  int max_x = (world->camera.pos.x + win_w * (2 * dist.x - 1) / 2 / engine->scale) / sky_w + dist.x;
-  int max_y = (world->camera.pos.y + win_h * (2 * dist.y - 1) / 2 / engine->scale) / sky_h + dist.y;
+  int max_x = (world->camera.pos.x + win_w * (2 * dist.x - 1) / 2 / engine->fbscale) / sky_w + dist.x;
+  int max_y = (world->camera.pos.y + win_h * (2 * dist.y - 1) / 2 / engine->fbscale) / sky_h + dist.y;
 
   sf::Sprite sky(texture);
   for (int y = std::floor(min_y / dist.y); y < std::floor(max_y / dist.y) + 1; y++)
@@ -40,12 +40,12 @@ void Gameplay::drawBGBottom(std::string bg, Vec2f dist) {
   float distdivx = dist.x / (dist.x - 1.0f);
   float distdivy = dist.y / (dist.y - 1.0f);
 
-  float left = world->camera.pos.x - win_w / 2 / engine->scale;
-  float bottom = world->camera.pos.y - win_h / 2 / engine->scale;
+  float left = world->camera.pos.x - win_w / 2 / engine->fbscale;
+  float bottom = world->camera.pos.y - win_h / 2 / engine->fbscale;
   int sky_w = texture.getSize().x;
-  int sky_h = texture.getSize().y;
+  int sky_h = texture.getSize().y - 11;
   int min_x = left / sky_w;
-  int max_x = (world->camera.pos.x + win_w * (2 * dist.x - 1) / 2 / engine->scale) / sky_w + dist.x;
+  int max_x = (world->camera.pos.x + win_w * (2 * dist.x - 1) / 2 / engine->fbscale) / sky_w + dist.x;
 
   sf::Sprite sky(texture);
   for (int x = std::floor(min_x / dist.x); x < std::floor(max_x / dist.x) + 1; x++) {
@@ -63,11 +63,11 @@ void Gameplay::drawBGTop(std::string bg, Vec2f dist) {
   float distdivx = dist.x / (dist.x - 1.0f);
   float distdivy = dist.y / (dist.y - 1.0f);
 
-  float left = world->camera.pos.x - win_w / 2 / engine->scale;
-  float top = world->camera.pos.y + win_h / 2 / engine->scale;
+  float left = world->camera.pos.x - win_w / 2 / engine->fbscale;
+  float top = world->camera.pos.y + win_h / 2 / engine->fbscale;
   int sky_w = texture.getSize().x;
   int min_x = left / sky_w;
-  int max_x = (world->camera.pos.x + win_w * (2 * dist.x - 1) / 2 / engine->scale) / sky_w + dist.x;
+  int max_x = (world->camera.pos.x + win_w * (2 * dist.x - 1) / 2 / engine->fbscale) / sky_w + dist.x;
 
   sf::Sprite sky(texture);
   for (int x = std::floor(min_x / dist.x); x < std::floor(max_x / dist.x) + 1; x++) {
@@ -80,10 +80,10 @@ void Gameplay::drawTiles() {
   auto win_w = engine->viewport->getSize().x;
   auto win_h = engine->viewport->getSize().y;
 
-  int left = std::max(0, std::min<int>(std::floor((world->camera.pos.x - win_w / 2 / engine->scale) / 16), world->size.x));
-  int bottom = std::max(0, std::min<int>(std::floor((world->camera.pos.y - win_h / 2 / engine->scale) / 16), world->size.y));
-  int right = std::max(0, std::min<int>(std::floor((world->camera.pos.x + win_w / 2 / engine->scale) / 16) + 1, world->size.x));
-  int top = std::max(0, std::min<int>(std::floor((world->camera.pos.y + win_h / 2 / engine->scale) / 16) + 1, world->size.y));
+  int left = std::max(0, std::min<int>(std::floor((world->camera.pos.x - win_w / 2 / engine->fbscale) / 16), world->size.x));
+  int bottom = std::max(0, std::min<int>(std::floor((world->camera.pos.y - win_h / 2 / engine->fbscale) / 16), world->size.y));
+  int right = std::max(0, std::min<int>(std::floor((world->camera.pos.x + win_w / 2 / engine->fbscale) / 16) + 1, world->size.x));
+  int top = std::max(0, std::min<int>(std::floor((world->camera.pos.y + win_h / 2 / engine->fbscale) / 16) + 1, world->size.y));
 
   for (int y = bottom; y < top; y++)
   for (int x = left; x < right; x++) {
@@ -324,10 +324,10 @@ void Gameplay::update() {
 
   world->camera.pos += world->camera.vel / engine->ticktime.rate;
 
-  auto camLeft = engine->viewport->getSize().x / 2 / engine->scale;
-  auto camRight = world->size.x * 16 - engine->viewport->getSize().x / 2 / engine->scale;
-  auto camUp = world->size.y * 16 - engine->viewport->getSize().y / 2 / engine->scale;
-  auto camDown = engine->viewport->getSize().y / 2 / engine->scale;
+  auto camLeft = engine->viewport->getSize().x / 2 / engine->fbscale;
+  auto camRight = world->size.x * 16 - engine->viewport->getSize().x / 2 / engine->fbscale;
+  auto camUp = world->size.y * 16 - engine->viewport->getSize().y / 2 / engine->fbscale;
+  auto camDown = engine->viewport->getSize().y / 2 / engine->fbscale;
 
   if (world->camera.pos.x < camLeft
   and world->camera.pos.x > camRight) {
@@ -364,7 +364,7 @@ void Gameplay::draw() {
   auto win_w = engine->viewport->getSize().x;
   auto win_h = engine->viewport->getSize().y;
 
-  sf::View view(sf::Vector2f(), sf::Vector2f(std::floor(win_w / engine->scale), std::floor(win_h / engine->scale)));
+  sf::View view(sf::Vector2f(), sf::Vector2f(std::floor(win_w / engine->fbscale), std::floor(win_h / engine->fbscale)));
   view.setCenter(World::toView(world->camera.pos));
   engine->viewport->setView(view);
 
