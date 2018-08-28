@@ -80,12 +80,14 @@ public:
   Sound* sound = nullptr;
 
   sf::RenderTexture* viewport = nullptr;
+  Vec2<uint> fbsize;
+  uint scale = 1;
 
   std::vector<GameState*> states;
 
 protected:
   void onKeyEvent(sf::Event&);
-  void onResize(Vec2<std::size_t>);
+  void onResize(Vec2<uint>);
 
 public:
   void tickKeys();

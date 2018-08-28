@@ -51,9 +51,18 @@ void Keys::State::resetDelta() {
   delta = 0;
 }
 
-void Engine::onResize(Vec2<std::size_t> size) {
-  window->setSize(sf::Vector2u(size.x, size.y));
-  //viewport->create(size.x, size.y);
+void Engine::onResize(Vec2<uint> size) {
+  scale = std::max<uint>(1, std::min(size.x / fbsize.x, size.y / fbsize.y));
+
+  uint width = fbsize.x * scale;
+  uint height = fbsize.y * scale;
+
+  window->setView(sf::View(
+    sf::Vector2f(width / 2.0f, height / 2.0f),
+    sf::Vector2f(size.x, size.y)
+  ));
+
+  viewport->create(width, height);
 }
 
 void Engine::onKeyEvent(sf::Event& event) {
@@ -113,27 +122,32 @@ bool Engine::setupPhysFS(std::string org, std::string appname, std::string baseg
 void Engine::handleEvents() {
   sf::Event event;
   while (window->pollEvent(event)) {
-    if (event.type == sf::Event::Closed) {
+    switch (event.type) {
+    case sf::Event::Closed:
       window->close();
-    }
-    else if (event.type == sf::Event::Resized) {
-      onResize(Vec2<std::size_t>(event.size.width, event.size.height));
-    }
-    else if (event.type == sf::Event::KeyPressed
-    or       event.type == sf::Event::KeyReleased) {
+      break;
+    case sf::Event::Resized:
+      onResize(Vec2(event.size.width, event.size.height));
+      break;
+    case sf::Event::KeyPressed:
+    case sf::Event::KeyReleased:
       onKeyEvent(event);
+    default:
+      break;
     }
   }
 }
 
 void Engine::update() {
-  for (auto& state : states) {
+  for (auto state : states) {
     state->update();
   }
 }
 
 void Engine::draw() {
-  for (auto& state : states) {
+  window->clear();
+
+  for (auto state : states) {
     state->draw();
   }
 
@@ -176,7 +190,7 @@ bool Engine::loop() {
 bool Engine::init() {
   setupPhysFS("Kha0z", "smb3", "basesmb3");
 
-  window->create(sf::VideoMode(768, 576), "Super Mario Bros. 3");
+  window->create(sf::VideoMode(fbsize.x * 2, fbsize.y * 2), "Super Mario Bros. 3");
 
   viewport->create(window->getSize().x, window->getSize().y);
 
@@ -198,7 +212,7 @@ int Engine::main() {
   return loop() ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-Engine::Engine(const StringList& args) : args(args), ticktime(64) {
+Engine::Engine(const StringList& args) : args(args), ticktime(64), fbsize(480, 270) {
   if (PHYSFS_isInit() == 0) {
     PHYSFS_init(args.at(0).c_str());
     deinitPhysFS = true;
