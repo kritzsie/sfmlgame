@@ -110,17 +110,11 @@ void Gameplay::drawEntities() {
 
 void Gameplay::drawUI() {}
 
-void Gameplay::enter() {
-}
+void Gameplay::enter() {}
+void Gameplay::exit() {}
 
-void Gameplay::exit() {
-}
-
-void Gameplay::pause() {
-}
-
-void Gameplay::resume() {
-}
+void Gameplay::pause() {}
+void Gameplay::resume() {}
 
 void Gameplay::update() {
   // TODO: Send these to a better place
