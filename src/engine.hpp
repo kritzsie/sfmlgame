@@ -93,7 +93,6 @@ public:
   void handleEvents();
   void update();
   void draw();
-  bool loop();
 
   int main();
 

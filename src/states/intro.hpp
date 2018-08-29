@@ -1,6 +1,7 @@
 #pragma once
 
 #include "gamestate.hpp"
+#include "../engine.hpp"
 
 namespace ke {
 class Intro : public GameState {
@@ -15,6 +16,6 @@ public:
   void draw() final;
 
   Intro(Engine*);
-  ~Intro() final;
+  ~Intro() final = default;
 };
 }

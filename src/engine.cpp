@@ -158,11 +158,34 @@ void Engine::draw() {
   window->display();
 }
 
-bool Engine::loop() {
+bool Engine::init() {
+  setupPhysFS("Kha0z", "smb3", "basesmb3");
+
+  auto videomode = sf::VideoMode::getDesktopMode();
+  uint scale = std::max<uint>(1, std::min(videomode.width / fbsize.x, videomode.height / fbsize.y) - 1);
+  uint width = fbsize.x * scale;
+  uint height = fbsize.y * scale;
+
+  window->create(sf::VideoMode(width, height), "Super Mario Bros. 3");
+  window->setPosition(sf::Vector2i((videomode.width - width) / 2, (videomode.height - height) / 2));
+
+  music->change("overworld");
+  music->play();
+
+  states.push_back(new Intro(this));
+
+  return true;
+}
+
+int Engine::main() {
+  if (init() == false) {
+    return EXIT_FAILURE;
+  }
+
   using namespace std::literals::chrono_literals;
 
-  Clock::time_point starttime = Clock::now();
-  Clock::time_point prevtime = starttime;
+  auto starttime = Clock::now();
+  auto prevtime = starttime;
   auto nexttick = prevtime + 1.0s / ticktime.rate;
   auto nextrender = prevtime + 1.0s / rendertime.rate;
 
@@ -187,34 +210,7 @@ bool Engine::loop() {
     prevtime = curtime;
   }
 
-  return true;
-}
-
-bool Engine::init() {
-  setupPhysFS("Kha0z", "smb3", "basesmb3");
-
-  auto videomode = sf::VideoMode::getDesktopMode();
-  uint scale = std::max<uint>(1, std::min(videomode.width / fbsize.x, videomode.height / fbsize.y));
-  uint width = fbsize.x * scale;
-  uint height = fbsize.y * scale;
-
-  window->create(sf::VideoMode(width, height), "Super Mario Bros. 3");
-  window->setPosition(sf::Vector2i((videomode.width - width) / 2, (videomode.height - height) / 2));
-
-  music->change("overworld");
-  music->play();
-
-  states.push_back(new Gameplay(this));
-
-  return true;
-}
-
-int Engine::main() {
-  if (init() == false) {
-    return EXIT_FAILURE;
-  }
-
-  return loop() ? EXIT_SUCCESS : EXIT_FAILURE;
+  return EXIT_SUCCESS;
 }
 
 Engine::Engine(const StringList& args) : args(args), ticktime(64), fbsize(480, 270) {

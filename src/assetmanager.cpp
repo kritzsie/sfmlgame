@@ -22,10 +22,9 @@ const std::string SFXAssetManager::extensions[] = {
 sf::Texture     GFXAssetManager::none;
 sf::SoundBuffer SFXAssetManager::none;
 
-namespace assets {
-  GFXAssetManager& gfx = GFXAssetManager::getInstance();
-  SFXAssetManager& sfx = SFXAssetManager::getInstance();
-}
+
+GFXAssetManager& assets::gfx = GFXAssetManager::getInstance();
+SFXAssetManager& assets::sfx = SFXAssetManager::getInstance();
 
 bool GFXAssetManager::load(
   std::string dir,
