@@ -48,7 +48,7 @@ struct Keys {
   State jump, run;
 };
 
-struct TimeInfo {
+class TimeInfo {
 public:
   float rate;
   float delta;
@@ -65,8 +65,6 @@ private:
 
   sf::RenderWindow* window = nullptr;
 
-  World* world = nullptr;
-
 public:
   Keys keys;
 
@@ -82,7 +80,6 @@ public:
   sf::RenderTexture* viewport = nullptr;
   Vec2<uint> fbsize;
   uint fbscale = 1;
-  std::string prefdir;
 
   std::vector<GameState*> states;
 

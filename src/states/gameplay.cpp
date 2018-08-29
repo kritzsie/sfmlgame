@@ -26,7 +26,7 @@ void Gameplay::drawBG(std::string bg, Vec2f dist) {
   sf::Sprite sky(texture);
   for (int y = std::floor(min_y / dist.y); y < std::floor(max_y / dist.y) + 1; y++)
   for (int x = std::floor(min_x / dist.x); x < std::floor(max_x / dist.x) + 1; x++) {
-    sky.setPosition(World::toView(Vec2f(x * sky_w + left / distdivx, y * sky_h + sky_h + bottom / distdivy)));
+    sky.setPosition(World::toView(Vec2f(x * sky_w + left / distdivx + 16 * world->padding.left / dist.x, y * sky_h + sky_h + bottom / distdivy - 16 * world->padding.top / dist.y)));
     engine->viewport->draw(sky);
   }
 }
@@ -49,7 +49,7 @@ void Gameplay::drawBGBottom(std::string bg, Vec2f dist) {
 
   sf::Sprite sky(texture);
   for (int x = std::floor(min_x / dist.x); x < std::floor(max_x / dist.x) + 1; x++) {
-    sky.setPosition(World::toView(Vec2f(x * sky_w + left / distdivx, sky_h + bottom / distdivy)));
+    sky.setPosition(World::toView(Vec2f(x * sky_w + left / distdivx + 16 * world->padding.left / dist.x, sky_h + bottom / distdivy + 16 * world->padding.bottom / dist.y)));
     engine->viewport->draw(sky);
   }
 }
@@ -71,7 +71,7 @@ void Gameplay::drawBGTop(std::string bg, Vec2f dist) {
 
   sf::Sprite sky(texture);
   for (int x = std::floor(min_x / dist.x); x < std::floor(max_x / dist.x) + 1; x++) {
-    sky.setPosition(World::toView(Vec2f(x * sky_w + left / distdivx, world->size.y * 16 / dist.y + top / distdivy)));
+    sky.setPosition(World::toView(Vec2f(x * sky_w + left / distdivx + 16 * world->padding.left / dist.x, world->size.y * 16 / dist.y + top / distdivy - 16 * world->padding.top / dist.y)));
     engine->viewport->draw(sky);
   }
 }
@@ -80,16 +80,16 @@ void Gameplay::drawTiles() {
   auto win_w = engine->viewport->getSize().x;
   auto win_h = engine->viewport->getSize().y;
 
-  int left = std::max(0, std::min<int>(std::floor((world->camera.pos.x - win_w / 2 / engine->fbscale) / 16), world->size.x));
-  int bottom = std::max(0, std::min<int>(std::floor((world->camera.pos.y - win_h / 2 / engine->fbscale) / 16), world->size.y));
-  int right = std::max(0, std::min<int>(std::floor((world->camera.pos.x + win_w / 2 / engine->fbscale) / 16) + 1, world->size.x));
-  int top = std::max(0, std::min<int>(std::floor((world->camera.pos.y + win_h / 2 / engine->fbscale) / 16) + 1, world->size.y));
+  int left = std::max(0, std::min(int((world->camera.pos.x - win_w / 2 / engine->fbscale) / 16), world->size.x));
+  int bottom = std::max(0, std::min(int((world->camera.pos.y - win_h / 2 / engine->fbscale) / 16), world->size.y));
+  int right = std::max(0, std::min(int((world->camera.pos.x + win_w / 2 / engine->fbscale) / 16) + 1, world->size.x));
+  int top = std::max(0, std::min(int((world->camera.pos.y + win_h / 2 / engine->fbscale) / 16) + 1, world->size.y));
 
   for (int y = bottom; y < top; y++)
   for (int x = left; x < right; x++) {
     auto tileid = world->getTile(x, y);
     if (tileid) {
-      const sf::Texture& texture = engine->gfx.getTile("smb3_tile_atlas");
+      const auto& texture = engine->gfx.getTile("smb3_tile_atlas");
       int xoffset = (tileid - 1) * 16 % texture.getSize().x;
       int yoffset = ((tileid - 1) / (texture.getSize().x / 16)) * 16 % texture.getSize().y;
       sf::Sprite tile(texture, sf::IntRect(xoffset, yoffset, 16, 16));
@@ -324,10 +324,10 @@ void Gameplay::update() {
 
   world->camera.pos += world->camera.vel / engine->ticktime.rate;
 
-  auto camLeft = engine->viewport->getSize().x / 2 / engine->fbscale;
-  auto camRight = world->size.x * 16 - engine->viewport->getSize().x / 2 / engine->fbscale;
-  auto camUp = world->size.y * 16 - engine->viewport->getSize().y / 2 / engine->fbscale;
-  auto camDown = engine->viewport->getSize().y / 2 / engine->fbscale;
+  auto camLeft = engine->viewport->getSize().x / 2 / engine->fbscale + world->padding.left * 16;
+  auto camRight = world->size.x * 16 - engine->viewport->getSize().x / 2 / engine->fbscale - world->padding.right * 16;
+  auto camUp = world->size.y * 16 - engine->viewport->getSize().y / 2 / engine->fbscale - world->padding.top * 16;
+  auto camDown = engine->viewport->getSize().y / 2 / engine->fbscale + world->padding.bottom * 16;
 
   if (world->camera.pos.x < camLeft
   and world->camera.pos.x > camRight) {

@@ -101,7 +101,7 @@ void Engine::tickKeys() {
 bool Engine::setupPhysFS(std::string org, std::string appname, std::string basegame) {
   PHYSFS_permitSymbolicLinks(true);
 
-  prefdir = PHYSFS_getPrefDir(org.c_str(), appname.c_str());
+  std::string prefdir = PHYSFS_getPrefDir(org.c_str(), appname.c_str());
 
   if (PHYSFS_setSaneConfig(org.c_str(), appname.c_str(), nullptr, 0, 0) == 0) {
     return false;
@@ -204,8 +204,6 @@ bool Engine::init() {
   music->change("overworld");
   music->play();
 
-  world->player.sprite.setTexture(gfx.getSprite("bigmariowalk_0"));
-
   states.push_back(new Gameplay(this));
 
   return true;
@@ -227,7 +225,6 @@ Engine::Engine(const StringList& args) : args(args), ticktime(64), fbsize(480, 2
 
   viewport = new sf::RenderTexture();
   window   = new sf::RenderWindow();
-  world    = new World(176, 27);
   music    = new Music();
   sound    = new Sound(sfx);
 }
@@ -236,7 +233,6 @@ Engine::~Engine() {
   if (deinitPhysFS) PHYSFS_deinit();
 
   if (window != nullptr) delete window;
-  if (world  != nullptr) delete world;
   if (music  != nullptr) delete music;
   if (sound  != nullptr) delete sound;
 }

@@ -8,12 +8,18 @@ using tileid_t = uint;
 
 using Vec2f = Vec2<float>;
 
+template<typename T>
+struct Padding {
+  T left, right, bottom, top;
+};
+
 class World {
 protected:
   tileid_t* tiles;
 
 public:
   Vec2<int> size;
+  Padding<int> padding;
 
   BaseEntity camera;
   PlayerEntity player;
@@ -29,6 +35,7 @@ public:
   void setTile(int, int, tileid_t);
 
   World(int, int);
+  World(int, int, Padding<int>);
   ~World();
 };
 }

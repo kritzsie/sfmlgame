@@ -57,7 +57,7 @@ void World::setTile(int x, int y, tileid_t tileid) {
   }
 }
 
-World::World(int x, int y) : player({7, -1}, {1, 1}, 5, 25) {
+World::World(int x, int y, Padding<int> padding) : padding(padding), player({7, -1}, {1, 1}, 5, 25) {
   tiles = new tileid_t[x * y]();
   size.x = x;
   size.y = y;
@@ -94,6 +94,8 @@ World::World(int x, int y) : player({7, -1}, {1, 1}, 5, 25) {
   camera.pos = player.pos + Vec2f(0, player.height / 2);
   // End test world
 }
+
+World::World(int x, int y) : World(x, y, Padding<int>{}) {}
 
 World::~World() {
   delete tiles;
