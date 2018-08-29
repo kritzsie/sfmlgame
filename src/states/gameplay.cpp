@@ -1,5 +1,7 @@
 #include "gameplay.hpp"
 
+#include "../assetmanager.hpp"
+
 namespace ke {
 void Gameplay::drawBG(uint32_t color) {
   engine->viewport->clear(sf::Color(color));
@@ -9,7 +11,7 @@ void Gameplay::drawBG(std::string bg, Vec2f dist) {
   auto win_w = engine->viewport->getSize().x;
   auto win_h = engine->viewport->getSize().y;
 
-  const auto& texture = engine->gfx.getTexture(bg);
+  const auto& texture = assets::gfx.getTexture(bg);
 
   float distdivx = dist.x / (dist.x - 1.0f);
   float distdivy = dist.y / (dist.y - 1.0f);
@@ -35,7 +37,7 @@ void Gameplay::drawBGBottom(std::string bg, Vec2f dist) {
   auto win_w = engine->viewport->getSize().x;
   auto win_h = engine->viewport->getSize().y;
 
-  const auto& texture = engine->gfx.getTexture(bg);
+  const auto& texture = assets::gfx.getTexture(bg);
 
   float distdivx = dist.x / (dist.x - 1.0f);
   float distdivy = dist.y / (dist.y - 1.0f);
@@ -58,7 +60,7 @@ void Gameplay::drawBGTop(std::string bg, Vec2f dist) {
   auto win_w = engine->viewport->getSize().x;
   auto win_h = engine->viewport->getSize().y;
 
-  const auto& texture = engine->gfx.getTexture(bg);
+  const auto& texture = assets::gfx.getTexture(bg);
 
   float distdivx = dist.x / (dist.x - 1.0f);
   float distdivy = dist.y / (dist.y - 1.0f);
@@ -89,7 +91,7 @@ void Gameplay::drawTiles() {
   for (int x = left; x < right; x++) {
     auto tileid = world->getTile(x, y);
     if (tileid) {
-      const auto& texture = engine->gfx.getTile("smb3_tile_atlas");
+      const auto& texture = assets::gfx.getTile("smb3_tile_atlas");
       int xoffset = (tileid - 1) * 16 % texture.getSize().x;
       int yoffset = ((tileid - 1) / (texture.getSize().x / 16)) * 16 % texture.getSize().y;
       sf::Sprite tile(texture, sf::IntRect(xoffset, yoffset, 16, 16));
@@ -157,14 +159,14 @@ void Gameplay::update() {
     }
 
     if (down and not direction) {
-      world->player.sprite.setTexture(engine->gfx.getSprite("bigmarioduck"), true);
+      world->player.sprite.setTexture(assets::gfx.getSprite("bigmarioduck"), true);
       world->player.offset.x = 7;
       world->player.duck();
     }
     else {
       if (world->player.vel.x > 0
       and direction < 0) {
-        world->player.sprite.setTexture(engine->gfx.getSprite("bigmarioslip"), true);
+        world->player.sprite.setTexture(assets::gfx.getSprite("bigmarioslip"), true);
         world->player.offset.x = 8;
         if (world->player.sliptime == 0) {
           world->player.sliptime = 0.09375;
@@ -176,7 +178,7 @@ void Gameplay::update() {
       }
       else if (world->player.vel.x < 0
       and direction > 0) {
-        world->player.sprite.setTexture(engine->gfx.getSprite("bigmarioslip"), true);
+        world->player.sprite.setTexture(assets::gfx.getSprite("bigmarioslip"), true);
         world->player.offset.x = 8;
         if (world->player.sliptime == 0) {
           world->player.sliptime = 0.09375;
@@ -200,7 +202,7 @@ void Gameplay::update() {
           world->player.walktime = 0;
           world->player.walkcycle = 0;
         }
-        world->player.sprite.setTexture(engine->gfx.getSprite("bigmariowalk_" + std::to_string(world->player.walkcycle < 3 ? world->player.walkcycle : 1)), true);
+        world->player.sprite.setTexture(assets::gfx.getSprite("bigmariowalk_" + std::to_string(world->player.walkcycle < 3 ? world->player.walkcycle : 1)), true);
         world->player.offset.x = world->player.walkcycle ? 9 : 7;
         world->player.sliptime = 0;
       }
@@ -220,7 +222,7 @@ void Gameplay::update() {
       }
     }
     if (not world->player.ducking) {
-      world->player.sprite.setTexture(engine->gfx.getSprite("bigmariojump"), true);
+      world->player.sprite.setTexture(assets::gfx.getSprite("bigmariojump"), true);
       world->player.offset.x = 8;
     }
   }

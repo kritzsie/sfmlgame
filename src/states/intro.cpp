@@ -8,7 +8,6 @@ void Intro::pause() {}
 void Intro::resume() {}
 
 void Intro::update() {}
-
 void Intro::draw() {}
 
 Intro::Intro(Engine* engine) : GameState(engine) {}

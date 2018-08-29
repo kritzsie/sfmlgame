@@ -1,12 +1,14 @@
 #include "sound.hpp"
 
+#include "assetmanager.hpp"
+
 #include <SFML/Audio.hpp>
 
 #include <cstddef>
 
 namespace ke {
 bool Sound::play(std::size_t voice_id, std::string name) {
-  const sf::SoundBuffer& sound = sfxassets.getSound(name);
+  const sf::SoundBuffer& sound = assets::sfx.getSound(name);
   sf::Sound& voice = voices[voice_id];
 
   if (voice.getBuffer() == &sound) {
@@ -23,7 +25,7 @@ bool Sound::play(std::size_t voice_id, std::string name) {
 }
 
 std::size_t Sound::play(std::string name) {
-  const sf::SoundBuffer& sound = sfxassets.getSound(name);
+  const sf::SoundBuffer& sound = assets::sfx.getSound(name);
 
   for (std::size_t i = 0; i < MAX_VOICES - 1; i++) {
     if (play(i, name)) {
@@ -94,6 +96,4 @@ std::size_t Sound::stop() {
   }
   return count;
 }
-
-Sound::Sound(SFXAssetManager& assetmanager) : sfxassets(assetmanager) {}
 }

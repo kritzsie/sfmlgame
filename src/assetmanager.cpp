@@ -22,6 +22,11 @@ const std::string SFXAssetManager::extensions[] = {
 sf::Texture     GFXAssetManager::none;
 sf::SoundBuffer SFXAssetManager::none;
 
+namespace assets {
+  GFXAssetManager& gfx = GFXAssetManager::getInstance();
+  SFXAssetManager& sfx = SFXAssetManager::getInstance();
+}
+
 bool GFXAssetManager::load(
   std::string dir,
   std::string name,
@@ -30,8 +35,8 @@ bool GFXAssetManager::load(
   for (auto& ext : extensions) {
     std::string path = dir + "/" + (ext.size() ? name + "." + ext : name);
     if (PHYSFS_exists(path.c_str())) {
-      sf::Texture texture;
       util::FileInputStream filestream;
+      sf::Texture texture;
 
       filestream.open(path);
       texture.loadFromStream(filestream);
@@ -139,6 +144,12 @@ sf::Texture& GFXAssetManager::getTile(std::string name) {
   return none;
 }
 
+GFXAssetManager& GFXAssetManager::getInstance() noexcept {
+  static GFXAssetManager instance;
+
+  return instance;
+}
+
 bool SFXAssetManager::load(std::string dir, std::string name) {
   for (auto& ext : extensions) {
     std::string path = dir + "/" + (ext.size() ? name + "." + ext : name);
@@ -176,5 +187,11 @@ sf::SoundBuffer& SFXAssetManager::getSound(std::string name) {
   }
 
   return none;
+}
+
+SFXAssetManager& SFXAssetManager::getInstance() noexcept {
+  static SFXAssetManager instance;
+
+  return instance;
 }
 }

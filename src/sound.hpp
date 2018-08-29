@@ -13,7 +13,6 @@ public:
   static const std::size_t MAX_VOICES = 32;
 
 private:
-  SFXAssetManager& sfxassets;
   sf::Sound voices[MAX_VOICES];
 
 public:
@@ -25,7 +24,5 @@ public:
   std::size_t resume();
   bool stop(std::size_t);
   std::size_t stop();
-
-  Sound(SFXAssetManager&);
 };
 }

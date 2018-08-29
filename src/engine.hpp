@@ -71,9 +71,6 @@ public:
   TimeInfo ticktime;
   TimeInfo rendertime;
 
-  GFXAssetManager gfx;
-  SFXAssetManager sfx;
-
   Music* music = nullptr;
   Sound* sound = nullptr;
 

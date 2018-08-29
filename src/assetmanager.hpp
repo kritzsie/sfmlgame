@@ -11,15 +11,17 @@
 namespace ke {
 class GFXAssetManager {
 private:
-  static const std::string extensions[];
-  static sf::Texture none;
-
   std::map<std::string, sf::Texture> sprites, textures, tiles;
 
-  bool load(std::string, std::string);
   bool load(std::string, std::string, std::map<std::string, sf::Texture>&);
 
 public:
+  static const std::string extensions[];
+  static sf::Texture none;
+
+  static GFXAssetManager& getInstance() noexcept;
+
+  bool load(std::string, std::string);
   bool loadSprite(std::string);
   bool loadTexture(std::string);
   bool loadTile(std::string);
@@ -27,20 +29,38 @@ public:
   sf::Texture& getSprite(std::string);
   sf::Texture& getTexture(std::string);
   sf::Texture& getTile(std::string);
+
+private:
+  GFXAssetManager() = default;
+
+public:
+  GFXAssetManager(const GFXAssetManager&) = delete;
 };
 
 class SFXAssetManager {
 private:
+  std::map<std::string, sf::SoundBuffer> sounds;
+
+public:
   static const std::string extensions[];
   static sf::SoundBuffer none;
 
-  std::map<std::string, sf::SoundBuffer> sounds;
+  static SFXAssetManager& getInstance() noexcept;
 
   bool load(std::string, std::string);
-
-public:
   bool loadSound(std::string);
 
   sf::SoundBuffer& getSound(std::string);
+
+private:
+  SFXAssetManager() = default;
+
+public:
+  SFXAssetManager(const SFXAssetManager&) = delete;
 };
+
+namespace assets {
+  extern GFXAssetManager& gfx;
+  extern SFXAssetManager& sfx;
+}
 }

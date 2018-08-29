@@ -226,7 +226,7 @@ Engine::Engine(const StringList& args) : args(args), ticktime(64), fbsize(480, 2
   viewport = new sf::RenderTexture();
   window   = new sf::RenderWindow();
   music    = new Music();
-  sound    = new Sound(sfx);
+  sound    = new Sound();
 }
 
 Engine::~Engine() {
