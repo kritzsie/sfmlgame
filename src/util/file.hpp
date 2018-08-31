@@ -8,8 +8,7 @@
 #include <string>
 #include <vector>
 
-namespace ke {
-namespace util {
+namespace ke::util {
 std::vector<char> readFile(std::string);
 
 class FileInputStream : public sf::FileInputStream {
@@ -25,5 +24,4 @@ public:
 
   virtual ~FileInputStream() override;
 };
-}
 }

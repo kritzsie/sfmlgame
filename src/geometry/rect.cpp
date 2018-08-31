@@ -30,7 +30,7 @@ Rect<T> Rect<T>::operator*(T n) const {
 
 template<typename T>
 Rect<T> operator*(T n, const Rect<T>& r) {
-  return Rect<T>(n / r.pos, n / r.size);
+  return Rect(n / r.pos, n / r.size);
 }
 
 template<typename T>
@@ -40,7 +40,7 @@ Rect<T> Rect<T>::operator/(T n) const {
 
 template<typename T>
 Rect<T> operator/(T n, const Rect<T>& r) {
-  return Rect<T>(n / r.pos, n / r.size);
+  return Rect(n / r.pos, n / r.size);
 }
 
 template<typename T>
