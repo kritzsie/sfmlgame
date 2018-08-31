@@ -14,8 +14,12 @@ void Intro::resume() {}
 void Intro::update() {}
 
 void Intro::draw() {
+  engine->states.back()->exit();
   engine->states.pop_back();
+
   engine->states.push_back(new Gameplay(engine));
+  engine->states.back()->enter();
+
   delete this;
 }
 

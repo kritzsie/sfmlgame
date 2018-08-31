@@ -169,9 +169,6 @@ bool Engine::init() {
   window->create(sf::VideoMode(width, height), "Super Mario Bros. 3");
   window->setPosition(sf::Vector2i((videomode.width - width) / 2, (videomode.height - height) / 2));
 
-  music->change("overworld");
-  music->play();
-
   states.push_back(new Intro(this));
 
   return true;

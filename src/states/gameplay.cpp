@@ -112,7 +112,11 @@ void Gameplay::drawEntities() {
 
 void Gameplay::drawUI() {}
 
-void Gameplay::enter() {}
+void Gameplay::enter() {
+  engine->music->change("overworld");
+  engine->music->play();
+}
+
 void Gameplay::exit() {}
 
 void Gameplay::pause() {}
