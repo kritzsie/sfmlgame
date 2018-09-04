@@ -6,11 +6,16 @@
 
 #include <SFML/Audio.hpp>
 
+#include <cmath>
 #include <vector>
 
 namespace ke {
 spc_err_t SPC::load_spc(const std::vector<char>& spc) {
   return spc_load_spc(snes_spc, spc.data(), spc.size());
+}
+
+spc_err_t SPC::play(std::vector<short>& buffer) {
+  return spc_play(snes_spc, buffer.size(), buffer.data());
 }
 
 void SPC::reset() {
@@ -21,8 +26,12 @@ void SPC::soft_reset() {
   spc_soft_reset(snes_spc);
 }
 
-spc_err_t SPC::play(std::vector<short>& buffer) {
-  return spc_play(snes_spc, buffer.size(), buffer.data());
+void SPC::set_tempo(float new_tempo) {
+  spc_set_tempo(snes_spc, std::round(new_tempo * tempo_unit));
+}
+
+float SPC::get_tempo() {
+  return tempo;
 }
 
 SPC::SPC() {
@@ -30,7 +39,7 @@ SPC::SPC() {
 }
 
 SPC::~SPC() {
-  spc_delete(snes_spc);
+  if (snes_spc != nullptr) spc_delete(snes_spc);
 }
 
 bool SPCStream::onGetData(Chunk& data) {
@@ -59,7 +68,7 @@ SPCStream::~SPCStream() {
 bool Music::change(std::string name) {
   std::string path = "/music/" + name + ".spc";
 
-  if (stream.spc.load_spc(util::readFile(path))) {
+  if (stream->spc.load_spc(util::readFile(path))) {
     return false;
   }
 
@@ -67,22 +76,28 @@ bool Music::change(std::string name) {
 }
 
 void Music::play() {
-  stream.play();
+  stream->play();
 }
 
 void Music::pause() {
-  stream.pause();
+  stream->pause();
 }
 
 void Music::resume() {
-  if (stream.getStatus() == sf::SoundSource::Status::Paused) {
-    stream.play();
+  if (stream->getStatus() == sf::SoundSource::Status::Paused) {
+    stream->play();
   }
 }
 
 void Music::stop() {
-  stream.stop();
+  stream->stop();
 }
 
-Music::Music() : stream() {}
+Music::Music() {
+  stream = new SPCStream;
+}
+
+Music::~Music() {
+  if (stream != nullptr) delete stream;
+}
 }

@@ -15,17 +15,21 @@ public:
     sample_rate = spc_sample_rate,
     rom_size = spc_rom_size,
     clock_rate = spc_clock_rate,
-    clocks_per_sample = spc_clocks_per_sample
+    clocks_per_sample = spc_clocks_per_sample,
+    tempo_unit = spc_tempo_unit
   };
 
 private:
-  SNES_SPC* snes_spc;
+  SNES_SPC* snes_spc = nullptr;
+  float tempo = 0.0f;
 
 public:
   spc_err_t load_spc(const std::vector<char>&);
   spc_err_t play(std::vector<short>&);
   void reset();
   void soft_reset();
+  void set_tempo(float);
+  float get_tempo();
 
   SPC();
   ~SPC();
@@ -48,7 +52,7 @@ public:
 
 class Music {
 private:
-  SPCStream stream;
+  SPCStream* stream = nullptr;
 
 public:
   bool change(std::string);
@@ -58,5 +62,6 @@ public:
   void stop();
 
   Music();
+  ~Music();
 };
 }
