@@ -52,8 +52,7 @@ void Keys::State::resetDelta() {
 }
 
 void Engine::onResize(Vec2<uint> size) {
-  fbscale = std::max<uint>(1, std::min(size.x / fbsize.x, size.y / fbsize.y));
-
+  fbscale = std::max(1u, std::min(size.x / fbsize.x, size.y / fbsize.y));
   uint width = fbsize.x * fbscale;
   uint height = fbsize.y * fbscale;
 
@@ -158,22 +157,6 @@ void Engine::draw() {
   window->display();
 }
 
-bool Engine::init() {
-  setupPhysFS("Kha0z", "smb3", "basesmb3");
-
-  auto videomode = sf::VideoMode::getDesktopMode();
-  uint scale = std::max<uint>(1, std::min(videomode.width / fbsize.x, videomode.height / fbsize.y) - 1);
-  uint width = fbsize.x * scale;
-  uint height = fbsize.y * scale;
-
-  window->create(sf::VideoMode(width, height), "Super Mario Bros. 3");
-  window->setPosition(sf::Vector2i((videomode.width - width) / 2, (videomode.height - height) / 2));
-
-  states.push_back(new Intro(this));
-
-  return true;
-}
-
 int Engine::main() {
   if (init() == false) {
     return EXIT_FAILURE;
@@ -208,6 +191,22 @@ int Engine::main() {
   }
 
   return EXIT_SUCCESS;
+}
+
+bool Engine::init() {
+  setupPhysFS("Kha0z", "smb3", "basesmb3");
+
+  auto videomode = sf::VideoMode::getDesktopMode();
+  uint scale = std::max(1u, std::min(videomode.width / fbsize.x, videomode.height / fbsize.y) - 1);
+  uint width = fbsize.x * scale;
+  uint height = fbsize.y * scale;
+
+  window->create(sf::VideoMode(width, height), "Super Mario Bros. 3");
+  window->setPosition(sf::Vector2i((videomode.width - width) / 2, (videomode.height - height) / 2));
+
+  states.push_back(new Intro(this));
+
+  return true;
 }
 
 Engine::Engine(const StringList& args) : args(args), ticktime(64), fbsize(480, 270) {
