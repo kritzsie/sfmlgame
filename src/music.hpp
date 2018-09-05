@@ -21,7 +21,7 @@ public:
 
 private:
   SNES_SPC* snes_spc = nullptr;
-  float tempo = 0.0f;
+  float spc_tempo = 1.0f;
 
 public:
   spc_err_t load_spc(const std::vector<char>&);
@@ -29,7 +29,7 @@ public:
   void reset();
   void soft_reset();
   void set_tempo(float);
-  float get_tempo();
+  float get_tempo() const;
 
   SPC();
   ~SPC();
@@ -42,8 +42,11 @@ private:
 public:
   SPC spc;
 
-  bool onGetData(Chunk&);
-  void onSeek(sf::Time);
+  bool onGetData(Chunk&) final;
+  void onSeek(sf::Time) final;
+
+  void setTempo(float);
+  float getTempo() const;
 
   SPCStream();
   SPCStream(std::size_t, std::size_t);
@@ -60,6 +63,10 @@ public:
   void pause();
   void resume();
   void stop();
+  sf::SoundSource::Status getStatus() const;
+  void setTempo(float);
+  float getTempo() const;
+
 
   Music();
   ~Music();

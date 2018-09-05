@@ -26,12 +26,13 @@ void SPC::soft_reset() {
   spc_soft_reset(snes_spc);
 }
 
-void SPC::set_tempo(float new_tempo) {
-  spc_set_tempo(snes_spc, std::round(new_tempo * tempo_unit));
+void SPC::set_tempo(float tempo) {
+  spc_tempo = tempo;
+  spc_set_tempo(snes_spc, std::round(tempo * tempo_unit));
 }
 
-float SPC::get_tempo() {
-  return tempo;
+float SPC::get_tempo() const {
+  return spc_tempo;
 }
 
 SPC::SPC() {
@@ -52,6 +53,15 @@ bool SPCStream::onGetData(Chunk& data) {
 }
 
 void SPCStream::onSeek(sf::Time) {}
+
+float SPCStream::getTempo() const {
+  return spc.get_tempo();
+}
+
+void SPCStream::setTempo(float tempo) {
+  spc.set_tempo(tempo);
+}
+
 
 SPCStream::SPCStream(std::size_t bufsize, std::size_t channels) : buffer(bufsize) {
   initialize(channels, 32000);
@@ -91,6 +101,18 @@ void Music::resume() {
 
 void Music::stop() {
   stream->stop();
+}
+
+sf::SoundSource::Status Music::getStatus() const {
+  return stream->getStatus();
+}
+
+void Music::setTempo(float tempo) {
+  stream->setTempo(tempo);
+}
+
+float Music::getTempo() const {
+  return stream->getTempo();
 }
 
 Music::Music() {
