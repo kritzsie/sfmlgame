@@ -22,6 +22,8 @@ private:
   void drawUI();
 
 public:
+  static GameState::Factory makeState();
+
   void enter() final;
   void exit() final;
 
@@ -31,7 +33,9 @@ public:
   void update() final;
   void draw() final;
 
-  Gameplay(Engine*);
   ~Gameplay() final;
+
+private:
+  Gameplay(Engine*);
 };
 }

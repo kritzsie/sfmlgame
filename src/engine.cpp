@@ -121,6 +121,15 @@ bool Engine::setupPhysFS(std::string org, std::string appname, std::string baseg
   return true;
 }
 
+void Engine::push_state(GameState::Factory state_factory) {
+  events.push_back(Event(EventType::push, state_factory));
+}
+
+GameState* Engine::pop_state() {
+  events.push_back(Event(EventType::pop, nullptr));
+  return states.back();
+}
+
 void Engine::handleEvents() {
   sf::Event event;
   while (window->pollEvent(event)) {
@@ -141,6 +150,28 @@ void Engine::handleEvents() {
 }
 
 void Engine::update() {
+  for (Event& event : events) {
+    switch (event.first) {
+      case EventType::push: {
+        GameState* state = event.second(this);
+        states.push_back(state);
+        state->enter();
+        break;
+      }
+      case EventType::pop: {
+        GameState* state = states.back();
+        state->exit();
+        delete state;
+        states.pop_back();
+        break;
+      }
+    }
+  }
+
+  if (events.size() > 0) {
+    events.clear();
+  }
+
   for (auto state : states) {
     state->update();
   }
@@ -171,7 +202,6 @@ int Engine::main() {
 
   while (window->isOpen()) {
     Clock::time_point curtime = Clock::now();
-    //Clock::duration deltatime = curtime - prevtime;
 
     handleEvents();
 
@@ -185,9 +215,14 @@ int Engine::main() {
       nextrender += 1.0s / rendertime.rate;
     }
 
-    std::this_thread::sleep_until(std::min(nexttick, nextrender));
-
-    prevtime = curtime;
+    if (events.size() > 0
+    or  states.size() > 0) {
+      std::this_thread::sleep_until(std::min(nexttick, nextrender));
+      prevtime = curtime;
+    }
+    else {
+      window->close();
+    }
   }
 
   return EXIT_SUCCESS;
@@ -204,7 +239,8 @@ bool Engine::init() {
   window->create(sf::VideoMode(width, height), "Super Mario Bros. 3");
   window->setPosition(sf::Vector2i((videomode.width - width) / 2, (videomode.height - height) / 2));
 
-  states.push_back(new Intro(this));
+  //states.push_back(new Intro(this));
+  push_state(Intro::makeState());
 
   return true;
 }

@@ -6,6 +6,8 @@
 namespace ke {
 class Intro : public GameState {
 public:
+  static GameState::Factory makeState();
+
   void enter() final;
   void exit() final;
 
@@ -15,7 +17,9 @@ public:
   void update() final;
   void draw() final;
 
-  Intro(Engine*);
   ~Intro() final = default;
+
+private:
+  Intro(Engine*);
 };
 }

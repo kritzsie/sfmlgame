@@ -58,14 +58,15 @@ public:
 };
 
 class Engine {
-private:
-  bool deinitPhysFS = false;
+public:
+  enum class EventType {
+    push, pop
+  };
+
+  using Event = std::pair<EventType, GameState::Factory>;
 
   StringList args;
 
-  sf::RenderWindow* window = nullptr;
-
-public:
   Keys keys;
 
   TimeInfo ticktime;
@@ -78,6 +79,12 @@ public:
   Vec2<uint> fbsize;
   uint fbscale = 1;
 
+private:
+  bool deinitPhysFS = false;
+
+  sf::RenderWindow* window = nullptr;
+
+  std::vector<Event> events;
   std::vector<GameState*> states;
 
 protected:
@@ -89,6 +96,9 @@ public:
 
   bool init();
   bool setupPhysFS(std::string, std::string, std::string);
+
+  void push_state(GameState::Factory);
+  GameState* pop_state();
 
   void handleEvents();
   void update();

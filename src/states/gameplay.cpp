@@ -3,6 +3,12 @@
 #include "../assetmanager.hpp"
 
 namespace ke {
+GameState::Factory Gameplay::makeState() {
+  return [](Engine* engine) -> GameState* {
+    return new Gameplay(engine);
+  };
+}
+
 void Gameplay::drawBG(uint32_t color) {
   engine->viewport->clear(sf::Color(color));
 }
@@ -117,7 +123,9 @@ void Gameplay::enter() {
   engine->music->play();
 }
 
-void Gameplay::exit() {}
+void Gameplay::exit() {
+  engine->music->stop();
+}
 
 void Gameplay::pause() {}
 void Gameplay::resume() {}
