@@ -63,7 +63,7 @@ public:
 class PlayerEntity : public Entity {
 public:
   std::size_t state_counter = 0;
-  std::map<std::string, std::vector<RenderState>> states;
+  StringTable<std::vector<RenderState>> states;
 
   bool airborne = false;
   bool ducking = false, p_speed = false;

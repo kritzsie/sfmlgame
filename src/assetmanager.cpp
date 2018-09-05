@@ -110,7 +110,11 @@ GFXAssets& GFXAssets::getInstance() {
   return instance;
 }
 
-GFXAssets::GFXAssets() : AssetManager(gfx_extensions) {}
+GFXAssets::GFXAssets() : AssetManager(gfx_extensions) {
+  assets["sprites" ][""] = none;
+  assets["tiles"   ][""] = none;
+  assets["textures"][""] = none;
+}
 
 bool SFXAssets::onLoad(sf::InputStream& ifs, std::string, std::string name) {
   sf::SoundBuffer sound;
@@ -144,5 +148,7 @@ SFXAssets& SFXAssets::getInstance() {
   return instance;
 }
 
-SFXAssets::SFXAssets() : AssetManager(sfx_extensions) {}
+SFXAssets::SFXAssets() : AssetManager(sfx_extensions) {
+  sounds[""] = none;
+}
 }
