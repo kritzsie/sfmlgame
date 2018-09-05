@@ -288,6 +288,9 @@ void Gameplay::update() {
             world->setTile(x, y, 0);
           }
           engine->sound->play("brickshatter");*/
+          if (world->player.vel.y > 0) {
+            engine->sound->play("bump");
+          }
           world->player.jumptime = 0;
           world->player.vel.y = 0;
           world->player.pos.y -= collBox.h;
