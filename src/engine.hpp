@@ -21,10 +21,7 @@
 #include <cstdint>
 
 namespace ke {
-using Vec2f = Vec2<float>;
-
 using Clock = std::chrono::steady_clock;
-using StringList = std::vector<std::string>;
 
 class GameState;
 

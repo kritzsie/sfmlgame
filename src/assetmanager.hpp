@@ -1,5 +1,7 @@
 #pragma once
 
+#include "types.hpp"
+
 #include <physfs.h>
 
 #include <SFML/Audio.hpp>
@@ -9,58 +11,66 @@
 #include <string>
 
 namespace ke {
-class GFXAssetManager {
-private:
-  std::map<std::string, sf::Texture> sprites, textures, tiles;
+class AssetManager {
+protected:
+  bool load(std::string, std::string);
+  virtual bool onLoad(sf::InputStream&, std::string, std::string) = 0;
 
-  bool load(std::string, std::string, std::map<std::string, sf::Texture>&);
+  AssetManager(const StringList&);
 
 public:
-  static const std::string extensions[];
+  const StringList extensions;
+
+  AssetManager(const AssetManager&) = delete;
+  virtual ~AssetManager() = default;
+};
+
+class GFXAssets : public AssetManager {
+private:
+  StringTable<StringTable<sf::Texture>> assets;
+
+  bool onLoad(sf::InputStream&, std::string, std::string) final;
+
+  GFXAssets();
+
+public:
   static sf::Texture none;
 
-  static GFXAssetManager& getInstance() noexcept;
+  static GFXAssets& getInstance();
 
-  bool load(std::string, std::string);
   bool loadSprite(std::string);
-  bool loadTexture(std::string);
   bool loadTile(std::string);
+  bool loadTexture(std::string);
 
   sf::Texture& getSprite(std::string);
   sf::Texture& getTexture(std::string);
   sf::Texture& getTile(std::string);
 
-private:
-  GFXAssetManager() = default;
-
-public:
-  GFXAssetManager(const GFXAssetManager&) = delete;
+  GFXAssets(const GFXAssets&) = delete;
 };
 
-class SFXAssetManager {
+class SFXAssets : public AssetManager {
 private:
-  std::map<std::string, sf::SoundBuffer> sounds;
+  StringTable<sf::SoundBuffer> sounds;
+
+  bool onLoad(sf::InputStream&, std::string, std::string) final;
+
+  SFXAssets();
 
 public:
-  static const std::string extensions[];
   static sf::SoundBuffer none;
 
-  static SFXAssetManager& getInstance() noexcept;
+  static SFXAssets& getInstance();
 
-  bool load(std::string, std::string);
   bool loadSound(std::string);
 
   sf::SoundBuffer& getSound(std::string);
 
-private:
-  SFXAssetManager() = default;
-
-public:
-  SFXAssetManager(const SFXAssetManager&) = delete;
+  SFXAssets(const SFXAssets&) = delete;
 };
 
 namespace assets {
-  extern GFXAssetManager& gfx;
-  extern SFXAssetManager& sfx;
+  extern GFXAssets& gfx;
+  extern SFXAssets& sfx;
 }
 }

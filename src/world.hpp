@@ -6,8 +6,6 @@
 namespace ke {
 using tileid_t = uint;
 
-using Vec2f = Vec2<float>;
-
 template<typename T>
 struct Padding {
   T left, right, bottom, top;

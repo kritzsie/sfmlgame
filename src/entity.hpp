@@ -11,8 +11,6 @@
 #include <cstddef>
 
 namespace ke {
-using Vec2f = Vec2<float>;
-
 using enttype_t = uint;
 
 class BaseEntity {

@@ -9,173 +9,123 @@
 
 #include <stdexcept>
 #include <string>
+#include <utility>
 
 namespace ke {
-const std::string GFXAssetManager::extensions[] = {
-  "hdr", "png", "psd", "tga", "gif", "bmp", "pic", "jpg", "jpeg", ""
+static const StringList gfx_extensions {
+  "hdr", "png", "psd", "tga", "bmp", "gif", "pic", "jpg", "jpeg", ""
 };
 
-const std::string SFXAssetManager::extensions[] = {
+static const StringList sfx_extensions {
   "flac", "wav", "ogg", ""
 };
 
-sf::Texture     GFXAssetManager::none;
-sf::SoundBuffer SFXAssetManager::none;
+sf::Texture     GFXAssets::none;
+sf::SoundBuffer SFXAssets::none;
 
+GFXAssets& assets::gfx = GFXAssets::getInstance();
+SFXAssets& assets::sfx = SFXAssets::getInstance();
 
-GFXAssetManager& assets::gfx = GFXAssetManager::getInstance();
-SFXAssetManager& assets::sfx = SFXAssetManager::getInstance();
-
-bool GFXAssetManager::load(
-  std::string dir,
-  std::string name,
-  std::map<std::string, sf::Texture>& container
-) {
+bool AssetManager::load(std::string dir, std::string name) {
   for (auto& ext : extensions) {
-    std::string path = dir + "/" + (ext.size() ? name + "." + ext : name);
+    std::string path = "/" + dir + "/" + (ext.size() ? name + "." + ext : name);
     if (PHYSFS_exists(path.c_str())) {
-      util::FileInputStream filestream;
-      sf::Texture texture;
+      util::FileInputStream ifs;
 
-      filestream.open(path);
-      texture.loadFromStream(filestream);
-      texture.setRepeated(true);
-      container.emplace(name, texture);
+      ifs.open(path);
 
-      return true;
+      return onLoad(ifs, dir, name);
     }
   }
 
   return false;
 }
 
-bool GFXAssetManager::load(std::string dir, std::string name) {
-  return load(dir, name, textures);
+AssetManager::AssetManager(const StringList& exts) : extensions(exts) {}
+
+bool GFXAssets::onLoad(sf::InputStream& ifs, std::string dir, std::string name) {
+  sf::Texture texture;
+
+  texture.loadFromStream(ifs);
+  texture.setRepeated(true);
+  assets[dir].emplace(name, std::move(texture));
+
+  return true;
 }
 
-bool GFXAssetManager::loadSprite(std::string name) {
-  return load("/sprites", name, sprites);
+bool GFXAssets::loadSprite(std::string name) {
+  return load("sprites", name);
 }
 
-bool GFXAssetManager::loadTexture(std::string name) {
-  return load("/textures", name);
+bool GFXAssets::loadTexture(std::string name) {
+  return load("textures", name);
 }
 
-bool GFXAssetManager::loadTile(std::string name) {
-  return load("/tiles", name, tiles);
+bool GFXAssets::loadTile(std::string name) {
+  return load("tiles", name);
 }
 
-sf::Texture& GFXAssetManager::getSprite(std::string name) {
-  if (name == "") {
-    return none;
+sf::Texture& GFXAssets::getTexture(std::string name) {
+  try {
+    return assets["textures"].at(name);
+  }
+  catch (const std::out_of_range&) {
+    if (loadTexture(name)) {
+      return assets["textures"][name];
+    }
   }
 
+  return none;
+}
+
+sf::Texture& GFXAssets::getTile(std::string name) {
   try {
-    return sprites.at(name);
+    return assets["tiles"].at(name);
+  }
+  catch (const std::out_of_range&) {
+    if (loadTile(name)) {
+      return assets["tiles"][name];
+    }
+  }
+
+  return getTexture(name);
+}
+
+sf::Texture& GFXAssets::getSprite(std::string name) {
+  try {
+    return assets["sprites"].at(name);
   }
   catch (const std::out_of_range&) {
     if (loadSprite(name)) {
-      return sprites[name];
+      return assets["sprites"][name];
     }
   }
 
-  try {
-    return tiles.at(name);
-  }
-  catch (const std::out_of_range&) {
-    if (loadTile(name)) {
-      return tiles[name];
-    }
-  }
-
-  try {
-    return textures.at(name);
-  }
-  catch (const std::out_of_range&) {
-    if (loadTexture(name)) {
-      return textures[name];
-    }
-  }
-
-  return none;
+  return getTile(name);
 }
 
-sf::Texture& GFXAssetManager::getTexture(std::string name) {
-  if (name == "") {
-    return none;
-  }
-
-  try {
-    return textures.at(name);
-  }
-  catch (const std::out_of_range&) {
-    if (loadTexture(name)) {
-      return textures[name];
-    }
-  }
-
-  return none;
-}
-
-sf::Texture& GFXAssetManager::getTile(std::string name) {
-  if (name == "") {
-    return none;
-  }
-
-  try {
-    return tiles.at(name);
-  }
-  catch (const std::out_of_range&) {
-    if (loadTile(name)) {
-      return tiles[name];
-    }
-  }
-
-  try {
-    return textures.at(name);
-  }
-  catch (const std::out_of_range&) {
-    if (loadTexture(name)) {
-      return textures[name];
-    }
-  }
-
-  return none;
-}
-
-GFXAssetManager& GFXAssetManager::getInstance() noexcept {
-  static GFXAssetManager instance;
+GFXAssets& GFXAssets::getInstance() {
+  static GFXAssets instance;
 
   return instance;
 }
 
-bool SFXAssetManager::load(std::string dir, std::string name) {
-  for (auto& ext : extensions) {
-    std::string path = dir + "/" + (ext.size() ? name + "." + ext : name);
-    if (PHYSFS_exists(path.c_str())) {
-      util::FileInputStream filestream;
-      sf::SoundBuffer sound;
+GFXAssets::GFXAssets() : AssetManager(gfx_extensions) {}
 
-      filestream.open(path);
-      sound.loadFromStream(filestream);
-      sounds.emplace(name, sound);
+bool SFXAssets::onLoad(sf::InputStream& ifs, std::string, std::string name) {
+  sf::SoundBuffer sound;
 
-      return true;
-    }
-  }
+  sound.loadFromStream(ifs);
+  sounds.emplace(name, std::move(sound));
 
-  return false;
+  return true;
 }
 
-bool SFXAssetManager::loadSound(std::string name) {
-  return load("/sounds", name);
+bool SFXAssets::loadSound(std::string name) {
+  return load("sounds", name);
 }
 
-sf::SoundBuffer& SFXAssetManager::getSound(std::string name) {
-  if (name == "") {
-    return none;
-  }
-
+sf::SoundBuffer& SFXAssets::getSound(std::string name) {
   try {
     return sounds.at(name);
   }
@@ -188,9 +138,11 @@ sf::SoundBuffer& SFXAssetManager::getSound(std::string name) {
   return none;
 }
 
-SFXAssetManager& SFXAssetManager::getInstance() noexcept {
-  static SFXAssetManager instance;
+SFXAssets& SFXAssets::getInstance() {
+  static SFXAssets instance;
 
   return instance;
 }
+
+SFXAssets::SFXAssets() : AssetManager(sfx_extensions) {}
 }
