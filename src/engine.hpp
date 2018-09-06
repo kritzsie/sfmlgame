@@ -24,28 +24,6 @@
 namespace ke {
 using Clock = std::chrono::steady_clock;
 
-/*
-struct Keys {
-  class State {
-  private:
-    bool state = false;
-    byte delta = 0;
-
-  public:
-    bool getState() const;
-    byte getDelta() const;
-
-    void setState(bool);
-    void press();
-    void release();
-    void resetDelta();
-  };
-
-  State up, left, down, right;
-  State jump, run;
-};
-*/
-
 class TimeInfo {
 public:
   float rate;
@@ -63,6 +41,15 @@ public:
 
   using Event = std::pair<EventType, GameState::Factory>;
 
+private:
+  bool deinitPhysFS = false;
+
+  sf::RenderWindow* window = nullptr;
+
+  std::vector<Event> events;
+  std::vector<GameState*> states;
+
+public:
   StringList args;
 
   InputMap inputs;
@@ -74,24 +61,14 @@ public:
   Sound* sound = nullptr;
 
   sf::RenderTexture* viewport = nullptr;
-  Vec2<uint> fbsize;
-  uint fbscale = 1;
-
-private:
-  bool deinitPhysFS = false;
-
-  sf::RenderWindow* window = nullptr;
-
-  std::vector<Event> events;
-  std::vector<GameState*> states;
+  Vec2<uint> viewsize;
+  uint viewscale;
 
 protected:
-  void onKeyEvent(sf::Event&);
-  void onResize(Vec2<uint>);
+  virtual void onKeyEvent(sf::Event&);
+  virtual void onResize(Vec2<uint>);
 
 public:
-  void updateInputs();
-
   bool init();
   bool setupPhysFS(std::string, std::string, std::string);
 

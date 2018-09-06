@@ -6,11 +6,10 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 
+#include <ctgmath>
 #include <string>
 #include <utility>
 #include <vector>
-
-#include <ctgmath>
 
 namespace ke {
 // BaseEntity skipped; no methods

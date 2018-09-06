@@ -26,37 +26,10 @@ TimeInfo::TimeInfo(float rate) : rate(rate), delta(1.0f / rate) {}
 
 TimeInfo::TimeInfo() : TimeInfo(60.0f) {}
 
-/*
-bool Keys::State::getState() const {
-  return state;
-}
-
-byte Keys::State::getDelta() const {
-  return delta;
-}
-
-void Keys::State::setState(bool pressed) {
-  delta = (pressed ? 1 : 0) - state;
-  state = pressed ? true : false;
-}
-
-void Keys::State::press() {
-  setState(true);
-}
-
-void Keys::State::release() {
-  setState(false);
-}
-
-void Keys::State::resetDelta() {
-  delta = 0;
-}
-*/
-
 void Engine::onResize(Vec2<uint> size) {
-  fbscale = std::max(1u, std::min(size.x / fbsize.x, size.y / fbsize.y));
-  uint width = fbsize.x * fbscale;
-  uint height = fbsize.y * fbscale;
+  viewscale = std::max(1u, std::min(size.x / viewsize.x, size.y / viewsize.y));
+  uint width = viewsize.x * viewscale;
+  uint height = viewsize.y * viewscale;
 
   window->setView(sf::View(
     sf::Vector2f(width / 2.0f, height / 2.0f),
@@ -88,15 +61,6 @@ void Engine::onKeyEvent(sf::Event& event) {
   default:
     break;
   }
-}
-
-void Engine::updateInputs() {
-  inputs[Actions::up].update();
-  inputs[Actions::left].update();
-  inputs[Actions::down].update();
-  inputs[Actions::right].update();
-  inputs[Actions::jump].update();
-  inputs[Actions::run].update();
 }
 
 bool Engine::setupPhysFS(std::string org, std::string appname, std::string basegame) {
@@ -177,6 +141,10 @@ void Engine::update() {
   for (auto state : states) {
     state->update();
   }
+
+  for (auto& it : inputs) {
+    it.second.update();
+  }
 }
 
 void Engine::draw() {
@@ -210,7 +178,6 @@ int Engine::main() {
     if (nexttick < curtime) {
       update();
       nexttick += 1.0s / ticktime.rate;
-      updateInputs();
     }
 
     if (nextrender < curtime) {
@@ -235,9 +202,9 @@ bool Engine::init() {
   setupPhysFS("Kha0z", "smb3", "basesmb3");
 
   auto videomode = sf::VideoMode::getDesktopMode();
-  uint scale = std::max(1, std::min<int>(videomode.width / fbsize.x, videomode.height / fbsize.y) - 1);
-  uint width = fbsize.x * scale;
-  uint height = fbsize.y * scale;
+  uint scale = std::max(1, std::min<int>(videomode.width / viewsize.x, videomode.height / viewsize.y) - 1);
+  uint width = viewsize.x * scale;
+  uint height = viewsize.y * scale;
 
   window->create(sf::VideoMode(width, height), "Super Mario Bros. 3");
   window->setPosition(sf::Vector2i((videomode.width - width) / 2, (videomode.height - height) / 2));
@@ -247,7 +214,8 @@ bool Engine::init() {
   return true;
 }
 
-Engine::Engine(const StringList& args) : args(args), ticktime(64.0f), fbsize(480, 270) {
+Engine::Engine(const StringList& args)
+: args(args), ticktime(64.0f), rendertime(60.0f), viewsize(480, 270) {
   if (PHYSFS_isInit() == 0) {
     PHYSFS_init(args.at(0).c_str());
     deinitPhysFS = true;
