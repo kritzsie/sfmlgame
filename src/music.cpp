@@ -115,11 +115,11 @@ float Music::getTempo() const {
 }
 
 void Music::setVolume(float volume) {
-  stream->setVolume(volume * 100.0f);
+  stream->setVolume(volume * 100);
 }
 
 float Music::getVolume() const {
-  return stream->getVolume();
+  return stream->getVolume() / 100;
 }
 
 Music::Music() {
