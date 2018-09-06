@@ -1,6 +1,7 @@
 #pragma once
 
 #include "types.hpp"
+#include "util.hpp"
 
 #include <physfs.h>
 
@@ -14,7 +15,7 @@ namespace ke {
 class AssetManager {
 protected:
   bool load(std::string, std::string);
-  virtual bool onLoad(sf::InputStream&, std::string, std::string) = 0;
+  virtual bool onLoad(util::FileInputStream&, std::string, std::string) = 0;
 
   AssetManager(const StringList&);
 
@@ -29,7 +30,7 @@ class GFXAssets : public AssetManager {
 private:
   StringTable<StringTable<sf::Texture>> assets;
 
-  bool onLoad(sf::InputStream&, std::string, std::string) final;
+  bool onLoad(util::FileInputStream&, std::string, std::string) final;
 
   GFXAssets();
 
@@ -53,7 +54,7 @@ class SFXAssets : public AssetManager {
 private:
   StringTable<sf::SoundBuffer> sounds;
 
-  bool onLoad(sf::InputStream&, std::string, std::string) final;
+  bool onLoad(util::FileInputStream&, std::string, std::string) final;
 
   SFXAssets();
 

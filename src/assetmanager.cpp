@@ -1,5 +1,6 @@
 #include "assetmanager.hpp"
 
+#include "types.hpp"
 #include "util.hpp"
 
 #include <physfs.h>
@@ -43,7 +44,7 @@ bool AssetManager::load(std::string dir, std::string name) {
 
 AssetManager::AssetManager(const StringList& exts) : extensions(exts) {}
 
-bool GFXAssets::onLoad(sf::InputStream& ifs, std::string dir, std::string name) {
+bool GFXAssets::onLoad(util::FileInputStream& ifs, std::string dir, std::string name) {
   sf::Texture texture;
 
   texture.loadFromStream(ifs);
@@ -116,7 +117,7 @@ GFXAssets::GFXAssets() : AssetManager(gfx_extensions) {
   assets["textures"][""] = none;
 }
 
-bool SFXAssets::onLoad(sf::InputStream& ifs, std::string, std::string name) {
+bool SFXAssets::onLoad(util::FileInputStream& ifs, std::string, std::string name) {
   sf::SoundBuffer sound;
 
   sound.loadFromStream(ifs);
