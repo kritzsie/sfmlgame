@@ -22,9 +22,9 @@
 #include <ctgmath>
 
 namespace ke {
-TimeInfo::TimeInfo(float rate) : rate(rate), delta(1 / rate) {}
+TimeInfo::TimeInfo(float rate) : rate(rate), delta(1.0f / rate) {}
 
-TimeInfo::TimeInfo() : TimeInfo(60) {}
+TimeInfo::TimeInfo() : TimeInfo(60.0f) {}
 
 bool Keys::State::getState() const {
   return state;
@@ -121,11 +121,11 @@ bool Engine::setupPhysFS(std::string org, std::string appname, std::string baseg
   return true;
 }
 
-void Engine::push_state(GameState::Factory state_factory) {
+void Engine::pushState(GameState::Factory state_factory) {
   events.push_back(Event(EventType::push, state_factory));
 }
 
-GameState* Engine::pop_state() {
+GameState* Engine::popState() {
   events.push_back(Event(EventType::pop, nullptr));
   return states.back();
 }
@@ -153,7 +153,7 @@ void Engine::update() {
   for (Event& event : events) {
     switch (event.first) {
       case EventType::push: {
-        GameState* state = event.second(this);
+        GameState* state = event.second(*this);
         states.push_back(state);
         state->enter();
         break;
@@ -208,6 +208,7 @@ int Engine::main() {
     if (nexttick < curtime) {
       update();
       nexttick += 1.0s / ticktime.rate;
+      tickKeys();
     }
 
     if (nextrender < curtime) {
@@ -232,20 +233,19 @@ bool Engine::init() {
   setupPhysFS("Kha0z", "smb3", "basesmb3");
 
   auto videomode = sf::VideoMode::getDesktopMode();
-  uint scale = std::max(1u, std::min(videomode.width / fbsize.x, videomode.height / fbsize.y) - 1);
+  uint scale = std::max(1, std::min<int>(videomode.width / fbsize.x, videomode.height / fbsize.y) - 1);
   uint width = fbsize.x * scale;
   uint height = fbsize.y * scale;
 
   window->create(sf::VideoMode(width, height), "Super Mario Bros. 3");
   window->setPosition(sf::Vector2i((videomode.width - width) / 2, (videomode.height - height) / 2));
 
-  //states.push_back(new Intro(this));
-  push_state(Intro::makeState());
+  pushState(Intro::makeState());
 
   return true;
 }
 
-Engine::Engine(const StringList& args) : args(args), ticktime(64), fbsize(480, 270) {
+Engine::Engine(const StringList& args) : args(args), ticktime(64.0f), fbsize(480, 270) {
   if (PHYSFS_isInit() == 0) {
     PHYSFS_init(args.at(0).c_str());
     deinitPhysFS = true;

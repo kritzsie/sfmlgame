@@ -5,8 +5,8 @@
 #include <cstdlib>
 
 namespace ke {
-GameState::Factory Intro::makeState() {
-  return [](Engine* engine) -> GameState* {
+Intro::Factory Intro::makeState() {
+  return [](Engine& engine) -> GameState* {
     return new Intro(engine);
   };
 }
@@ -18,11 +18,11 @@ void Intro::pause() {}
 void Intro::resume() {}
 
 void Intro::update() {
-  engine->pop_state();
-  engine->push_state(Gameplay::makeState());
+  engine.popState();
+  engine.pushState(Gameplay::makeState());
 }
 
 void Intro::draw() {}
 
-Intro::Intro(Engine* engine) : GameState(engine) {}
+Intro::Intro(Engine& engine) : GameState(engine) {}
 }

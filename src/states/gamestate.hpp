@@ -5,10 +5,10 @@ class Engine;
 
 class GameState {
 protected:
-  Engine* const engine;
+  Engine& engine;
 
 public:
-  using Factory = GameState* (*)(Engine*);
+  using Factory = GameState* (*)(Engine&);
 
   virtual void enter() = 0;
   virtual void exit() = 0;
@@ -22,6 +22,7 @@ public:
   virtual ~GameState() = default;
 
 protected:
-  GameState(Engine*);
+  GameState(Engine&);
 };
 }
+

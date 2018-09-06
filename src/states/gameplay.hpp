@@ -13,6 +13,8 @@ private:
   World* world = nullptr;
   std::vector<Entity*> entities;
 
+  bool paused = true;
+
   void drawBG(uint32_t);
   void drawBG(std::string, Vec2f);
   void drawBGBottom(std::string, Vec2f);
@@ -22,7 +24,7 @@ private:
   void drawUI();
 
 public:
-  static GameState::Factory makeState();
+  static Factory makeState();
 
   void enter() final;
   void exit() final;
@@ -36,6 +38,6 @@ public:
   ~Gameplay() final;
 
 private:
-  Gameplay(Engine*);
+  Gameplay(Engine&);
 };
 }

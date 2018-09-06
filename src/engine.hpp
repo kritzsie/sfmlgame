@@ -94,8 +94,8 @@ public:
   bool init();
   bool setupPhysFS(std::string, std::string, std::string);
 
-  void push_state(GameState::Factory);
-  GameState* pop_state();
+  void pushState(GameState::Factory);
+  GameState* popState();
 
   void handleEvents();
   void update();

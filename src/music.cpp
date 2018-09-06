@@ -62,7 +62,6 @@ void SPCStream::setTempo(float tempo) {
   spc.set_tempo(tempo);
 }
 
-
 SPCStream::SPCStream(std::size_t bufsize, std::size_t channels) : buffer(bufsize) {
   initialize(channels, 32000);
 }
@@ -113,6 +112,14 @@ void Music::setTempo(float tempo) {
 
 float Music::getTempo() const {
   return stream->getTempo();
+}
+
+void Music::setVolume(float volume) {
+  stream->setVolume(volume * 100.0f);
+}
+
+float Music::getVolume() const {
+  return stream->getVolume();
 }
 
 Music::Music() {

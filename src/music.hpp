@@ -45,6 +45,8 @@ public:
   bool onGetData(Chunk&) final;
   void onSeek(sf::Time) final;
 
+  bool load();
+
   void setTempo(float);
   float getTempo() const;
 
@@ -63,10 +65,14 @@ public:
   void pause();
   void resume();
   void stop();
+
   sf::SoundSource::Status getStatus() const;
+
   void setTempo(float);
   float getTempo() const;
 
+  void setVolume(float);
+  float getVolume() const;
 
   Music();
   ~Music();
