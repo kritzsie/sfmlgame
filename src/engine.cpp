@@ -58,6 +58,9 @@ void Engine::onKeyEvent(sf::Event& event) {
     break;
   case sf::Keyboard::Z:
     inputs[Actions::run] = sf::Keyboard::isKeyPressed(sf::Keyboard::Z);
+    break;
+  case sf::Keyboard::Escape:
+    inputs[Actions::pause] = sf::Keyboard::isKeyPressed(sf::Keyboard::Escape);
   default:
     break;
   }

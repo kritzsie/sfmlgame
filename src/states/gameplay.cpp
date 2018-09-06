@@ -146,15 +146,26 @@ void Gameplay::update() {
   const float min_yvel = -16 * 16;
 
   // Handle keyboard input first
-  const Input& up = engine.inputs[Actions::up];
   const Input& left = engine.inputs[Actions::left];
   const Input& down = engine.inputs[Actions::down];
   const Input& right = engine.inputs[Actions::right];
+
   const Input& jump = engine.inputs[Actions::jump];
   const Input& run = engine.inputs[Actions::run];
 
+  const Input& pause_input = engine.inputs[Actions::pause];
+
+  if (pause_input.getDelta() > 0.0f) {
+    if (paused) {
+      resume();
+    }
+    else {
+      pause();
+    }
+  }
+
   if (not paused) {
-    auto direction = (right ? 1 : 0) + (left ? -1 : 0);
+    byte direction = (right ? 1 : 0) + (left ? -1 : 0);
 
     float max_xvel = (run ? (world->player.p_speed ? 12 : 10) : 6) * 16;
     float min_xvel = -max_xvel;
@@ -167,18 +178,18 @@ void Gameplay::update() {
       if (direction and not world->player.ducking) {
         if (direction > 0
         and world->player.vel.x < max_xvel) {
-          world->player.vel.x = std::max(-8.0f * 16.0f, std::min(world->player.vel.x + direction * 16 * 16 / engine.ticktime.rate, max_xvel));
+          world->player.vel.x = std::max(-8.f * 16.f, std::min(world->player.vel.x + direction * 16 * 16 / engine.ticktime.rate, max_xvel));
         }
         else if (direction < 0
         and world->player.vel.x > min_xvel) {
-          world->player.vel.x = std::max(min_xvel, std::min(world->player.vel.x + direction * 16 * 16 / engine.ticktime.rate, 8.0f * 16.0f));
+          world->player.vel.x = std::max(min_xvel, std::min(world->player.vel.x + direction * 16 * 16 / engine.ticktime.rate, 8.f * 16.f));
         }
       }
       else if (world->player.vel.x > 0) {
-        world->player.vel.x = std::max(world->player.vel.x - 12 * 16 / engine.ticktime.rate, 0.0f);
+        world->player.vel.x = std::max(world->player.vel.x - 12 * 16 / engine.ticktime.rate, 0.f);
       }
       else if (world->player.vel.x < 0) {
-        world->player.vel.x = std::min(world->player.vel.x + 12 * 16 / engine.ticktime.rate, 0.0f);
+        world->player.vel.x = std::min(world->player.vel.x + 12 * 16 / engine.ticktime.rate, 0.f);
       }
 
       if (down and not direction) {
@@ -192,11 +203,11 @@ void Gameplay::update() {
           world->player.sprite.setTexture(assets::gfx.getSprite("bigmarioslip"), true);
           world->player.offset.x = 8;
           if (world->player.sliptime == 0) {
-            world->player.sliptime = 0.09375;
+            world->player.sliptime = 0.09375f;
             engine.sound->play("slip");
           }
           else {
-            world->player.sliptime = std::max(0.0f, world->player.sliptime - 1 / engine.ticktime.rate);
+            world->player.sliptime = std::max(0.f, world->player.sliptime - 1 / engine.ticktime.rate);
           }
         }
         else if (world->player.vel.x < 0
@@ -204,20 +215,20 @@ void Gameplay::update() {
           world->player.sprite.setTexture(assets::gfx.getSprite("bigmarioslip"), true);
           world->player.offset.x = 8;
           if (world->player.sliptime == 0) {
-            world->player.sliptime = 0.09375;
+            world->player.sliptime = 0.09375f;
             engine.sound->play("slip");
           }
           else {
-            world->player.sliptime = std::max(0.0f, world->player.sliptime - 1 / engine.ticktime.rate);
+            world->player.sliptime = std::max(0.f, world->player.sliptime - 1 / engine.ticktime.rate);
           }
         }
         else {
           if (world->player.vel.x) {
             if (world->player.walktime) {
-              world->player.walktime = std::max(0.0f, world->player.walktime - std::max(1.0f, std::abs(world->player.vel.x) / 32) / engine.ticktime.rate);
+              world->player.walktime = std::max(0.f, world->player.walktime - std::max(1.f, std::abs(world->player.vel.x) / 32) / engine.ticktime.rate);
             }
             else {
-              world->player.walktime = 0.125;
+              world->player.walktime = 0.125f;
               world->player.walkcycle = (world->player.walkcycle + 1) % 4;
             }
           }
@@ -251,18 +262,18 @@ void Gameplay::update() {
     }
 
     if (not world->player.underwater) {
-      if (jump.getDelta() > 0.0f) {
+      if (jump.getDelta() > 0) {
         if (not world->player.airborne) {
-          world->player.jumptime = 0.3125;
+          world->player.jumptime = 0.3125f;
           engine.sound->play("jump");
         }
       }
-      else if (jump.getDelta() < 0.0f) {
+      else if (jump == 0) {
         world->player.jumptime = 0;
       }
 
-      if (jump and world->player.jumptime > 0) {
-        world->player.jumptime = std::max(world->player.jumptime - 1 / engine.ticktime.rate, 0.0f);
+      if (world->player.jumptime > 0) {
+        world->player.jumptime = std::max(0.f, world->player.jumptime - 1 / engine.ticktime.rate);
         world->player.jump();
       }
     }
@@ -311,9 +322,11 @@ void Gameplay::update() {
             world->player.vel.y = 0;
             world->player.pos.y += collBox.h;
           }
+          goto y_collision_end;
         }
       }
     }
+    y_collision_end:
 
     if (world->player.vel.x) {
       world->player.pos.x += world->player.vel.x / engine.ticktime.rate;
@@ -338,12 +351,13 @@ void Gameplay::update() {
             world->player.vel.x = 0;
             world->player.pos.x += collBox.w;
           }
+          goto x_collision_end;
         }
       }
     }
+    x_collision_end:
 
-    world->camera.vel = (world->player.pos + Vec2f(0, world->player.height / 2) - world->camera.pos) * engine.ticktime.rate / 8.0f;
-
+    world->camera.vel = (world->player.pos + Vec2f(0, world->player.height / 2) - world->camera.pos) * engine.ticktime.rate / 8.f;
     world->camera.pos += world->camera.vel / engine.ticktime.rate;
 
     auto camLeft = engine.viewport->getSize().x / 2 / engine.viewscale + world->padding.left * 16;
