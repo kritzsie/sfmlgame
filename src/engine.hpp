@@ -2,6 +2,7 @@
 
 #include "assetmanager.hpp"
 #include "geometry.hpp"
+#include "input.hpp"
 #include "music.hpp"
 #include "sound.hpp"
 #include "states.hpp"
@@ -23,8 +24,7 @@
 namespace ke {
 using Clock = std::chrono::steady_clock;
 
-class GameState;
-
+/*
 struct Keys {
   class State {
   private:
@@ -44,6 +44,7 @@ struct Keys {
   State up, left, down, right;
   State jump, run;
 };
+*/
 
 class TimeInfo {
 public:
@@ -64,7 +65,7 @@ public:
 
   StringList args;
 
-  Keys keys;
+  InputMap inputs;
 
   TimeInfo ticktime;
   TimeInfo rendertime;
@@ -89,7 +90,7 @@ protected:
   void onResize(Vec2<uint>);
 
 public:
-  void tickKeys();
+  void updateInputs();
 
   bool init();
   bool setupPhysFS(std::string, std::string, std::string);

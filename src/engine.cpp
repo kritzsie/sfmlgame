@@ -26,6 +26,7 @@ TimeInfo::TimeInfo(float rate) : rate(rate), delta(1.0f / rate) {}
 
 TimeInfo::TimeInfo() : TimeInfo(60.0f) {}
 
+/*
 bool Keys::State::getState() const {
   return state;
 }
@@ -50,6 +51,7 @@ void Keys::State::release() {
 void Keys::State::resetDelta() {
   delta = 0;
 }
+*/
 
 void Engine::onResize(Vec2<uint> size) {
   fbscale = std::max(1u, std::min(size.x / fbsize.x, size.y / fbsize.y));
@@ -67,34 +69,34 @@ void Engine::onResize(Vec2<uint> size) {
 void Engine::onKeyEvent(sf::Event& event) {
   switch (event.key.code) {
   case sf::Keyboard::Up:
-    keys.up.setState(sf::Keyboard::isKeyPressed(sf::Keyboard::Up));
+    inputs[Actions::up] = sf::Keyboard::isKeyPressed(sf::Keyboard::Up);
     break;
   case sf::Keyboard::Left:
-    keys.left.setState(sf::Keyboard::isKeyPressed(sf::Keyboard::Left));
+    inputs[Actions::left] = sf::Keyboard::isKeyPressed(sf::Keyboard::Left);
     break;
   case sf::Keyboard::Down:
-    keys.down.setState(sf::Keyboard::isKeyPressed(sf::Keyboard::Down));
+    inputs[Actions::down] = sf::Keyboard::isKeyPressed(sf::Keyboard::Down);
     break;
   case sf::Keyboard::Right:
-    keys.right.setState(sf::Keyboard::isKeyPressed(sf::Keyboard::Right));
+    inputs[Actions::right] = sf::Keyboard::isKeyPressed(sf::Keyboard::Right);
     break;
   case sf::Keyboard::X:
-    keys.jump.setState(sf::Keyboard::isKeyPressed(sf::Keyboard::X));
+    inputs[Actions::jump] = sf::Keyboard::isKeyPressed(sf::Keyboard::X);
     break;
   case sf::Keyboard::Z:
-    keys.run.setState(sf::Keyboard::isKeyPressed(sf::Keyboard::Z));
+    inputs[Actions::run] = sf::Keyboard::isKeyPressed(sf::Keyboard::Z);
   default:
     break;
   }
 }
 
-void Engine::tickKeys() {
-  keys.up.resetDelta();
-  keys.left.resetDelta();
-  keys.down.resetDelta();
-  keys.right.resetDelta();
-  keys.jump.resetDelta();
-  keys.run.resetDelta();
+void Engine::updateInputs() {
+  inputs[Actions::up].update();
+  inputs[Actions::left].update();
+  inputs[Actions::down].update();
+  inputs[Actions::right].update();
+  inputs[Actions::jump].update();
+  inputs[Actions::run].update();
 }
 
 bool Engine::setupPhysFS(std::string org, std::string appname, std::string basegame) {
@@ -208,7 +210,7 @@ int Engine::main() {
     if (nexttick < curtime) {
       update();
       nexttick += 1.0s / ticktime.rate;
-      tickKeys();
+      updateInputs();
     }
 
     if (nextrender < curtime) {

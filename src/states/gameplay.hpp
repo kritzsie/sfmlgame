@@ -8,6 +8,8 @@
 #include <vector>
 
 namespace ke {
+class Engine;
+
 class Gameplay : public GameState {
 private:
   World* world = nullptr;

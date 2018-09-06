@@ -146,12 +146,12 @@ void Gameplay::update() {
   const float min_yvel = -16 * 16;
 
   // Handle keyboard input first
-  auto up = engine.keys.up.getState();
-  auto left = engine.keys.left.getState();
-  auto down = engine.keys.down.getState();
-  auto right = engine.keys.right.getState();
-  auto jump = engine.keys.jump.getState();
-  auto run = engine.keys.run.getState();
+  const Input& up = engine.inputs[Actions::up];
+  const Input& left = engine.inputs[Actions::left];
+  const Input& down = engine.inputs[Actions::down];
+  const Input& right = engine.inputs[Actions::right];
+  const Input& jump = engine.inputs[Actions::jump];
+  const Input& run = engine.inputs[Actions::run];
 
   if (not paused) {
     auto direction = (right ? 1 : 0) + (left ? -1 : 0);
@@ -251,13 +251,13 @@ void Gameplay::update() {
     }
 
     if (not world->player.underwater) {
-      if (engine.keys.jump.getDelta() == 1) {
+      if (jump.getDelta() > 0.0f) {
         if (not world->player.airborne) {
           world->player.jumptime = 0.3125;
           engine.sound->play("jump");
         }
       }
-      else if (engine.keys.jump.getDelta() == -1) {
+      else if (jump.getDelta() < 0.0f) {
         world->player.jumptime = 0;
       }
 
