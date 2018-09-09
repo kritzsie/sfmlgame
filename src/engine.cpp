@@ -141,7 +141,7 @@ void Engine::update() {
     events.clear();
   }
 
-  for (auto state : states) {
+  for (GameState* state : states) {
     state->update();
   }
 
@@ -153,7 +153,7 @@ void Engine::update() {
 void Engine::draw() {
   window->clear();
 
-  for (auto state : states) {
+  for (GameState* state : states) {
     state->draw();
   }
 
@@ -204,13 +204,15 @@ int Engine::main() {
 bool Engine::init() {
   setupPhysFS("Kha0z", "smb3", "basesmb3");
 
-  auto videomode = sf::VideoMode::getDesktopMode();
-  uint scale = std::max(1, std::min<int>(videomode.width / viewsize.x, videomode.height / viewsize.y) - 1);
+  sf::VideoMode videomode = sf::VideoMode::getDesktopMode();
+  uint scale = std::max(1, std::min<int>(videomode.width / viewsize.x,
+                                         videomode.height / viewsize.y) - 1);
   uint width = viewsize.x * scale;
   uint height = viewsize.y * scale;
 
   window->create(sf::VideoMode(width, height), "Super Mario Bros. 3");
-  window->setPosition(sf::Vector2i((videomode.width - width) / 2, (videomode.height - height) / 2));
+  window->setPosition(sf::Vector2i((videomode.width - width) / 2,
+                                   (videomode.height - height) / 2));
 
   pushState(Intro::makeState());
 

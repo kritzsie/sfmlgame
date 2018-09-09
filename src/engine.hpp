@@ -69,7 +69,6 @@ protected:
   virtual void onResize(Vec2<uint>);
 
 public:
-  bool init();
   bool setupPhysFS(std::string, std::string, std::string);
 
   void pushState(GameState::Factory);
@@ -79,6 +78,7 @@ public:
   void update();
   void draw();
 
+  bool init();
   int main();
 
   Engine(const StringList&);

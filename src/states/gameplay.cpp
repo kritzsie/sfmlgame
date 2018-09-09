@@ -14,8 +14,8 @@ void Gameplay::drawBG(uint32_t color) {
 }
 
 void Gameplay::drawBG(std::string bg, Vec2f dist) {
-  auto win_w = engine.viewport->getSize().x;
-  auto win_h = engine.viewport->getSize().y;
+  uint win_w = engine.viewport->getSize().x;
+  uint win_h = engine.viewport->getSize().y;
 
   const sf::Texture& texture = assets::gfx.getTexture(bg);
 
@@ -40,8 +40,8 @@ void Gameplay::drawBG(std::string bg, Vec2f dist) {
 }
 
 void Gameplay::drawBGBottom(std::string bg, Vec2f dist) {
-  auto win_w = engine.viewport->getSize().x;
-  auto win_h = engine.viewport->getSize().y;
+  uint win_w = engine.viewport->getSize().x;
+  uint win_h = engine.viewport->getSize().y;
 
   const sf::Texture& texture = assets::gfx.getTexture(bg);
 
@@ -63,8 +63,8 @@ void Gameplay::drawBGBottom(std::string bg, Vec2f dist) {
 }
 
 void Gameplay::drawBGTop(std::string bg, Vec2f dist) {
-  auto win_w = engine.viewport->getSize().x;
-  auto win_h = engine.viewport->getSize().y;
+  uint win_w = engine.viewport->getSize().x;
+  uint win_h = engine.viewport->getSize().y;
 
   const sf::Texture& texture = assets::gfx.getTexture(bg);
 
@@ -85,8 +85,8 @@ void Gameplay::drawBGTop(std::string bg, Vec2f dist) {
 }
 
 void Gameplay::drawTiles() {
-  auto win_w = engine.viewport->getSize().x;
-  auto win_h = engine.viewport->getSize().y;
+  uint win_w = engine.viewport->getSize().x;
+  uint win_h = engine.viewport->getSize().y;
 
   int left = std::max(0, std::min(int((world->camera.pos.x - win_w / 2 / engine.viewscale) / 16), world->size.x));
   int bottom = std::max(0, std::min(int((world->camera.pos.y - win_h / 2 / engine.viewscale) / 16), world->size.y));
@@ -95,7 +95,7 @@ void Gameplay::drawTiles() {
 
   for (int y = bottom; y < top; y++)
   for (int x = left; x < right; x++) {
-    auto tileid = world->getTile(x, y);
+    uint32_t tileid = world->getTile(x, y);
     if (tileid) {
       const sf::Texture& texture = assets::gfx.getTile("smb3_tile_atlas");
       int xoffset = (tileid - 1) * 16 % texture.getSize().x;
@@ -283,7 +283,7 @@ void Gameplay::update() {
       world->player.vel.y = std::max(world->player.vel.y + gravity / engine.ticktime.rate, min_yvel);
     }
 
-    auto range = World::tilesFromAABB(world->player.getAABB());
+    Rect<int> range = World::tilesFromAABB(world->player.getAABB());
 
     if (world->player.vel.y) {
       world->player.pos.y += world->player.vel.y / engine.ticktime.rate;
@@ -292,14 +292,14 @@ void Gameplay::update() {
 
     for (int x = range.x; x < range.x + range.w + 1; x++)
     for (int y = range.y; y < range.y + range.h + 1; y++) {
-      auto plyrBox = world->player.getAABB();
-      auto tileBox = World::tileAABB(x, y);
+      Rect<float> plyrBox = world->player.getAABB();
+      Rect<float> tileBox = World::tileAABB(x, y);
 
       if (x >= 0 and x < world->size.x
       and y >= 0 and y < world->size.y) {
         if (world->getTile(x, y) != 0
         and plyrBox.intersects(tileBox)) {
-          auto collBox = plyrBox.intersection(tileBox);
+          Rect<float> collBox = plyrBox.intersection(tileBox);
 
           if (plyrBox.y + plyrBox.h / 2 < tileBox.y + tileBox.h / 2) {
             /*if (world->player.pos.x > tileBox.x + tileBox.w
@@ -334,14 +334,14 @@ void Gameplay::update() {
 
     for (int x = range.x; x < range.x + range.w + 1; x++)
     for (int y = range.y; y < range.y + range.h + 1; y++) {
-      auto plyrBox = world->player.getAABB();
-      auto tileBox = World::tileAABB(x, y);
+      Rect<float> plyrBox = world->player.getAABB();
+      Rect<float> tileBox = World::tileAABB(x, y);
 
       if (x >= 0 and x < world->size.x
       and y >= 0 and y < world->size.y) {
         if (world->getTile(x, y) != 0
         and plyrBox.intersects(tileBox)) {
-          auto collBox = plyrBox.intersection(tileBox);
+          Rect<float> collBox = plyrBox.intersection(tileBox);
 
           if (plyrBox.x + plyrBox.w / 2 < tileBox.x + tileBox.w / 2) {
             world->player.vel.x = 0;
@@ -360,46 +360,52 @@ void Gameplay::update() {
     world->camera.vel = (world->player.pos + Vec2f(0, world->player.height / 2) - world->camera.pos) * engine.ticktime.rate / 8.f;
     world->camera.pos += world->camera.vel / engine.ticktime.rate;
 
-    auto camLeft = engine.viewport->getSize().x / 2 / engine.viewscale + world->padding.left * 16;
-    auto camRight = world->size.x * 16 - engine.viewport->getSize().x / 2 / engine.viewscale - world->padding.right * 16;
-    auto camUp = world->size.y * 16 - engine.viewport->getSize().y / 2 / engine.viewscale - world->padding.top * 16;
-    auto camDown = engine.viewport->getSize().y / 2 / engine.viewscale + world->padding.bottom * 16;
+    const Vec2f view_center(
+      engine.viewport->getSize().x / 2.f / engine.viewscale,
+      engine.viewport->getSize().y / 2.f / engine.viewscale
+    );
+    const Padding<float> camera_padding{
+      .left = view_center.x + world->padding.left * 16.f,
+      .right = world->size.x * 16.f - view_center.x - world->padding.right * 16.f,
+      .bottom = view_center.y + world->padding.bottom * 16,
+      .top = world->size.y * 16.f - view_center.y - world->padding.top * 16.f
+    };
 
-    if (world->camera.pos.x < camLeft
-    and world->camera.pos.x > camRight) {
-      world->camera.pos.x = (camLeft + camRight) / 2;
+    if (world->camera.pos.x < camera_padding.left
+    and world->camera.pos.x > camera_padding.right) {
+      world->camera.pos.x = (camera_padding.left + camera_padding.right) / 2;
     }
     else {
-      if (world->camera.pos.x < camLeft) {
-        world->camera.pos.x = camLeft;
+      if (world->camera.pos.x < camera_padding.left) {
+        world->camera.pos.x = camera_padding.left;
       }
-      else if (world->camera.pos.x > camRight) {
-        world->camera.pos.x = camRight;
+      else if (world->camera.pos.x > camera_padding.right) {
+        world->camera.pos.x = camera_padding.right;
       }
     }
 
-    if (world->camera.pos.y > camUp
-    and world->camera.pos.y < camDown) {
-      world->camera.pos.y = (camUp + camDown) / 2;
+    if (world->camera.pos.y > camera_padding.top
+    and world->camera.pos.y < camera_padding.bottom) {
+      world->camera.pos.y = (camera_padding.top + camera_padding.bottom) / 2;
     }
     else {
-      if (world->camera.pos.y > camUp) {
+      if (world->camera.pos.y > camera_padding.top) {
         world->camera.vel.y = 0;
-        world->camera.pos.y = camUp;
+        world->camera.pos.y = camera_padding.top;
       }
-      else if (world->camera.pos.y < camDown) {
+      else if (world->camera.pos.y < camera_padding.bottom) {
         world->camera.vel.y = 0;
-        world->camera.pos.y = camDown;
+        world->camera.pos.y = camera_padding.bottom;
       }
     }
   }
 }
 
 void Gameplay::draw() {
-  auto win_w = engine.viewport->getSize().x;
-  auto win_h = engine.viewport->getSize().y;
+  uint win_w = engine.viewport->getSize().x;
+  uint win_h = engine.viewport->getSize().y;
 
-  sf::View view(sf::Vector2f(), sf::Vector2f(std::floor(win_w / engine.viewscale), std::floor(win_h / engine.viewscale)));
+  sf::View view(sf::Vector2f(), sf::Vector2f(win_w / engine.viewscale, win_h / engine.viewscale));
   view.setCenter(World::toView(world->camera.pos));
   engine.viewport->setView(view);
 

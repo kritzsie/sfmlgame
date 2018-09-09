@@ -12,7 +12,7 @@
 #include <string>
 #include <utility>
 
-namespace ke {
+namespace ke::assets {
 static const StringList gfx_extensions {
   "hdr", "png", "psd", "tga", "bmp", "gif", "pic", "jpg", "jpeg", ""
 };
@@ -24,8 +24,8 @@ static const StringList sfx_extensions {
 sf::Texture     GFXAssets::none;
 sf::SoundBuffer SFXAssets::none;
 
-GFXAssets& assets::gfx = GFXAssets::getInstance();
-SFXAssets& assets::sfx = SFXAssets::getInstance();
+GFXAssets& gfx = GFXAssets::getInstance();
+SFXAssets& sfx = SFXAssets::getInstance();
 
 bool AssetManager::load(std::string dir, std::string name) {
   for (auto& ext : extensions) {

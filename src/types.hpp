@@ -14,9 +14,6 @@ namespace ke {
   using uint = unsigned int;
   using ulong = unsigned long;
 
-  using FloatRect = Rect<float>;
-  using IntRect = Rect<int>;
-
   using Vec2f = Vec2<float>;
   using Vec2i = Vec2<int>;
   using Vec2u = Vec2<uint>;

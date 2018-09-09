@@ -11,7 +11,7 @@
 #include <map>
 #include <string>
 
-namespace ke {
+namespace ke::assets {
 class AssetManager {
 protected:
   bool load(std::string, std::string);
@@ -70,8 +70,6 @@ public:
   SFXAssets(const SFXAssets&) = delete;
 };
 
-namespace assets {
-  extern GFXAssets& gfx;
-  extern SFXAssets& sfx;
-}
+extern GFXAssets& gfx;
+extern SFXAssets& sfx;
 }

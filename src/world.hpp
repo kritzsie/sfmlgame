@@ -3,8 +3,10 @@
 #include "entity.hpp"
 #include "geometry.hpp"
 
+#include <cstdint>
+
 namespace ke {
-using tileid_t = uint;
+using tileid_t = uint32_t;
 
 template<typename T>
 struct Padding {
