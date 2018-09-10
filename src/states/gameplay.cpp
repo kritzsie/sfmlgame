@@ -95,7 +95,7 @@ void Gameplay::drawTiles() {
 
   for (int y = bottom; y < top; y++)
   for (int x = left; x < right; x++) {
-    uint32_t tileid = world->getTile(x, y);
+    tileid_t tileid = world->getTile(x, y);
     if (tileid) {
       const sf::Texture& texture = assets::gfx.getTile("smb3_tile_atlas");
       int xoffset = (tileid - 1) * 16 % texture.getSize().x;

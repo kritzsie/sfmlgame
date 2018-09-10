@@ -4,8 +4,10 @@
 #include "geometry.hpp"
 #include "input.hpp"
 #include "music.hpp"
+#include "renderer.hpp"
 #include "sound.hpp"
 #include "states.hpp"
+#include "tiletypes.hpp"
 #include "types.hpp"
 #include "world.hpp"
 
@@ -49,6 +51,8 @@ private:
   std::vector<Event> events;
   std::vector<GameState*> states;
 
+  std::map<tileid_t, TileDef> tiles;
+
 public:
   StringList args;
 
@@ -77,6 +81,9 @@ public:
   void handleEvents();
   void update();
   void draw();
+
+  void registerTileDef(tileid_t, TileDef);
+  TileDef& getTileDef(tileid_t);
 
   bool init();
   int main();

@@ -36,7 +36,7 @@ add_executable(
   src/music.cpp
   src/renderer.cpp
   src/sound.cpp
-  src/tileproperties.cpp
+  src/tiletypes.cpp
   src/world.cpp
   src/main.cpp
 )

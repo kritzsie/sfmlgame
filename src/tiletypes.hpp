@@ -1,5 +1,7 @@
 #pragma once
 
+#include "renderer.hpp"
+
 #include <cstdint>
 
 namespace ke {
@@ -13,5 +15,10 @@ enum struct TileEdge : char {
 
 struct TileSides {
   TileEdge left, right, down, up;
+};
+
+class TileDef {
+public:
+  TileDef();
 };
 }

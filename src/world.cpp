@@ -63,22 +63,25 @@ World::World(int x, int y, Padding<int> padding) : padding(padding), player({7, 
   size.y = y;
 
   // WARNING: Test world ahead
-  setTile(0, 0, 5);
+  player.pos = Vec2f(32, 16);
+  camera.pos = player.pos + Vec2f(0, player.height / 2);
+
+  setTile(0, 0, 1);
   for (int x = 1; x <= 6; x++) {
-      setTile(x, 0, 6);
+      setTile(x, 0, 1);
   }
-  setTile(7, 0, 7);
-  setTile(15, 4, 30);
-  setTile(16, 4, 2);
-  setTile(17, 4, 30);
-  setTile(18, 4, 2);
-  setTile(19, 4, 30);
-  setTile(5, 1, 37);
-  setTile(6, 1, 37);
-  setTile(6, 2, 37);
-  setTile(7, 1, 37);
-  setTile(7, 2, 37);
-  setTile(7, 3, 37);
+  setTile(7, 0, 1);
+  setTile(15, 4, 1);
+  setTile(16, 4, 1);
+  setTile(17, 4, 1);
+  setTile(18, 4, 1);
+  setTile(19, 4, 1);
+  setTile(5, 1, 1);
+  setTile(6, 1, 1);
+  setTile(6, 2, 1);
+  setTile(7, 1, 1);
+  setTile(7, 2, 1);
+  setTile(7, 3, 1);
   for (int x = 12; x < size.x; x++) for (int y = 0; y < 1; y++) {
     setTile(x, y, 1);
   }
@@ -90,8 +93,6 @@ World::World(int x, int y, Padding<int> padding) : padding(padding), player({7, 
     setTile(x, 4, 1);
   }
   setTile(23, 1, 1);
-  player.pos = Vec2f(32, 16);
-  camera.pos = player.pos + Vec2f(0, player.height / 2);
   // End test world
 }
 

@@ -2,6 +2,8 @@
 
 #include "assetmanager.hpp"
 #include "geometry.hpp"
+#include "renderer.hpp"
+#include "tiletypes.hpp"
 #include "types.hpp"
 #include "world.hpp"
 
@@ -201,6 +203,21 @@ int Engine::main() {
   return EXIT_SUCCESS;
 }
 
+void Engine::registerTileDef(tileid_t tileid, TileDef tiledef) {
+  if (tileid == 0
+  or  tiles.find(tileid) != tiles.end()) {
+    //TODO: actually throw an exception here
+    throw nullptr;
+  }
+
+  tiles[tileid] = tiledef;
+}
+
+TileDef& Engine::getTileDef(tileid_t tileid) {
+  auto tiledef = tiles.find(tileid);
+  return tiledef->second;
+}
+
 bool Engine::init() {
   setupPhysFS("Kha0z", "smb3", "basesmb3");
 
@@ -214,6 +231,8 @@ bool Engine::init() {
   window->setPosition(sf::Vector2i((videomode.width - width) / 2,
                                    (videomode.height - height) / 2));
 
+  registerTileDef(1, TileDef());
+
   pushState(Intro::makeState());
 
   return true;
@@ -226,10 +245,11 @@ Engine::Engine(const StringList& args)
     deinitPhysFS = true;
   }
 
-  viewport = new sf::RenderTexture();
-  window   = new sf::RenderWindow();
-  music    = new Music();
-  sound    = new Sound();
+  viewport = new sf::RenderTexture;
+  window   = new sf::RenderWindow;
+
+  music    = new Music;
+  sound    = new Sound;
 }
 
 Engine::~Engine() {
