@@ -6,8 +6,8 @@ float Input::getValue() const {
 }
 
 void Input::setValue(float new_value) {
-  new_value = std::max(0.0f, std::min(new_value, 1.0f));
-  delta = std::max(-1.0f, std::min(delta + new_value - value, 1.0f));
+  new_value = std::max(0.f, std::min(new_value, 1.f));
+  delta = std::max(-1.f, std::min(delta + new_value - value, 1.f));
   value = new_value;
 }
 
@@ -16,7 +16,7 @@ float Input::getDelta() const {
 }
 
 void Input::update() {
-  delta = 0.0f;
+  delta = 0.f;
 }
 
 Input& Input::operator =(float rhs) {

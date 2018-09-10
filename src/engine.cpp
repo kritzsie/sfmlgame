@@ -210,7 +210,7 @@ void Engine::registerTileDef(tileid_t tileid, TileDef tiledef) {
     throw nullptr;
   }
 
-  tiles[tileid] = tiledef;
+  tiles.emplace(tileid, tiledef);
 }
 
 TileDef& Engine::getTileDef(tileid_t tileid) {
@@ -251,17 +251,20 @@ Engine::Engine(const StringList& args)
   }
 
   viewport = new sf::RenderTexture;
-  window   = new sf::RenderWindow;
+  window = new sf::RenderWindow;
 
-  music    = new Music;
-  sound    = new Sound;
+  music = new Music;
+  sound = new Sound;
 }
 
 Engine::~Engine() {
-  if (window != nullptr) delete window;
-  if (music  != nullptr) delete music;
-  if (sound  != nullptr) delete sound;
+  if (window   != nullptr) delete window;
+  if (viewport != nullptr) delete viewport;
+  if (music    != nullptr) delete music;
+  if (sound    != nullptr) delete sound;
 
-  if (deinitPhysFS) PHYSFS_deinit();
+  if (deinitPhysFS) {
+    PHYSFS_deinit();
+  }
 }
 }

@@ -9,15 +9,15 @@
 
 namespace ke {
 enum struct TileType : char {
-  NONE, SOLID, LIQUID, PLATFORM, SLOPE
+  NONE, SOLID, LIQUID, SLOPE
 };
 
-enum struct TileEdge : char {
+enum struct TileSide : char {
   NONE, SOLID, HURT, KILL
 };
 
 struct TileSides {
-  TileEdge left, right, down, up;
+  TileSide top, bottom, left, right;
 };
 
 class TileDef {
@@ -25,10 +25,15 @@ private:
   renderer::Frames frames;
 
 public:
+  const TileType type;
+  const TileSides sides;
+
+  std::size_t addFrame(std::string, Vec2i, float);
   std::size_t getFrameOffset(float) const;
-
-  void addFrame(std::string, Vec2i, float);
-
   const renderer::Frame& getFrame(std::size_t) const;
+
+  TileDef();
+  TileDef(TileType);
+  TileDef(TileType, TileSides);
 };
 }

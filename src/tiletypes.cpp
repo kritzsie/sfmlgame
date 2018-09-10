@@ -24,11 +24,18 @@ std::size_t TileDef::getFrameOffset(float time) const {
   return (counter - 1) % frames.size();
 }
 
-void TileDef::addFrame(std::string texture, Vec2i offset, float duration) {
+std::size_t TileDef::addFrame(std::string texture, Vec2i offset, float duration) {
   frames.push_back(renderer::Frame{texture, Rect<int>(offset, Vec2(16)), duration});
+  return frames.size() - 1;
 }
 
 const renderer::Frame& TileDef::getFrame(std::size_t index) const {
   return frames.at(index);
 }
+
+TileDef::TileDef(TileType type, TileSides sides) : type(type), sides(sides) {}
+
+TileDef::TileDef(TileType type) : TileDef(type, TileSides{TileSide::SOLID}) {}
+
+TileDef::TileDef() : TileDef(TileType::SOLID) {}
 }

@@ -1,6 +1,7 @@
 #include "gameplay.hpp"
 
 #include "../assetmanager.hpp"
+#include "../tiletypes.hpp"
 
 namespace ke {
 Gameplay::Factory Gameplay::makeState() {
@@ -297,7 +298,9 @@ void Gameplay::update() {
 
       if (x >= 0 and x < world->size.x
       and y >= 0 and y < world->size.y) {
-        if (world->getTile(x, y) != 0
+        tileid_t tileid = world->getTile(x, y);
+        if (tileid != 0
+        and engine.getTileDef(tileid).type == TileType::SOLID
         and plyrBox.intersects(tileBox)) {
           Rect<float> collBox = plyrBox.intersection(tileBox);
 
@@ -339,7 +342,9 @@ void Gameplay::update() {
 
       if (x >= 0 and x < world->size.x
       and y >= 0 and y < world->size.y) {
-        if (world->getTile(x, y) != 0
+        tileid_t tileid = world->getTile(x, y) != 0;
+        if (tileid != 0
+        and engine.getTileDef(tileid).type == TileType::SOLID
         and plyrBox.intersects(tileBox)) {
           Rect<float> collBox = plyrBox.intersection(tileBox);
 
