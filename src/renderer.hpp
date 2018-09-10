@@ -8,7 +8,7 @@
 namespace ke::renderer {
 struct Frame {
   std::string texture;
-  Rect<float> cliprect;
+  Rect<int> cliprect;
   float duration;
 };
 

@@ -231,7 +231,12 @@ bool Engine::init() {
   window->setPosition(sf::Vector2i((videomode.width - width) / 2,
                                    (videomode.height - height) / 2));
 
-  registerTileDef(1, TileDef());
+  TileDef brick;
+  brick.addFrame("smb3_tile_atlas", Vec2(0, 0), 8.f / 60.f);
+  brick.addFrame("smb3_tile_atlas", Vec2(16, 0), 8.f / 60.f);
+  brick.addFrame("smb3_tile_atlas", Vec2(32, 0), 8.f / 60.f);
+  brick.addFrame("smb3_tile_atlas", Vec2(48, 0), 8.f / 60.f);
+  registerTileDef(1, brick);
 
   pushState(Intro::makeState());
 
@@ -253,10 +258,10 @@ Engine::Engine(const StringList& args)
 }
 
 Engine::~Engine() {
-  if (deinitPhysFS) PHYSFS_deinit();
-
   if (window != nullptr) delete window;
   if (music  != nullptr) delete music;
   if (sound  != nullptr) delete sound;
+
+  if (deinitPhysFS) PHYSFS_deinit();
 }
 }

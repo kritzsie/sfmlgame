@@ -13,7 +13,9 @@ class Engine;
 class Gameplay : public GameState {
 private:
   World* world = nullptr;
-  std::vector<Entity*> entities;
+
+  float ticktime = 0.f;
+  float rendertime = 0.f;
 
   bool paused = true;
 

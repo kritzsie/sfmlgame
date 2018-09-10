@@ -43,6 +43,7 @@ add_executable(
 
 target_link_libraries(
   sfmlgame
+  m
   physfs
   sfml-audio sfml-graphics sfml-network sfml-system sfml-window
 )

@@ -97,10 +97,10 @@ void Gameplay::drawTiles() {
   for (int x = left; x < right; x++) {
     tileid_t tileid = world->getTile(x, y);
     if (tileid) {
-      const sf::Texture& texture = assets::gfx.getTile("smb3_tile_atlas");
-      int xoffset = (tileid - 1) * 16 % texture.getSize().x;
-      int yoffset = ((tileid - 1) / (texture.getSize().x / 16)) * 16 % texture.getSize().y;
-      sf::Sprite tile(texture, sf::IntRect(xoffset, yoffset, 16, 16));
+      const TileDef& tiledef = engine.getTileDef(tileid);
+      const std::size_t frame = tiledef.getFrameOffset(rendertime);
+      const sf::Texture& texture = assets::gfx.getTile(tiledef.frames[frame].texture);
+      sf::Sprite tile(texture, tiledef.frames[frame].cliprect);
       tile.setPosition(World::toView(Vec2f(x * 16, y * 16 + 16)));
       engine.viewport->draw(tile);
     }
@@ -410,11 +410,13 @@ void Gameplay::draw() {
   engine.viewport->setView(view);
 
   drawBG(0x6898F8FF);
-  drawBGBottom("overworldblockstop", Vec2f(1.625, 1.375));
-  drawBGTop("cloudlayer", Vec2f(2.625, 1.125));
+  drawBGBottom("overworldblockstop", Vec2f(1.625f, 1.375f));
+  drawBGTop("cloudlayer", Vec2f(2.625f, 1.125f));
   drawTiles();
   drawEntities();
   drawUI();
+
+  rendertime += engine.rendertime.delta;
 
   engine.viewport->display();
 }
