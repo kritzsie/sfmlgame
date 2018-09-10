@@ -99,8 +99,8 @@ void Gameplay::drawTiles() {
     if (tileid) {
       const TileDef& tiledef = engine.getTileDef(tileid);
       const std::size_t frame = tiledef.getFrameOffset(rendertime);
-      const sf::Texture& texture = assets::gfx.getTile(tiledef.frames[frame].texture);
-      sf::Sprite tile(texture, tiledef.frames[frame].cliprect);
+      const sf::Texture& texture = assets::gfx.getTile(tiledef.getFrame(frame).texture);
+      sf::Sprite tile(texture, tiledef.getFrame(frame).cliprect);
       tile.setPosition(World::toView(Vec2f(x * 16, y * 16 + 16)));
       engine.viewport->draw(tile);
     }

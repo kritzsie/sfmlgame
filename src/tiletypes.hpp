@@ -21,11 +21,14 @@ struct TileSides {
 };
 
 class TileDef {
-public:
+private:
   renderer::Frames frames;
 
+public:
   std::size_t getFrameOffset(float) const;
 
   void addFrame(std::string, Vec2i, float);
+
+  const renderer::Frame& getFrame(std::size_t) const;
 };
 }

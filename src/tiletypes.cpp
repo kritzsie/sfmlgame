@@ -27,4 +27,8 @@ std::size_t TileDef::getFrameOffset(float time) const {
 void TileDef::addFrame(std::string texture, Vec2i offset, float duration) {
   frames.push_back(renderer::Frame{texture, Rect<int>(offset, Vec2(16)), duration});
 }
+
+const renderer::Frame& TileDef::getFrame(std::size_t index) const {
+  return frames.at(index);
+}
 }
