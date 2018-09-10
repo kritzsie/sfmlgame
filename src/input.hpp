@@ -20,6 +20,7 @@ public:
   float getDelta() const;
   void update();
 
+  float operator ~() const;
   Input& operator =(float);
 
   operator float() const;

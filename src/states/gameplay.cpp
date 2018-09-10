@@ -156,7 +156,7 @@ void Gameplay::update() {
 
   const Input& pause_input = engine.inputs[Actions::pause];
 
-  if (pause_input.getDelta() > 0.0f) {
+  if (~pause_input > 0.0f) {
     if (paused) {
       resume();
     }
@@ -263,7 +263,7 @@ void Gameplay::update() {
     }
 
     if (not world->player.underwater) {
-      if (jump.getDelta() > 0) {
+      if (~jump > 0) {
         if (not world->player.airborne) {
           world->player.jumptime = 0.3125f;
           engine.sound->play("jump");

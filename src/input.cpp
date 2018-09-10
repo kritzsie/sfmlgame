@@ -19,6 +19,10 @@ void Input::update() {
   delta = 0.f;
 }
 
+float Input::operator ~() const {
+  return delta;
+}
+
 Input& Input::operator =(float rhs) {
   setValue(rhs);
 
