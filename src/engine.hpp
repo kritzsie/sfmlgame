@@ -16,12 +16,12 @@
 #include <SFML/Window.hpp>
 
 #include <chrono>
-#include <map>
-#include <string>
-#include <vector>
-
 #include <cstddef>
 #include <cstdint>
+#include <map>
+#include <stdexcept>
+#include <string>
+#include <vector>
 
 namespace ke {
 using Clock = std::chrono::steady_clock;
@@ -33,6 +33,12 @@ public:
 
   TimeInfo();
   TimeInfo(float);
+};
+
+class TileRedefinitionError : public std::logic_error {
+public:
+  TileRedefinitionError(const std::string&);
+  TileRedefinitionError(const char*);
 };
 
 class Engine {
@@ -51,12 +57,11 @@ private:
   std::vector<Event> events;
   std::vector<GameState*> states;
 
+  // TODO: move tiledef functions to a more suitable location
   std::map<tileid_t, TileDef> tiles;
 
 public:
   StringList args;
-
-  InputMap inputs;
 
   TimeInfo ticktime;
   TimeInfo rendertime;
@@ -68,6 +73,8 @@ public:
   Vec2<uint> viewsize;
   uint viewscale;
 
+  InputMap inputs;
+
 protected:
   virtual void onKeyEvent(sf::Event&);
   virtual void onResize(Vec2<uint>);
@@ -78,12 +85,12 @@ public:
   void pushState(GameState::Factory);
   GameState* popState();
 
+  void registerTileDef(tileid_t, TileDef);
+  const TileDef& getTileDef(tileid_t) const;
+
   void handleEvents();
   void update();
   void draw();
-
-  void registerTileDef(tileid_t, TileDef);
-  TileDef& getTileDef(tileid_t);
 
   bool init();
   int main();

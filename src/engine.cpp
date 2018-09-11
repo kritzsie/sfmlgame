@@ -15,13 +15,12 @@
 
 #include <algorithm>
 #include <chrono>
-#include <stdexcept>
-#include <thread>
-
 #include <cstddef>
 #include <cstdint>
 #include <cstdlib>
 #include <ctgmath>
+#include <stdexcept>
+#include <thread>
 
 namespace ke {
 TimeInfo::TimeInfo(float rate) : rate(rate), delta(1.0f / rate) {}
@@ -44,25 +43,25 @@ void Engine::onResize(Vec2<uint> size) {
 void Engine::onKeyEvent(sf::Event& event) {
   switch (event.key.code) {
   case sf::Keyboard::Up:
-    inputs[Actions::up] = sf::Keyboard::isKeyPressed(sf::Keyboard::Up);
+    inputs[Action::up] = sf::Keyboard::isKeyPressed(sf::Keyboard::Up);
     break;
   case sf::Keyboard::Left:
-    inputs[Actions::left] = sf::Keyboard::isKeyPressed(sf::Keyboard::Left);
+    inputs[Action::left] = sf::Keyboard::isKeyPressed(sf::Keyboard::Left);
     break;
   case sf::Keyboard::Down:
-    inputs[Actions::down] = sf::Keyboard::isKeyPressed(sf::Keyboard::Down);
+    inputs[Action::down] = sf::Keyboard::isKeyPressed(sf::Keyboard::Down);
     break;
   case sf::Keyboard::Right:
-    inputs[Actions::right] = sf::Keyboard::isKeyPressed(sf::Keyboard::Right);
+    inputs[Action::right] = sf::Keyboard::isKeyPressed(sf::Keyboard::Right);
     break;
   case sf::Keyboard::X:
-    inputs[Actions::jump] = sf::Keyboard::isKeyPressed(sf::Keyboard::X);
+    inputs[Action::jump] = sf::Keyboard::isKeyPressed(sf::Keyboard::X);
     break;
   case sf::Keyboard::Z:
-    inputs[Actions::run] = sf::Keyboard::isKeyPressed(sf::Keyboard::Z);
+    inputs[Action::run] = sf::Keyboard::isKeyPressed(sf::Keyboard::Z);
     break;
   case sf::Keyboard::Escape:
-    inputs[Actions::pause] = sf::Keyboard::isKeyPressed(sf::Keyboard::Escape);
+    inputs[Action::pause] = sf::Keyboard::isKeyPressed(sf::Keyboard::Escape);
   default:
     break;
   }
@@ -99,6 +98,26 @@ void Engine::pushState(GameState::Factory state_factory) {
 GameState* Engine::popState() {
   events.push_back(Event(EventType::pop, nullptr));
   return states.back();
+}
+
+TileRedefinitionError::TileRedefinitionError(const std::string& what)
+: std::logic_error(what) {}
+
+TileRedefinitionError::TileRedefinitionError(const char* what)
+: TileRedefinitionError(std::string(what)) {}
+
+void Engine::registerTileDef(tileid_t tileid, TileDef tiledef) {
+  if (tiles.find(tileid) != tiles.end()) {
+    std::stringstream ss;
+    ss << "attempted to redefine tile with id " << tileid;
+    throw TileRedefinitionError(ss.str());
+  }
+
+  tiles.emplace(tileid, tiledef);
+}
+
+const TileDef& Engine::getTileDef(tileid_t tileid) const {
+  return tiles.at(tileid);
 }
 
 void Engine::handleEvents() {
@@ -203,21 +222,6 @@ int Engine::main() {
   return EXIT_SUCCESS;
 }
 
-void Engine::registerTileDef(tileid_t tileid, TileDef tiledef) {
-  if (tileid == 0
-  or  tiles.find(tileid) != tiles.end()) {
-    //TODO: actually throw an exception here
-    throw nullptr;
-  }
-
-  tiles.emplace(tileid, tiledef);
-}
-
-TileDef& Engine::getTileDef(tileid_t tileid) {
-  auto tiledef = tiles.find(tileid);
-  return tiledef->second;
-}
-
 bool Engine::init() {
   setupPhysFS("Kha0z", "smb3", "basesmb3");
 
@@ -231,12 +235,38 @@ bool Engine::init() {
   window->setPosition(sf::Vector2i((videomode.width - width) / 2,
                                    (videomode.height - height) / 2));
 
-  TileDef brick;
-  brick.addFrame("smb3_tile_atlas", Vec2(0, 0), 8.f / 60.f);
-  brick.addFrame("smb3_tile_atlas", Vec2(16, 0), 8.f / 60.f);
-  brick.addFrame("smb3_tile_atlas", Vec2(32, 0), 8.f / 60.f);
-  brick.addFrame("smb3_tile_atlas", Vec2(48, 0), 8.f / 60.f);
-  registerTileDef(1, brick);
+  TileDef brickblock;
+  brickblock.pushFrame("smb3_tile_atlas", Vec2(0, 0), 8.f / 60.f);
+  brickblock.pushFrame("smb3_tile_atlas", Vec2(16, 0), 8.f / 60.f);
+  brickblock.pushFrame("smb3_tile_atlas", Vec2(32, 0), 8.f / 60.f);
+  brickblock.pushFrame("smb3_tile_atlas", Vec2(48, 0), 8.f / 60.f);
+  registerTileDef(1, brickblock);
+
+  TileDef itemblock;
+  itemblock.pushFrame("smb3_tile_atlas", Vec2(0, 48), 8.f / 60.f);
+  itemblock.pushFrame("smb3_tile_atlas", Vec2(16, 48), 8.f / 60.f);
+  itemblock.pushFrame("smb3_tile_atlas", Vec2(32, 48), 8.f / 60.f);
+  itemblock.pushFrame("smb3_tile_atlas", Vec2(48, 48), 8.f / 60.f);
+  registerTileDef(2, itemblock);
+
+  TileDef woodfloor0, woodfloor1, woodfloor2;
+  TileDef woodfloor3, woodfloor4, woodfloor5;
+  woodfloor0.pushFrame("smb3_tile_atlas", Vec2(80, 48), 0.f);
+  woodfloor1.pushFrame("smb3_tile_atlas", Vec2(96, 48), 0.f);
+  woodfloor2.pushFrame("smb3_tile_atlas", Vec2(112, 48), 0.f);
+  woodfloor3.pushFrame("smb3_tile_atlas", Vec2(80, 48), 0.f);
+  woodfloor4.pushFrame("smb3_tile_atlas", Vec2(96, 48), 0.f);
+  woodfloor5.pushFrame("smb3_tile_atlas", Vec2(112, 48), 0.f);
+  registerTileDef(3, woodfloor0);
+  registerTileDef(4, woodfloor1);
+  registerTileDef(5, woodfloor2);
+  registerTileDef(6, woodfloor3);
+  registerTileDef(7, woodfloor4);
+  registerTileDef(8, woodfloor5);
+
+  TileDef woodblock;
+  woodblock.pushFrame("smb3_tile_atlas", Vec2(208, 96), 0.f);
+  registerTileDef(9, woodblock);
 
   pushState(Intro::makeState());
 
@@ -255,6 +285,10 @@ Engine::Engine(const StringList& args)
 
   music = new Music;
   sound = new Sound;
+
+  TileDef notile(TileType::NONE);
+  notile.pushFrame("", Vec2i(), 0.f);
+  tiles.emplace(0, notile);
 }
 
 Engine::~Engine() {

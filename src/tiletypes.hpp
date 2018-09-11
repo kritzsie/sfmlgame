@@ -28,7 +28,7 @@ public:
   const TileType type;
   const TileSides sides;
 
-  std::size_t addFrame(std::string, Vec2i, float);
+  std::size_t pushFrame(std::string, Vec2i, float);
   std::size_t getFrameOffset(float) const;
   const renderer::Frame& getFrame(std::size_t) const;
 

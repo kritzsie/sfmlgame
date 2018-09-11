@@ -35,7 +35,7 @@ void Gameplay::drawBG(std::string bg, Vec2f dist) {
   sf::Sprite sky(texture);
   for (int y = std::floor(min_y / dist.y); y < std::floor(max_y / dist.y) + 1; y++)
   for (int x = std::floor(min_x / dist.x); x < std::floor(max_x / dist.x) + 1; x++) {
-    sky.setPosition(World::toView(Vec2f(x * sky_w + left / distdivx + 16 * world->padding.left / dist.x, y * sky_h + sky_h + bottom / distdivy - 16 * world->padding.top / dist.y)));
+    sky.setPosition(World::toView(Vec2(x * sky_w + left / distdivx + 16.f * world->padding.left / dist.x, y * sky_h + sky_h + bottom / distdivy - 16.f * world->padding.top / dist.y)));
     engine.viewport->draw(sky);
   }
 }
@@ -58,7 +58,7 @@ void Gameplay::drawBGBottom(std::string bg, Vec2f dist) {
 
   sf::Sprite sky(texture);
   for (int x = std::floor(min_x / dist.x); x < std::floor(max_x / dist.x) + 1; x++) {
-    sky.setPosition(World::toView(Vec2f(x * sky_w + left / distdivx + 16 * world->padding.left / dist.x, sky_h + bottom / distdivy + 16 * world->padding.bottom / dist.y)));
+    sky.setPosition(World::toView(Vec2(x * sky_w + left / distdivx + 16.f * world->padding.left / dist.x, sky_h + bottom / distdivy + 16.f * world->padding.bottom / dist.y)));
     engine.viewport->draw(sky);
   }
 }
@@ -80,7 +80,7 @@ void Gameplay::drawBGTop(std::string bg, Vec2f dist) {
 
   sf::Sprite sky(texture);
   for (int x = std::floor(min_x / dist.x); x < std::floor(max_x / dist.x) + 1; x++) {
-    sky.setPosition(World::toView(Vec2f(x * sky_w + left / distdivx + 16 * world->padding.left / dist.x, world->size.y * 16 / dist.y + top / distdivy - 16 * world->padding.top / dist.y)));
+    sky.setPosition(World::toView(Vec2(x * sky_w + left / distdivx + 16.f * world->padding.left / dist.x, world->size.y * 16.f / dist.y + top / distdivy - 16.f * world->padding.top / dist.y)));
     engine.viewport->draw(sky);
   }
 }
@@ -100,10 +100,12 @@ void Gameplay::drawTiles() {
     if (tileid) {
       const TileDef& tiledef = engine.getTileDef(tileid);
       const std::size_t frame = tiledef.getFrameOffset(rendertime);
-      const sf::Texture& texture = assets::gfx.getTile(tiledef.getFrame(frame).texture);
-      sf::Sprite tile(texture, tiledef.getFrame(frame).cliprect);
-      tile.setPosition(World::toView(Vec2f(x * 16, y * 16 + 16)));
-      engine.viewport->draw(tile);
+      const std::string& texture = tiledef.getFrame(frame).texture;
+      if (texture.length()) {
+        sf::Sprite tile(assets::gfx.getTile(texture), tiledef.getFrame(frame).cliprect);
+        tile.setPosition(World::toView(Vec2(x * 16.f, y * 16.f + 16.f)));
+        engine.viewport->draw(tile);
+      }
     }
   }
 }
@@ -143,20 +145,20 @@ void Gameplay::resume() {
 
 void Gameplay::update() {
   // TODO: Send these to a better place
-  const float gravity = -48 * 16;
-  const float min_yvel = -16 * 16;
+  const float gravity = -48.f * 16.f;
+  const float min_yvel = -16.f * 16.f;
 
   // Handle keyboard input first
-  const Input& left = engine.inputs[Actions::left];
-  const Input& down = engine.inputs[Actions::down];
-  const Input& right = engine.inputs[Actions::right];
+  const Input& left = engine.inputs[Action::left];
+  const Input& down = engine.inputs[Action::down];
+  const Input& right = engine.inputs[Action::right];
 
-  const Input& jump = engine.inputs[Actions::jump];
-  const Input& run = engine.inputs[Actions::run];
+  const Input& jump = engine.inputs[Action::jump];
+  const Input& run = engine.inputs[Action::run];
 
-  const Input& pause_input = engine.inputs[Actions::pause];
+  const Input& pause_input = engine.inputs[Action::pause];
 
-  if (~pause_input > 0.0f) {
+  if (~pause_input > 0.f) {
     if (paused) {
       resume();
     }
@@ -168,7 +170,7 @@ void Gameplay::update() {
   if (not paused) {
     byte direction = (right ? 1 : 0) + (left ? -1 : 0);
 
-    float max_xvel = (run ? (world->player.p_speed ? 12 : 10) : 6) * 16;
+    float max_xvel = (run ? (world->player.p_speed ? 12.f : 10.f) : 6.f) * 16.f;
     float min_xvel = -max_xvel;
 
     if (direction) {
@@ -186,11 +188,11 @@ void Gameplay::update() {
           world->player.vel.x = std::max(min_xvel, std::min(world->player.vel.x + direction * 16 * 16 / engine.ticktime.rate, 8.f * 16.f));
         }
       }
-      else if (world->player.vel.x > 0) {
-        world->player.vel.x = std::max(world->player.vel.x - 12 * 16 / engine.ticktime.rate, 0.f);
+      else if (world->player.vel.x > 0.f) {
+        world->player.vel.x = std::max(world->player.vel.x - 12.f * 16.f / engine.ticktime.rate, 0.f);
       }
-      else if (world->player.vel.x < 0) {
-        world->player.vel.x = std::min(world->player.vel.x + 12 * 16 / engine.ticktime.rate, 0.f);
+      else if (world->player.vel.x < 0.f) {
+        world->player.vel.x = std::min(world->player.vel.x + 12.f * 16.f / engine.ticktime.rate, 0.f);
       }
 
       if (down and not direction) {
@@ -199,34 +201,34 @@ void Gameplay::update() {
         world->player.duck();
       }
       else {
-        if (world->player.vel.x > 0
+        if (world->player.vel.x > 0.f
         and direction < 0) {
           world->player.sprite.setTexture(assets::gfx.getSprite("bigmarioslip"), true);
-          world->player.offset.x = 8;
-          if (world->player.sliptime == 0) {
+          world->player.offset.x = 8.f;
+          if (world->player.sliptime <= 0.f) {
             world->player.sliptime = 0.09375f;
             engine.sound->play("slip");
           }
           else {
-            world->player.sliptime = std::max(0.f, world->player.sliptime - 1 / engine.ticktime.rate);
+            world->player.sliptime = std::max(0.f, world->player.sliptime - 1.f / engine.ticktime.rate);
           }
         }
-        else if (world->player.vel.x < 0
+        else if (world->player.vel.x < 0.f
         and direction > 0) {
           world->player.sprite.setTexture(assets::gfx.getSprite("bigmarioslip"), true);
-          world->player.offset.x = 8;
-          if (world->player.sliptime == 0) {
+          world->player.offset.x = 8.f;
+          if (world->player.sliptime <= 0.f) {
             world->player.sliptime = 0.09375f;
             engine.sound->play("slip");
           }
           else {
-            world->player.sliptime = std::max(0.f, world->player.sliptime - 1 / engine.ticktime.rate);
+            world->player.sliptime = std::max(0.f, world->player.sliptime - 1.f / engine.ticktime.rate);
           }
         }
         else {
           if (world->player.vel.x) {
             if (world->player.walktime) {
-              world->player.walktime = std::max(0.f, world->player.walktime - std::max(1.f, std::abs(world->player.vel.x) / 32) / engine.ticktime.rate);
+              world->player.walktime = std::max(0.f, world->player.walktime - std::max(1.f, std::abs(world->player.vel.x) / 32.f) / engine.ticktime.rate);
             }
             else {
               world->player.walktime = 0.125f;
@@ -234,12 +236,12 @@ void Gameplay::update() {
             }
           }
           else {
-            world->player.walktime = 0;
-            world->player.walkcycle = 0;
+            world->player.walktime = 0.f;
+            world->player.walkcycle = 0.f;
           }
           world->player.sprite.setTexture(assets::gfx.getSprite("bigmariowalk_" + std::to_string(world->player.walkcycle < 3 ? world->player.walkcycle : 1)), true);
           world->player.offset.x = world->player.walkcycle ? 9 : 7;
-          world->player.sliptime = 0;
+          world->player.sliptime = 0.f;
         }
 
         world->player.stand();
@@ -249,16 +251,16 @@ void Gameplay::update() {
       if (direction) {
         if (direction > 0
         and world->player.vel.x < max_xvel) {
-          world->player.vel.x = std::min(world->player.vel.x + direction * 10 * 16 / engine.ticktime.rate, max_xvel);
+          world->player.vel.x = std::min(world->player.vel.x + direction * 10.f * 16.f / engine.ticktime.rate, max_xvel);
         }
         else if (direction < 0
         and world->player.vel.x > min_xvel) {
-          world->player.vel.x = std::max(min_xvel, world->player.vel.x + direction * 10 * 16 / engine.ticktime.rate);
+          world->player.vel.x = std::max(min_xvel, world->player.vel.x + direction * 10.f * 16.f / engine.ticktime.rate);
         }
       }
       if (not world->player.ducking) {
         world->player.sprite.setTexture(assets::gfx.getSprite("bigmariojump"), true);
-        world->player.offset.x = 8;
+        world->player.offset.x = 8.f;
       }
     }
 
@@ -270,17 +272,17 @@ void Gameplay::update() {
         }
       }
       else if (jump == 0) {
-        world->player.jumptime = 0;
+        world->player.jumptime = 0.f;
       }
 
-      if (world->player.jumptime > 0) {
-        world->player.jumptime = std::max(0.f, world->player.jumptime - 1 / engine.ticktime.rate);
+      if (world->player.jumptime > 0.f) {
+        world->player.jumptime = std::max(0.f, world->player.jumptime - 1.f / engine.ticktime.rate);
         world->player.jump();
       }
     }
 
     if (world->player.vel.y > min_yvel
-    and world->player.jumptime == 0) {
+    and world->player.jumptime == 0.f) {
       world->player.vel.y = std::max(world->player.vel.y + gravity / engine.ticktime.rate, min_yvel);
     }
 
@@ -304,7 +306,7 @@ void Gameplay::update() {
         and plyrBox.intersects(tileBox)) {
           Rect<float> collBox = plyrBox.intersection(tileBox);
 
-          if (plyrBox.y + plyrBox.h / 2 < tileBox.y + tileBox.h / 2) {
+          if (plyrBox.y + plyrBox.h / 2.f < tileBox.y + tileBox.h / 2.f) {
             /*if (world->player.pos.x > tileBox.x + tileBox.w
             and world->getTile(x + 1, y) != 0) {
               world->setTile(x + 1, y, 0);
@@ -313,23 +315,21 @@ void Gameplay::update() {
               world->setTile(x, y, 0);
             }
             engine.sound->play("brickshatter");*/
-            if (world->player.vel.y > 0) {
+            if (world->player.vel.y > 0.f) {
               engine.sound->play("bump");
             }
-            world->player.jumptime = 0;
-            world->player.vel.y = 0;
+            world->player.jumptime = 0.f;
+            world->player.vel.y = 0.f;
             world->player.pos.y -= collBox.h;
           }
           else {
             world->player.airborne = false;
-            world->player.vel.y = 0;
+            world->player.vel.y = 0.f;
             world->player.pos.y += collBox.h;
           }
-          goto y_collision_end;
         }
       }
     }
-    y_collision_end:
 
     if (world->player.vel.x) {
       world->player.pos.x += world->player.vel.x / engine.ticktime.rate;
@@ -342,27 +342,25 @@ void Gameplay::update() {
 
       if (x >= 0 and x < world->size.x
       and y >= 0 and y < world->size.y) {
-        tileid_t tileid = world->getTile(x, y) != 0;
+        tileid_t tileid = world->getTile(x, y);
         if (tileid != 0
         and engine.getTileDef(tileid).type == TileType::SOLID
         and plyrBox.intersects(tileBox)) {
           Rect<float> collBox = plyrBox.intersection(tileBox);
 
-          if (plyrBox.x + plyrBox.w / 2 < tileBox.x + tileBox.w / 2) {
-            world->player.vel.x = 0;
+          if (plyrBox.x + plyrBox.w / 2.f < tileBox.x + tileBox.w / 2.f) {
+            world->player.vel.x = 0.f;
             world->player.pos.x -= collBox.w;
           }
           else {
-            world->player.vel.x = 0;
+            world->player.vel.x = 0.f;
             world->player.pos.x += collBox.w;
           }
-          goto x_collision_end;
         }
       }
     }
-    x_collision_end:
 
-    world->camera.vel = (world->player.pos + Vec2f(0, world->player.height / 2) - world->camera.pos) * engine.ticktime.rate / 8.f;
+    world->camera.vel = (world->player.pos + Vec2(0.f, world->player.height / 2.f) - world->camera.pos) * engine.ticktime.rate / 8.f;
     world->camera.pos += world->camera.vel / engine.ticktime.rate;
 
     const Vec2f view_center(
@@ -378,7 +376,7 @@ void Gameplay::update() {
 
     if (world->camera.pos.x < camera_padding.left
     and world->camera.pos.x > camera_padding.right) {
-      world->camera.pos.x = (camera_padding.left + camera_padding.right) / 2;
+      world->camera.pos.x = (camera_padding.left + camera_padding.right) / 2.f;
     }
     else {
       if (world->camera.pos.x < camera_padding.left) {
@@ -391,15 +389,15 @@ void Gameplay::update() {
 
     if (world->camera.pos.y > camera_padding.top
     and world->camera.pos.y < camera_padding.bottom) {
-      world->camera.pos.y = (camera_padding.top + camera_padding.bottom) / 2;
+      world->camera.pos.y = (camera_padding.top + camera_padding.bottom) / 2.f;
     }
     else {
       if (world->camera.pos.y > camera_padding.top) {
-        world->camera.vel.y = 0;
+        world->camera.vel.y = 0.f;
         world->camera.pos.y = camera_padding.top;
       }
       else if (world->camera.pos.y < camera_padding.bottom) {
-        world->camera.vel.y = 0;
+        world->camera.vel.y = 0.f;
         world->camera.pos.y = camera_padding.bottom;
       }
     }
@@ -415,8 +413,8 @@ void Gameplay::draw() {
   engine.viewport->setView(view);
 
   drawBG(0x6898F8FF);
-  drawBGBottom("overworldblockstop", Vec2f(1.625f, 1.375f));
-  drawBGTop("cloudlayer", Vec2f(2.625f, 1.125f));
+  drawBGBottom("overworldblockstop", Vec2(1.625f, 1.375f));
+  drawBGTop("cloudlayer", Vec2(2.625f, 1.125f));
   drawTiles();
   drawEntities();
   drawUI();

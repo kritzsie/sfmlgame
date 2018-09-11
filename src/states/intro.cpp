@@ -18,6 +18,8 @@ void Intro::resume() {}
 void Intro::update() {
   engine.popState();
   engine.pushState(Gameplay::makeState());
+
+  ticktime += engine.ticktime.delta;
 }
 
 void Intro::draw() {}

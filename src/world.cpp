@@ -66,33 +66,34 @@ World::World(int x, int y, Padding<int> padding) : padding(padding), player({7, 
   player.pos = Vec2f(32, 16);
   camera.pos = player.pos + Vec2f(0, player.height / 2);
 
-  setTile(0, 0, 1);
+  setTile(0, 0, 3);
   for (int x = 1; x <= 6; x++) {
-      setTile(x, 0, 1);
+      setTile(x, 0, 4);
   }
-  setTile(7, 0, 1);
+  setTile(7, 0, 5);
   setTile(15, 4, 1);
-  setTile(16, 4, 1);
+  setTile(16, 4, 2);
   setTile(17, 4, 1);
-  setTile(18, 4, 1);
+  setTile(18, 4, 2);
   setTile(19, 4, 1);
-  setTile(5, 1, 1);
-  setTile(6, 1, 1);
-  setTile(6, 2, 1);
-  setTile(7, 1, 1);
-  setTile(7, 2, 1);
-  setTile(7, 3, 1);
-  for (int x = 12; x < size.x; x++) for (int y = 0; y < 1; y++) {
-    setTile(x, y, 1);
+  setTile(5, 1, 9);
+  setTile(6, 1, 9);
+  setTile(6, 2, 9);
+  setTile(7, 1, 9);
+  setTile(7, 2, 9);
+  setTile(7, 3, 9);
+  setTile(10, 0, 3);
+  for (int x = 11; x <= size.x - 2; x++) {
+    setTile(x, 0, 4);
   }
-  for (int x = 24; x < 40; x++) {
-    setTile(x, 1, 1);
+  setTile(size.x - 1, 0, 5);
+  for (int x = 24; x <= 39; x++) {
+    setTile(x, 1, 9);
   }
-  for (int x = 28; x < 36; x++) {
-    setTile(x, 3, 1);
-    setTile(x, 4, 1);
+  for (int x = 28; x <= 35; x++)
+  for (int y = 3; y <= 4; y++) {
+    setTile(x, y, 9);
   }
-  setTile(23, 1, 1);
   // End test world
 }
 

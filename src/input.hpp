@@ -3,7 +3,7 @@
 #include <map>
 
 namespace ke {
-enum class Actions {
+enum class Action {
   up, left, down, right,
   jump, run, spinjump,
   pause, back
@@ -11,8 +11,8 @@ enum class Actions {
 
 class Input {
 private:
-  float delta = 0.0f;
-  float value = 0.0f;
+  float delta = 0.f;
+  float value = 0.f;
 
 public:
   float getValue() const;
@@ -20,7 +20,7 @@ public:
   float getDelta() const;
   void update();
 
-  float operator ~() const;
+  float operator ~() const; // Same as getDelta()
   Input& operator =(float);
 
   operator float() const;
@@ -29,5 +29,5 @@ public:
   Input(const Input&) = delete;
 };
 
-using InputMap = std::map<Actions, Input>;
+using InputMap = std::map<Action, Input>;
 }

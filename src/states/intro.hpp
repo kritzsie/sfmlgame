@@ -8,6 +8,8 @@ class Intro : public GameState {
 public:
   static Factory makeState();
 
+  float ticktime = 0.f;
+
   void enter() final;
   void exit() final;
 

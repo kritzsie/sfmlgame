@@ -14,11 +14,11 @@
 
 namespace ke::assets {
 static const StringList gfx_extensions {
-  "hdr", "png", "psd", "tga", "bmp", "gif", "pic", "jpg", "jpeg", ""
+  "", "hdr", "png", "psd", "tga", "bmp", "gif", "pic", "jpg", "jpeg"
 };
 
 static const StringList sfx_extensions {
-  "flac", "wav", "ogg", ""
+  "", "flac", "wav", "ogg"
 };
 
 sf::Texture     GFXAssets::none;
