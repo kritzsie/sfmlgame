@@ -32,6 +32,7 @@ public:
 
   void jump();
   void duck();
+  void stand();
 
   void update() override;
 

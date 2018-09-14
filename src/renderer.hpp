@@ -26,7 +26,7 @@ public:
   void pushFrame(std::string, RenderFrame);
   void pushFrame(std::string, std::string, Rect<int>, Vec2f, float);
 
-  void setState(std::string, std::size_t);
+  void setState(std::string, std::size_t = 0);
 
   StringList getStateList() const;
   std::size_t getFrameCount(std::string) const;

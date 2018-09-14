@@ -88,14 +88,38 @@ void Player::jump() {
   }
 }
 
+void Player::duck() {
+  if (!(state & airborne)) {
+    height = 15.f;
+    state |= ducking;
+    setState("ducking");
+  }
+}
+
+void Player::stand() {
+  if (!(state & airborne)) {
+    height = 25.f;
+    state &= ~ducking;
+    setState("idle");
+  }
+}
+
 void Player::update() {
   const Input& jump_input = engine->inputs[Action::jump];
+  const Input& duck_input = engine->inputs[Action::down];
 
   if (jump_input > 0.f) {
     jump();
   }
   else {
     jumptime = 0.f;
+  }
+
+  if (duck_input > 0.f) {
+    duck();
+  }
+  else {
+    stand();
   }
 
   if (jumptime == 0.f
@@ -117,16 +141,14 @@ void Player::update() {
   resolveEntityCollisionsX();
   resolveWorldCollisionsX();
 
-  if (state & airborne) {
-    setState("jumping", 0);
-  }
-  else {
-    setState("idle", 0);
+  if (state & airborne
+  and !(state & ducking)) {
+    setState("jumping");
   }
 }
 
 Player::Player(Engine* engine, World* world)
-: Entity(engine, world, 4.f, 26.f), max_vel(0.f, 256.f) {
+: Entity(engine, world, 4.f, 25.f), max_vel(0.f, 256.f) {
   pushFrame("idle", "bigmariowalk_0", Rect(0, 0, 14, 27), Vec2(7.f, -1.f), 0.f);
 
   pushFrame("walking", "bigmariowalk_1", Rect(0, 0, 16, 27), Vec2(8.f, -1.f), 0.125f);
@@ -135,5 +157,7 @@ Player::Player(Engine* engine, World* world)
   pushFrame("walking", "bigmariowalk_0", Rect(0, 0, 14, 27), Vec2(7.f, -1.f), 0.125f);
 
   pushFrame("jumping", "bigmariojump", Rect(0, 0, 16, 26), Vec2(8.f, -1.f), 0.f);
+
+  pushFrame("ducking", "bigmarioduck", Rect(0, 0, 14, 18), Vec2(7.f, -1.f), 0.f);
 }
 }
