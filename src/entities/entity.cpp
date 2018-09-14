@@ -7,12 +7,8 @@ Entity::Factory Entity::create() {
   };
 }
 
-Vec2f Entity::getSize() const {
-  return Vec2(radius * 2.f, height);
-}
-
 Rect<float> Entity::getBBox() const {
-  return Rect<float>(pos, getSize());
+  return Rect<float>(pos - Vec2f(radius / 2.f, 0.f), Vec2(radius * 2.f, height));
 }
 
 Entity::Entity(Engine* engine, World* world, float radius, float height)

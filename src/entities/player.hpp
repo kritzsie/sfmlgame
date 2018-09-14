@@ -6,8 +6,13 @@
 namespace ke {
 class Player : public Entity {
 private:
-  void resolveEntityCollisions();
-  void resolveWorldCollisions();
+  Vec2f max_vel;
+
+  void resolveEntityCollisionsX();
+  void resolveEntityCollisionsY();
+
+  void resolveWorldCollisionsX();
+  void resolveWorldCollisionsY();
 
 public:
   enum State : int {
@@ -25,7 +30,8 @@ public:
   float jumptime;
   float sliptime;
 
-  Vec2f max_vel;
+  void jump();
+  void duck();
 
   void update() override;
 

@@ -13,7 +13,6 @@ public:
   float height;
 
   Rect<float> getBBox() const;
-  Vec2f getSize() const;
 
   ~Entity() override = default;
 

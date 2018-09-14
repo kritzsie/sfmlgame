@@ -10,18 +10,13 @@ Player::Factory Player::create() {
   };
 }
 
-void Player::resolveEntityCollisions() {}
+void Player::resolveEntityCollisionsX() {}
+void Player::resolveEntityCollisionsY() {}
 
-void Player::resolveWorldCollisions() {
+void Player::resolveWorldCollisionsX() {
   Rect<int> range = World::tilesInBBox(getBBox());
-
-  if (vel.y) {
-    pos.y += vel.y / engine->ticktime.rate;
-  }
-  //airborne = true;
-
-  for (int x = range.x; x < range.x + range.w + 1; x++)
-  for (int y = range.y; y < range.y + range.h + 1; y++) {
+  for (int x = range.x; x <= range.x + range.w; x++)
+  for (int y = range.y; y <= range.y + range.h; y++) {
     Rect<float> plyrBox = getBBox();
     Rect<float> tileBox = World::tileBBox(x, y);
 
@@ -32,16 +27,34 @@ void Player::resolveWorldCollisions() {
       and engine->getTileDef(tileid).type == TileType::SOLID
       and plyrBox.intersects(tileBox)) {
         Rect<float> collBox = plyrBox.intersection(tileBox);
+        if (plyrBox.x + plyrBox.w / 2.f < tileBox.x + tileBox.w / 2.f) {
+          vel.x = 0.f;
+          pos.x -= collBox.w;
+        }
+        else {
+          vel.x = 0.f;
+          pos.x += collBox.w;
+        }
+      }
+    }
+  }
+}
 
+void Player::resolveWorldCollisionsY() {
+  Rect<int> range = World::tilesInBBox(getBBox());
+  for (int x = range.x; x <= range.x + range.w; x++)
+  for (int y = range.y; y <= range.y + range.h; y++) {
+    Rect<float> plyrBox = getBBox();
+    Rect<float> tileBox = World::tileBBox(x, y);
+
+    if (x >= 0 and x < world->size.x
+    and y >= 0 and y < world->size.y) {
+      tileid_t tileid = world->getTile(x, y);
+      if (tileid != 0
+      and engine->getTileDef(tileid).type == TileType::SOLID
+      and plyrBox.intersects(tileBox)) {
+        Rect<float> collBox = plyrBox.intersection(tileBox);
         if (plyrBox.y + plyrBox.h / 2.f < tileBox.y + tileBox.h / 2.f) {
-          if (pos.x > tileBox.x + tileBox.w
-          and world->getTile(x + 1, y) == 1) {
-            world->setTile(x + 1, y, 0);
-          }
-          else {
-            world->setTile(x, y, 0);
-          }
-          engine->sound->play("brickshatter");
           if (vel.y > 0.f) {
             engine->sound->play("bump");
           }
@@ -59,19 +72,50 @@ void Player::resolveWorldCollisions() {
   }
 }
 
+void Player::jump() {
+  const Input& jump_input = engine->inputs[Action::jump];
+
+  if (~jump_input > 0.f
+  and !(state & airborne)
+  and !(state & underwater)) {
+    jumptime = 0.3125f;
+    engine->sound->play("jump");
+  }
+
+  if (jumptime > 0.f) {
+    vel.y = 176.f + std::abs(vel.x / 16.f);
+    jumptime = std::max(0.f, jumptime - 1.f / engine->ticktime.rate);
+  }
+}
+
 void Player::update() {
-  if (vel.y > -max_vel.y) {
+  const Input& jump_input = engine->inputs[Action::jump];
+
+  if (jump_input > 0.f) {
+    jump();
+  }
+  else {
+    jumptime = 0.f;
+  }
+
+  if (jumptime == 0.f
+  and vel.y > -max_vel.y) {
     vel.y = std::max(
       -max_vel.y,
       vel.y + world->gravity / engine->ticktime.rate
     );
   }
-  pos += vel / engine->ticktime.rate;
 
+  Vec2f new_pos = pos + vel / engine->ticktime.rate;
   state |= airborne;
 
-  resolveEntityCollisions();
-  resolveWorldCollisions();
+  pos.y = new_pos.y;
+  resolveEntityCollisionsY();
+  resolveWorldCollisionsY();
+
+  pos.x = new_pos.x;
+  resolveEntityCollisionsX();
+  resolveWorldCollisionsX();
 
   if (state & airborne) {
     setState("jumping", 0);
@@ -82,8 +126,14 @@ void Player::update() {
 }
 
 Player::Player(Engine* engine, World* world)
-: Entity(engine, world, 5.f, 26.f), max_vel(0.f, 192.f) {
+: Entity(engine, world, 4.f, 26.f), max_vel(0.f, 256.f) {
   pushFrame("idle", "bigmariowalk_0", Rect(0, 0, 14, 27), Vec2(7.f, -1.f), 0.f);
+
+  pushFrame("walking", "bigmariowalk_1", Rect(0, 0, 16, 27), Vec2(8.f, -1.f), 0.125f);
+  pushFrame("walking", "bigmariowalk_2", Rect(0, 0, 16, 26), Vec2(8.f, -1.f), 0.125f);
+  pushFrame("walking", "bigmariowalk_1", Rect(0, 0, 16, 27), Vec2(8.f, -1.f), 0.125f);
+  pushFrame("walking", "bigmariowalk_0", Rect(0, 0, 14, 27), Vec2(7.f, -1.f), 0.125f);
+
   pushFrame("jumping", "bigmariojump", Rect(0, 0, 16, 26), Vec2(8.f, -1.f), 0.f);
 }
 }

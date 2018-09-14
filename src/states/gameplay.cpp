@@ -117,6 +117,10 @@ void Gameplay::drawEntities() {
       const std::string& texture = entity->getFrame().texture;
       sf::Sprite sprite(assets::gfx.getSprite(texture));
       sprite.setPosition(World::toView(entity));
+      sprite.setScale(sf::Vector2f(
+        entity->scale.x * entity->getDirection(),
+        entity->scale.y
+      ));
       engine->viewport->draw(sprite);
     }
   }
@@ -147,18 +151,6 @@ void Gameplay::resume() {
 }
 
 void Gameplay::update() {
-  // TODO: Send these to a better place
-  const float gravity = -48.f * 16.f;
-  const float min_yvel = -16.f * 16.f;
-
-  // Handle keyboard input first
-  const Input& left = engine->inputs[Action::left];
-  const Input& down = engine->inputs[Action::down];
-  const Input& right = engine->inputs[Action::right];
-
-  const Input& jump = engine->inputs[Action::jump];
-  const Input& run = engine->inputs[Action::run];
-
   const Input& pause_input = engine->inputs[Action::pause];
 
   if (~pause_input > 0.f) {
