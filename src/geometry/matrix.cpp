@@ -1,6 +1,7 @@
 #include "matrix.hpp"
 
 #include <cstddef>
+#include <sstream>
 
 namespace ke {
 template<typename T>
@@ -27,11 +28,8 @@ Matrix<T>::operator bool() {
 }
 
 template<typename T>
-Matrix<T>::Proxy::Proxy(T* const data, const Vec2i& size, int x) :
-  data(data),
-  size(size),
-  x(x)
-{}
+Matrix<T>::Proxy::Proxy(T* const data, const Vec2i& size, int x)
+: data(data), size(size), x(x) {}
 
 template<typename T>
 typename Matrix<T>::Proxy Matrix<T>::operator[](int x) {

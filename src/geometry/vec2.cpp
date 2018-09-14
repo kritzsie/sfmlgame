@@ -2,8 +2,8 @@
 
 #include <SFML/Graphics.hpp>
 
+#include <cmath>
 #include <cstddef>
-#include <ctgmath>
 
 namespace ke {
 template<typename T>

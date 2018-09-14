@@ -35,6 +35,7 @@ public:
   operator bool() const;
   operator sf::Rect<T>() const;
 
+  Vec2<T> center() const;
   bool intersects(const Rect<T>&) const;
   Rect<T> intersection(const Rect<T>&) const;
 

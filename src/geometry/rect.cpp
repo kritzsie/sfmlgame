@@ -99,6 +99,11 @@ Rect<T>::operator sf::Rect<T>() const {
 }
 
 template<typename T>
+Vec2<T> Rect<T>::center() const {
+  return Vec2(x + w / 2, y + h / 2);
+}
+
+template<typename T>
 bool Rect<T>::intersects(const Rect<T>& r) const {
   if (x < r.x + r.w
   and x + w > r.x
