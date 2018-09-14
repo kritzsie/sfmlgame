@@ -82,7 +82,6 @@ World::World(Engine* engine, int x, int y, Padding<int> padding)
   camera = dynamic_cast<Camera*>(spawnEntity(Camera::create()));
 
   player->pos = Vec2(32.f, 16.f);
-  camera->pos = player->pos;
   camera->setTarget(player);
 
   setTile(0, 0, 3);

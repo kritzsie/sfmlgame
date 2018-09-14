@@ -15,4 +15,25 @@ struct RenderFrame {
 };
 
 using RenderFrames = std::vector<RenderFrame>;
+
+class RenderStates {
+private:
+  std::string state;
+  std::size_t offset = 0;
+  std::map<std::string, RenderFrames> states;
+
+public:
+  void pushFrame(std::string, RenderFrame);
+  void pushFrame(std::string, std::string, Rect<int>, Vec2f, float);
+
+  void setState(std::string, std::size_t);
+
+  StringList getStateList() const;
+  std::size_t getFrameCount(std::string) const;
+
+  const std::string& getState() const;
+  const RenderFrame& getFrame() const;
+
+  RenderStates();
+};
 }
