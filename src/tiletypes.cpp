@@ -6,6 +6,7 @@
 #include <ctgmath>
 
 namespace ke {
+// TODO: This method has GREAT potential for optimization
 std::size_t TileDef::getFrameOffset(float time) const {
   float time_max = 0.f;
 

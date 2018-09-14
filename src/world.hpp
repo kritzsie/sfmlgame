@@ -1,11 +1,14 @@
 #pragma once
 
-#include "entity.hpp"
+#include "entities.hpp"
 #include "geometry.hpp"
 
 #include <cstdint>
+#include <list>
 
 namespace ke {
+class Engine;
+
 using tileid_t = uint32_t;
 
 template<typename T>
@@ -14,28 +17,31 @@ struct Padding {
 };
 
 class World {
+private:
+  tileid_t* tiles = nullptr;
+
 protected:
-  tileid_t* tiles;
+  Engine* const engine = nullptr;
 
 public:
-  Vec2<int> size;
+  const Vec2<int> size;
   Padding<int> padding;
 
-  BaseEntity camera;
-  PlayerEntity player;
+  std::list<BaseEntity*> entities;
+  Camera* camera = nullptr;
+  Player* player = nullptr;
 
   static Vec2f toView(const Vec2f&);
   static Rect<int> tilesFromAABB(const Rect<float>&);
   static Rect<float> tileAABB(int, int);
 
-  void enter();
-  void exit();
-
   tileid_t& getTile(int, int);
   void setTile(int, int, tileid_t);
 
-  World(int, int);
-  World(int, int, Padding<int>);
+  BaseEntity* spawnEntity(BaseEntity::Factory);
+
+  World(Engine*, int, int);
+  World(Engine*, int, int, Padding<int>);
   ~World();
 };
 }

@@ -143,7 +143,7 @@ void Engine::update() {
   for (Event& event : events) {
     switch (event.first) {
       case EventType::push: {
-        GameState* state = event.second(*this);
+        GameState* state = event.second(this);
         states.push_back(state);
         state->enter();
         break;
@@ -268,7 +268,7 @@ bool Engine::init() {
   woodblock.pushFrame("smb3_tile_atlas", Vec2(208, 96), 0.f);
   registerTileDef(9, woodblock);
 
-  pushState(Intro::makeState());
+  pushState(Intro::create());
 
   return true;
 }

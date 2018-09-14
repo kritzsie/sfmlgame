@@ -3,8 +3,8 @@
 #include "gameplay.hpp"
 
 namespace ke {
-Intro::Factory Intro::makeState() {
-  return [](Engine& engine) -> GameState* {
+Intro::Factory Intro::create() {
+  return [](Engine* engine) -> GameState* {
     return new Intro(engine);
   };
 }
@@ -16,13 +16,13 @@ void Intro::pause() {}
 void Intro::resume() {}
 
 void Intro::update() {
-  engine.popState();
-  engine.pushState(Gameplay::makeState());
+  engine->popState();
+  engine->pushState(Gameplay::create());
 
-  ticktime += engine.ticktime.delta;
+  ticktime += engine->ticktime.delta;
 }
 
 void Intro::draw() {}
 
-Intro::Intro(Engine& engine) : GameState(engine) {}
+Intro::Intro(Engine* engine) : GameState(engine) {}
 }

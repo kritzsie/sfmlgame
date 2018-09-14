@@ -57,14 +57,22 @@ void World::setTile(int x, int y, tileid_t tileid) {
   }
 }
 
-World::World(int x, int y, Padding<int> padding) : padding(padding), player({7, -1}, {1, 1}, 5, 25) {
+BaseEntity* World::spawnEntity(BaseEntity::Factory factory) {
+  BaseEntity* entity = factory(engine, this);
+  entities.push_back(entity);
+  return entity;
+}
+
+World::World(Engine* engine, int x, int y, Padding<int> padding)
+: engine(engine), size(x, y), padding(padding) {
   tiles = new tileid_t[x * y]();
-  size.x = x;
-  size.y = y;
 
   // WARNING: Test world ahead
-  player.pos = Vec2f(32, 16);
-  camera.pos = player.pos + Vec2f(0, player.height / 2);
+  player = dynamic_cast<Player*>(spawnEntity(Player::create()));
+  camera = dynamic_cast<Camera*>(spawnEntity(Camera::create()));
+
+  player->pos = Vec2f(32, 16);
+  camera->pos = player->pos + Vec2(0.f, player->getBBox().y / 2.f);
 
   setTile(0, 0, 3);
   for (int x = 1; x <= 6; x++) {
@@ -97,7 +105,8 @@ World::World(int x, int y, Padding<int> padding) : padding(padding), player({7, 
   // End test world
 }
 
-World::World(int x, int y) : World(x, y, Padding<int>{}) {}
+World::World(Engine* engine, int x, int y)
+: World(engine, x, y, Padding<int>{}) {}
 
 World::~World() {
   delete tiles;

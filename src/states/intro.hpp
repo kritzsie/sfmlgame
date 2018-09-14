@@ -6,7 +6,7 @@
 namespace ke {
 class Intro : public GameState {
 public:
-  static Factory makeState();
+  static Factory create();
 
   float ticktime = 0.f;
 
@@ -22,6 +22,6 @@ public:
   ~Intro() final = default;
 
 private:
-  Intro(Engine&);
+  Intro(Engine*);
 };
 }

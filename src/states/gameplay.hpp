@@ -2,7 +2,6 @@
 
 #include "gamestate.hpp"
 #include "../engine.hpp"
-#include "../entity.hpp"
 #include "../world.hpp"
 
 #include <vector>
@@ -28,7 +27,7 @@ private:
   void drawUI();
 
 public:
-  static Factory makeState();
+  static Factory create();
 
   void enter() final;
   void exit() final;
@@ -42,6 +41,6 @@ public:
   ~Gameplay() final;
 
 private:
-  Gameplay(Engine&);
+  Gameplay(Engine*);
 };
 }
