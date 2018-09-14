@@ -27,13 +27,17 @@ public:
   const Vec2<int> size;
   Padding<int> padding;
 
+  float gravity = -768.f;
+
   std::list<BaseEntity*> entities;
   Camera* camera = nullptr;
   Player* player = nullptr;
 
-  static Vec2f toView(const Vec2f&);
-  static Rect<int> tilesFromAABB(const Rect<float>&);
-  static Rect<float> tileAABB(int, int);
+  static Vec2f toView(Vec2f);
+  static Vec2f toView(RenderEntity*);
+
+  static Rect<int> tilesInBBox(const Rect<float>&);
+  static Rect<float> tileBBox(int, int);
 
   tileid_t& getTile(int, int);
   void setTile(int, int, tileid_t);

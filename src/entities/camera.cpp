@@ -14,8 +14,16 @@ BaseEntity* Camera::getTarget() const {
   return target;
 }
 
-void Camera::setTarget(BaseEntity* entity) {
-  target = entity;
+void Camera::setTarget(BaseEntity* new_target) {
+  target = new_target;
+
+  Entity* entity = dynamic_cast<Entity*>(new_target);
+  if (entity != nullptr) {
+    pos = entity->getBBox().center();
+  }
+  else {
+    pos = new_target->pos;
+  }
 }
 
 void Camera::resolveWorldCollisions() {

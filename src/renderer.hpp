@@ -1,16 +1,18 @@
 #pragma once
 
 #include "geometry.hpp"
+#include "types.hpp"
 
 #include <string>
 #include <vector>
 
-namespace ke::renderer {
-struct Frame {
+namespace ke {
+struct RenderFrame {
   std::string texture;
   Rect<int> cliprect;
+  Vec2f offset;
   float duration;
 };
 
-using Frames = std::vector<Frame>;
+using RenderFrames = std::vector<RenderFrame>;
 }

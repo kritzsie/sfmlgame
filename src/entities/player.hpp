@@ -5,8 +5,14 @@
 
 namespace ke {
 class Player : public Entity {
+private:
+  void resolveEntityCollisions();
+  void resolveWorldCollisions();
+
 public:
   static Factory create();
+
+  Vec2f max_vel;
 
   void update() override;
 

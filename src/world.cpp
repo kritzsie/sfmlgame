@@ -2,22 +2,32 @@
 
 #include "geometry.hpp"
 
+#include <cmath>
 #include <sstream>
 #include <string>
 
 namespace ke {
-Vec2f World::toView(const Vec2f& vector) {
-  return Vec2f(vector.x, -vector.y);
+Vec2f World::toView(Vec2f vector) {
+  return Vec2(vector.x, -vector.y);
 }
 
-Rect<int> World::tilesFromAABB(const Rect<float>& bbox) {
+Vec2f World::toView(RenderEntity* entity) {
+  const RenderFrame& frame = entity->getFrame();
+
+  return toView(Vec2(
+    entity->pos.x - (frame.offset.x * entity->scale.x) * entity->getDirection(),
+    entity->pos.y + (frame.offset.y * entity->scale.y) + frame.cliprect.h * entity->scale.y
+  ));
+}
+
+Rect<int> World::tilesInBBox(const Rect<float>& bbox) {
   return Rect<int>(
-    floor(bbox.x / 16 - 1), floor(bbox.y / 16 - 1),
-    ceil(bbox.w / 16 + 1), ceil(bbox.h / 16 + 1)
+    std::floor(bbox.x / 16 - 1), std::floor(bbox.y / 16 - 1),
+    std::ceil(bbox.w / 16 + 1), std::ceil(bbox.h / 16 + 1)
   );
 }
 
-Rect<float> World::tileAABB(int x, int y) {
+Rect<float> World::tileBBox(int x, int y) {
   return Rect<float>(x * 16, y * 16, 16, 16);
 }
 
@@ -72,7 +82,8 @@ World::World(Engine* engine, int x, int y, Padding<int> padding)
   camera = dynamic_cast<Camera*>(spawnEntity(Camera::create()));
 
   player->pos = Vec2(32.f, 16.f);
-  camera->pos = player->getBBox().center();
+  camera->pos = player->pos;
+  camera->setTarget(player);
 
   setTile(0, 0, 3);
   for (int x = 1; x <= 6; x++) {

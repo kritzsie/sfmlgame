@@ -12,11 +12,12 @@ Vec2f Entity::getSize() const {
 }
 
 Rect<float> Entity::getBBox() const {
-  return Rect<float>(pos, pos + getSize());
+  return Rect<float>(pos, getSize());
 }
 
 Entity::Entity(Engine* engine, World* world, float radius, float height)
 : RenderEntity(engine, world), radius(radius), height(height) {}
 
-Entity::Entity(Engine* engine, World* world) : Entity(engine, world, 8.f, 16.f) {}
+Entity::Entity(Engine* engine, World* world)
+: Entity(engine, world, 8.f, 16.f) {}
 }

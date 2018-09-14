@@ -101,7 +101,7 @@ void Gameplay::drawTiles() {
       const TileDef& tiledef = engine->getTileDef(tileid);
       const std::size_t frame = tiledef.getFrameOffset(rendertime);
       const std::string& texture = tiledef.getFrame(frame).texture;
-      if (texture.length()) {
+      if (texture != "") {
         sf::Sprite tile(assets::gfx.getTile(texture), tiledef.getFrame(frame).cliprect);
         tile.setPosition(World::toView(Vec2(x * 16.f, y * 16.f + 16.f)));
         engine->viewport->draw(tile);
@@ -114,9 +114,9 @@ void Gameplay::drawEntities() {
   for (BaseEntity* baseentity : world->entities) {
     RenderEntity* entity = dynamic_cast<RenderEntity*>(baseentity);
     if (entity != nullptr) {
-      const std::string& texture = entity->getTexture();
+      const std::string& texture = entity->getFrame().texture;
       sf::Sprite sprite(assets::gfx.getSprite(texture));
-      sprite.setPosition(entity->pos);
+      sprite.setPosition(World::toView(entity));
       engine->viewport->draw(sprite);
     }
   }

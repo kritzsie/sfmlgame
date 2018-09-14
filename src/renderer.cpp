@@ -1,4 +1,4 @@
 #include "renderer.hpp"
 
-namespace ke::renderer {
+namespace ke {
 }

@@ -6,6 +6,14 @@
 #include <ctgmath>
 
 namespace ke {
+void TileDef::pushFrame(std::string texture, Vec2i offset, float duration) {
+  frames.push_back(RenderFrame{texture, Rect<int>(offset, Vec2(16)), Vec2(0.f, 0.f), duration});
+}
+
+std::size_t TileDef::getFrameCount() const {
+  return frames.size();
+}
+
 // TODO: This method has GREAT potential for optimization
 std::size_t TileDef::getFrameOffset(float time) const {
   float time_max = 0.f;
@@ -25,12 +33,7 @@ std::size_t TileDef::getFrameOffset(float time) const {
   return (counter - 1) % frames.size();
 }
 
-std::size_t TileDef::pushFrame(std::string texture, Vec2i offset, float duration) {
-  frames.push_back(renderer::Frame{texture, Rect<int>(offset, Vec2(16)), duration});
-  return frames.size() - 1;
-}
-
-const renderer::Frame& TileDef::getFrame(std::size_t index) const {
+const RenderFrame& TileDef::getFrame(std::size_t index) const {
   return frames.at(index);
 }
 

@@ -22,15 +22,18 @@ struct TileSides {
 
 class TileDef {
 private:
-  renderer::Frames frames;
+  RenderFrames frames;
 
 public:
   const TileType type;
   const TileSides sides;
 
-  std::size_t pushFrame(std::string, Vec2i, float);
+  void pushFrame(std::string, Vec2i, float);
+
+  std::size_t getFrameCount() const;
   std::size_t getFrameOffset(float) const;
-  const renderer::Frame& getFrame(std::size_t) const;
+
+  const RenderFrame& getFrame(std::size_t) const;
 
   TileDef();
   TileDef(TileType);

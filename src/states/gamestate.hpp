@@ -8,7 +8,7 @@ protected:
   Engine* const engine = nullptr;
 
 public:
-  using Factory = GameState* (* const)(Engine*);
+  using Factory = GameState* (*)(Engine*);
 
   virtual void enter() = 0;
   virtual void exit() = 0;
