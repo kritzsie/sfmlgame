@@ -7,7 +7,8 @@ Player::Factory Player::create() {
   };
 }
 
-void Player::update() {}
+void Player::update() {
+}
 
 Player::Player(Engine* engine, World* world) : Entity(engine, world) {}
 }

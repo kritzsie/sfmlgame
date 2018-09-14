@@ -7,6 +7,8 @@ class Camera : public BaseEntity {
 private:
   BaseEntity* target = nullptr;
 
+  void resolveWorldCollisions();
+
 public:
   static Factory create();
 

@@ -15,10 +15,10 @@
 
 #include <algorithm>
 #include <chrono>
+#include <cmath>
 #include <cstddef>
 #include <cstdint>
 #include <cstdlib>
-#include <ctgmath>
 #include <stdexcept>
 #include <thread>
 
@@ -91,12 +91,12 @@ bool Engine::setupPhysFS(std::string org, std::string appname, std::string baseg
   return true;
 }
 
-void Engine::pushState(GameState::Factory state_factory) {
-  events.push_back(Event(EventType::push, state_factory));
+void Engine::pushState(GameState::Factory factory) {
+  events.push_back(Event(EventType::pushState, factory));
 }
 
 GameState* Engine::popState() {
-  events.push_back(Event(EventType::pop, nullptr));
+  events.push_back(Event(EventType::popState, nullptr));
   return states.back();
 }
 
@@ -142,13 +142,13 @@ void Engine::handleEvents() {
 void Engine::update() {
   for (Event& event : events) {
     switch (event.first) {
-      case EventType::push: {
+      case EventType::pushState: {
         GameState* state = event.second(this);
         states.push_back(state);
         state->enter();
         break;
       }
-      case EventType::pop: {
+      case EventType::popState: {
         GameState* state = states.back();
         state->exit();
         delete state;

@@ -13,7 +13,7 @@ protected:
   World* const world = nullptr;
 
 public:
-  using Factory = BaseEntity* (*)(Engine*, World*);
+  using Factory = BaseEntity* (* const)(Engine*, World*);
 
   static Factory create();
 

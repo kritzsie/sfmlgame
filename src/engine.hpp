@@ -44,7 +44,7 @@ public:
 class Engine {
 public:
   enum class EventType {
-    push, pop
+    pushState, popState
   };
 
   using Event = std::pair<EventType, GameState::Factory>;

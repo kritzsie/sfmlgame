@@ -71,12 +71,12 @@ World::World(Engine* engine, int x, int y, Padding<int> padding)
   player = dynamic_cast<Player*>(spawnEntity(Player::create()));
   camera = dynamic_cast<Camera*>(spawnEntity(Camera::create()));
 
-  player->pos = Vec2f(32, 16);
-  camera->pos = player->pos + Vec2(0.f, player->getBBox().y / 2.f);
+  player->pos = Vec2(32.f, 16.f);
+  camera->pos = player->getBBox().center();
 
   setTile(0, 0, 3);
   for (int x = 1; x <= 6; x++) {
-      setTile(x, 0, 4);
+    setTile(x, 0, 4);
   }
   setTile(7, 0, 5);
   setTile(15, 4, 1);
