@@ -76,8 +76,8 @@ public:
   InputMap inputs;
 
 protected:
-  virtual void onKeyEvent(sf::Event&);
-  virtual void onResize(Vec2<uint>);
+  void onKeyEvent(sf::Event&);
+  void onResize(Vec2<uint>);
 
 public:
   bool setupPhysFS(std::string, std::string, std::string);
