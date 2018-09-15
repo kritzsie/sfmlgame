@@ -41,6 +41,8 @@ void Player::resolveWorldCollisionsX() {
 }
 
 void Player::resolveWorldCollisionsY() {
+  state |= airborne;
+
   Rect<int> range = World::tilesInBBox(getBBox());
   for (int x = range.x; x <= range.x + range.w; x++)
   for (int y = range.y; y <= range.y + range.h; y++) {
@@ -92,7 +94,6 @@ void Player::duck() {
   if (!(state & airborne)) {
     height = 15.f;
     state |= ducking;
-    setState("ducking");
   }
 }
 
@@ -100,50 +101,67 @@ void Player::stand() {
   if (!(state & airborne)) {
     height = 25.f;
     state &= ~ducking;
-    setState("idle");
   }
 }
 
 void Player::update() {
-  const Input& jump_input = engine->inputs[Action::jump];
+  const Input& left_input = engine->inputs[Action::left];
+  const Input& right_input = engine->inputs[Action::right];
   const Input& duck_input = engine->inputs[Action::down];
+  const Input& run_input = engine->inputs[Action::run];
+  const Input& jump_input = engine->inputs[Action::jump];
 
   if (jump_input > 0.f) {
     jump();
   }
-  else {
+  else if (jumptime != 0.f) {
     jumptime = 0.f;
   }
 
-  if (duck_input > 0.f) {
+  float direction = right_input - left_input;
+  if (duck_input > 0.f
+  and direction == 0.f) {
     duck();
   }
   else {
+    if (direction != 0.f) {
+      setDirection(direction);
+    }
+    vel.x += direction;
     stand();
   }
 
   if (jumptime == 0.f
   and vel.y > -max_vel.y) {
-    vel.y = std::max(
-      -max_vel.y,
-      vel.y + world->gravity / engine->ticktime.rate
-    );
+    vel.y = std::max(-max_vel.y, vel.y + world->gravity / engine->ticktime.rate);
   }
 
   Vec2f new_pos = pos + vel / engine->ticktime.rate;
-  state |= airborne;
+
+  resolveEntityCollisionsY();
+  resolveEntityCollisionsX();
 
   pos.y = new_pos.y;
-  resolveEntityCollisionsY();
   resolveWorldCollisionsY();
 
   pos.x = new_pos.x;
-  resolveEntityCollisionsX();
   resolveWorldCollisionsX();
 
   if (state & airborne
   and !(state & ducking)) {
     setState("jumping");
+  }
+  else if (state & ducking) {
+    setState("ducking");
+  }
+  else if (!(state & airborne)) {
+    if (vel.x != 0.f
+    or  direction != 0.f) {
+      setState("walking");
+    }
+    else {
+      setState("idle");
+    }
   }
 }
 
