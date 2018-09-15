@@ -2,6 +2,7 @@
 
 #include "gamestate.hpp"
 #include "../engine.hpp"
+#include "../entities.hpp"
 #include "../world.hpp"
 
 #include <vector>
@@ -23,6 +24,7 @@ private:
   void drawBGBottom(std::string, Vec2f);
   void drawBGTop(std::string, Vec2f);
   void drawTiles();
+  void drawEntity(RenderEntity*);
   void drawEntities();
   void drawUI();
 

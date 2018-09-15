@@ -1,6 +1,8 @@
 #include "gameplay.hpp"
 
 #include "../assetmanager.hpp"
+#include "../engine.hpp"
+#include "../entities.hpp"
 #include "../tiletypes.hpp"
 
 namespace ke {
@@ -110,20 +112,30 @@ void Gameplay::drawTiles() {
   }
 }
 
+void Gameplay::drawEntity(RenderEntity* renderentity) {
+  const std::string& texture = renderentity->getFrame().texture;
+  sf::Sprite sprite(assets::gfx.getSprite(texture));
+  sprite.setPosition(World::toView(renderentity));
+  sprite.setScale(sf::Vector2f(
+    renderentity->scale.x * renderentity->getDirection(),
+    renderentity->scale.y
+  ));
+  engine->viewport->draw(sprite);
+}
+
 void Gameplay::drawEntities() {
   for (BaseEntity* baseentity : world->entities) {
-    RenderEntity* entity = dynamic_cast<RenderEntity*>(baseentity);
-    if (entity != nullptr) {
-      const std::string& texture = entity->getFrame().texture;
-      sf::Sprite sprite(assets::gfx.getSprite(texture));
-      sprite.setPosition(World::toView(entity));
-      sprite.setScale(sf::Vector2f(
-        entity->scale.x * entity->getDirection(),
-        entity->scale.y
-      ));
-      engine->viewport->draw(sprite);
+    if (baseentity == world->player) {
+      continue;
+    }
+
+    RenderEntity* renderentity = dynamic_cast<RenderEntity*>(baseentity);
+    if (renderentity != nullptr) {
+      drawEntity(renderentity);
     }
   }
+
+  drawEntity(world->player);
 }
 
 void Gameplay::drawUI() {}
