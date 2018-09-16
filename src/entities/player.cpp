@@ -154,16 +154,15 @@ void Player::update() {
     stand();
   }
 
-  state &= ~slipping;
-
-  if ((direction > 0.f and vel.x < 0.f)
-  or  (direction < 0.f and vel.x > 0.f)) {
-    state |= slipping;
-  }
-  else if ((vel.x != 0.f and !(state & airborne))
+  state &= ~ slipping;
+  if ((vel.x != 0.f and !(state & airborne))
   or  direction != 0.f) {
+    if ((direction > 0.f and vel.x < 0.f)
+    or  (direction < 0.f and vel.x > 0.f)) {
+      state |= slipping;
+    }
     state |= walking;
-    walktime += std::min(std::abs(vel.x / 12.f) + 5.f, 32.f);
+    walktime += std::min(std::abs(vel.x / 15.f) + 5.f, 64.f);
   }
   else {
     state &= ~walking;

@@ -19,7 +19,7 @@ private:
 
 public:
   enum State : int {
-    idle = 0,
+    idle       = 0,
     walking    = 1 << 0,
     slipping   = 1 << 1,
     ducking    = 1 << 2,
