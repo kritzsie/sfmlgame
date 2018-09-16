@@ -2,6 +2,7 @@
 
 #include "baseentity.hpp"
 #include "entity.hpp"
+#include "../input.hpp"
 
 namespace ke {
 class Player : public Entity {
@@ -14,23 +15,28 @@ private:
   void resolveWorldCollisionsX();
   void resolveWorldCollisionsY();
 
+  void updateState();
+
 public:
   enum State : int {
-    idle,
-    airborne   = 1 << 0,
-    ducking    = 1 << 1,
-    p_speed    = 1 << 2,
-    underwater = 1 << 3
+    idle = 0,
+    walking    = 1 << 0,
+    slipping   = 1 << 1,
+    ducking    = 1 << 2,
+    airborne   = 1 << 3,
+    underwater = 1 << 4,
+    running    = 1 << 5
   };
 
   static Factory create();
 
-  int state = idle;
+  int state = State::idle;
 
-  float jumptime;
+  float walktime;
   float sliptime;
+  float jumptime;
 
-  void jump();
+  void jump(const Input&);
   void duck();
   void stand();
 
