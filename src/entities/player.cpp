@@ -118,8 +118,12 @@ void Player::updateState() {
       setState("slipping");
     }
     else if (state & walking) {
-      std::size_t offset = std::floor(std::fmod(walktime / engine->ticktime.rate,
-                                                getFrameCount("walking")));
+      std::size_t offset = std::floor(
+        std::fmod(
+          walktime * getFrame().duration / engine->ticktime.rate,
+          getFrameCount("walking")
+      )
+    );
       setState("walking", offset);
     }
     else {
@@ -132,6 +136,7 @@ void Player::update() {
   const Input& left_input = engine->inputs[Action::left];
   const Input& right_input = engine->inputs[Action::right];
   const Input& duck_input = engine->inputs[Action::down];
+
   const Input& run_input = engine->inputs[Action::run];
   const Input& jump_input = engine->inputs[Action::jump];
 
@@ -142,7 +147,7 @@ void Player::update() {
     jumptime = 0.f;
   }
 
-  float direction = right_input - left_input;
+  const float direction = std::max(-1.f, std::min(right_input - left_input, 1.f));
   if (duck_input > 0.f
   and direction == 0.f) {
     duck();
@@ -162,29 +167,40 @@ void Player::update() {
       state |= slipping;
     }
     state |= walking;
-    walktime += std::min(std::abs(vel.x / 15.f) + 5.f, 64.f);
+    walktime += engine->ticktime.rate * std::min(
+      std::abs(vel.x * 0.75f / engine->ticktime.rate) + 0.75f, 16.f
+    );
   }
   else {
     state &= ~walking;
     walktime = 0.f;
   }
 
-  if (run_input > 0.f) {
-    max_vel.x = 160.f;
+  const float max_run_vel = run_input ? 160.f : 128.f;
+  if (direction > 0.f
+  and vel.x >= 0.f
+  and vel.x <= max_run_vel) {
+    vel.x = std::min(max_vel.x, vel.x + direction * 192.f / engine->ticktime.rate);
   }
-  else {
-    max_vel.x = 96.f;
+  else if (direction < 0.f
+  and vel.x <= 0.f
+  and vel.x >= -max_run_vel) {
+    vel.x = std::max(-max_vel.x, vel.x + direction * 192.f / engine->ticktime.rate);
   }
-
-  if (direction != 0.f) {
-    vel.x = std::max(-max_vel.x, std::min(vel.x + direction * 192.f / engine->ticktime.rate, max_vel.x));
+  else if (direction < 0.f
+  and vel.x > 0.f) {
+    vel.x = std::max(0.f, vel.x - 320.f / engine->ticktime.rate);
+  }
+  else if (direction > 0.f
+  and vel.x < 0.f) {
+    vel.x = std::min(0.f, vel.x + 320.f / engine->ticktime.rate);
   }
   else if (!(state & airborne)) {
     if (vel.x > 0.f) {
-      vel.x = std::max(0.f, vel.x - 144.f / engine->ticktime.rate);
+      vel.x = std::max(0.f, vel.x - 256.f / engine->ticktime.rate);
     }
     else if (vel.x < 0.f) {
-      vel.x = std::min(0.f, vel.x + 144.f / engine->ticktime.rate);
+      vel.x = std::min(0.f, vel.x + 256.f / engine->ticktime.rate);
     }
   }
 
@@ -193,27 +209,25 @@ void Player::update() {
     vel.y = std::max(-max_vel.y, vel.y + world->gravity / engine->ticktime.rate);
   }
 
-  Vec2f new_pos = pos + vel / engine->ticktime.rate;
-
   resolveEntityCollisionsY();
   resolveEntityCollisionsX();
 
-  pos.y = new_pos.y;
+  pos.y += vel.y / engine->ticktime.rate;
   resolveWorldCollisionsY();
 
-  pos.x = new_pos.x;
+  pos.x += vel.x / engine->ticktime.rate;
   resolveWorldCollisionsX();
 
   updateState();
 }
 
 Player::Player(Engine* engine, World* world)
-: Entity(engine, world, 5.f, 25.f), max_vel(160.f, 256.f) {
+: Entity(engine, world, 5.f, 25.f), max_vel(192.f, 256.f) {
   pushFrame("idle", "bigmariowalk_0", Rect(0, 0, 14, 27), Vec2(7.f, -1.f), 0.f);
 
-  pushFrame("walking", "bigmariowalk_1", Rect(0, 0, 16, 27), Vec2(7.f, -1.f), 0.125f);
-  pushFrame("walking", "bigmariowalk_2", Rect(0, 0, 16, 26), Vec2(7.f, -1.f), 0.125f);
-  pushFrame("walking", "bigmariowalk_1", Rect(0, 0, 16, 27), Vec2(7.f, -1.f), 0.125f);
+  pushFrame("walking", "bigmariowalk_1", Rect(0, 0, 16, 27), Vec2(9.f, -1.f), 0.125f);
+  pushFrame("walking", "bigmariowalk_2", Rect(0, 0, 16, 26), Vec2(9.f, -1.f), 0.125f);
+  pushFrame("walking", "bigmariowalk_1", Rect(0, 0, 16, 27), Vec2(9.f, -1.f), 0.125f);
   pushFrame("walking", "bigmariowalk_0", Rect(0, 0, 14, 27), Vec2(7.f, -1.f), 0.125f);
 
   pushFrame("slipping", "bigmarioslip", Rect(0, 0, 16, 28), Vec2(8.f, -1.f), 0.f);
