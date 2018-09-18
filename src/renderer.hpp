@@ -24,6 +24,7 @@ private:
 
 public:
   void pushFrame(std::string, RenderFrame);
+  void pushFrame(std::string, std::string, Vec2i, Vec2f, float);
   void pushFrame(std::string, std::string, Rect<int>, Vec2f, float);
 
   void setState(std::string, std::size_t = 0);

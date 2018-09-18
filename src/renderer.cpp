@@ -7,7 +7,14 @@ void RenderStates::pushFrame(std::string state_arg, RenderFrame renderframe) {
 
 void RenderStates::pushFrame(std::string state_arg, std::string texture,
                              Rect<int> cliprect, Vec2f offset_arg, float duration) {
-  states[state_arg].push_back(RenderFrame{texture, cliprect, offset_arg, duration});
+  states[state_arg].push_back(
+    RenderFrame{texture, cliprect, offset_arg, duration}
+  );
+}
+
+void RenderStates::pushFrame(std::string state_arg, std::string texture,
+                             Vec2i origin, Vec2f offset_arg, float duration) {
+  pushFrame(state_arg, texture, Rect<int>(origin, Vec2(16)), offset_arg, duration);
 }
 
 // WARNING: slow. slooooooooow...

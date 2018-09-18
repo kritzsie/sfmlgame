@@ -21,7 +21,7 @@ public:
   enum State : int {
     idle       = 0,
     walking    = 1 << 0,
-    turning   = 1 << 1,
+    turning    = 1 << 1,
     ducking    = 1 << 2,
     airborne   = 1 << 3,
     underwater = 1 << 4,

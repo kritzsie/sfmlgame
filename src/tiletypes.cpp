@@ -6,8 +6,10 @@
 #include <ctgmath>
 
 namespace ke {
-void TileDef::pushFrame(std::string texture, Vec2i offset, float duration) {
-  frames.push_back(RenderFrame{texture, Rect<int>(offset, Vec2(16)), Vec2(0.f, 0.f), duration});
+void TileDef::pushFrame(std::string texture, Vec2i origin, float duration) {
+  frames.push_back(
+    RenderFrame{texture, Rect<int>(origin, Vec2(16)), Vec2(0.f, 0.f), duration}
+  );
 }
 
 std::size_t TileDef::getFrameCount() const {
