@@ -25,8 +25,6 @@ class RenderEntity : public BaseEntity, public Sprite {
 public:
   static Factory create();
 
-  ~RenderEntity() override = default;
-
 protected:
   RenderEntity(Engine*, World*);
 };

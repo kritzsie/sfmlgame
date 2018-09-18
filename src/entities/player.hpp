@@ -42,8 +42,6 @@ public:
 
   void update() override;
 
-  ~Player() override = default;
-
 protected:
   Player(Engine*, World*);
 };

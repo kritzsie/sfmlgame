@@ -159,12 +159,20 @@ void Player::update() {
     stand();
   }
 
-  state &= ~ slipping;
-  if ((vel.x != 0.f and !(state & airborne))
-  or  direction != 0.f) {
+  state &= ~slipping;
+  if ((vel.x != 0.f or direction != 0.f)
+  and !(state & airborne)) {
     if ((direction > 0.f and vel.x < 0.f)
     or  (direction < 0.f and vel.x > 0.f)) {
       state |= slipping;
+      if (sliptime == 0.f) {
+        sliptime = 0.125;
+        engine->sound->play("slip");
+      }
+      sliptime = std::max(0.f, sliptime - 1.f / engine->ticktime.rate);
+    }
+    else if (sliptime > 0.f) {
+      sliptime = 0.f;
     }
     state |= walking;
     walktime += engine->ticktime.rate * std::min(

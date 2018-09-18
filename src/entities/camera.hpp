@@ -17,8 +17,6 @@ public:
 
   void update() override;
 
-  ~Camera() override = default;
-
 protected:
   Camera(Engine*, World*);
 };

@@ -14,8 +14,6 @@ public:
 
   Rect<float> getBBox() const;
 
-  ~Entity() override = default;
-
 protected:
   Entity(Engine*, World*);
   Entity(Engine*, World*, float, float);
