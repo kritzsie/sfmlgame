@@ -31,6 +31,7 @@ add_executable(
   src/states/intro.cpp
   src/states/gameplay.cpp
   src/states/gamestate.cpp
+  src/states/pausemenu.cpp
   src/util/file.cpp
   src/assetmanager.cpp
   src/engine.cpp

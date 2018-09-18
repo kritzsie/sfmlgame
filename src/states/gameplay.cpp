@@ -1,5 +1,6 @@
 #include "gameplay.hpp"
 
+#include "pausemenu.hpp"
 #include "../assetmanager.hpp"
 #include "../engine.hpp"
 #include "../entities.hpp"
@@ -143,7 +144,7 @@ void Gameplay::drawUI() {}
 void Gameplay::enter() {
   engine->music->change("overworld");
   engine->music->play();
-  paused = false;
+  resume();
 }
 
 void Gameplay::exit() {
@@ -151,30 +152,23 @@ void Gameplay::exit() {
 }
 
 void Gameplay::pause() {
-  engine->sound->play("pause");
-  engine->music->setVolume(0.5f);
   paused = true;
 }
 
 void Gameplay::resume() {
-  engine->sound->play("pause");
-  engine->music->setVolume(1.f);
   paused = false;
 }
 
 void Gameplay::update() {
   const Input& pause_input = engine->inputs[Action::pause];
 
-  if (~pause_input > 0.f) {
-    if (paused) {
-      resume();
-    }
-    else {
-      pause();
-    }
-  }
-
   if (not paused) {
+    if (~pause_input > 0.f) {
+      engine->sound->play("pause");
+      engine->music->setVolume(0.5f);
+      engine->pushState(PauseMenu::create(this));
+    }
+
     for (BaseEntity* entity : world->entities) {
       entity->update();
     }

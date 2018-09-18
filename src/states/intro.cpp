@@ -1,6 +1,7 @@
 #include "intro.hpp"
 
 #include "gameplay.hpp"
+#include "../engine.hpp"
 
 namespace ke {
 Intro::Factory Intro::create() {

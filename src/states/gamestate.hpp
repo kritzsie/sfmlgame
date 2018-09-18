@@ -1,5 +1,7 @@
 #pragma once
 
+#include <functional>
+
 namespace ke {
 class Engine;
 
@@ -8,7 +10,7 @@ protected:
   Engine* const engine = nullptr;
 
 public:
-  using Factory = GameState* (*)(Engine*);
+  using Factory = std::function<GameState*(Engine*)>;
 
   virtual void enter() = 0;
   virtual void exit() = 0;

@@ -184,24 +184,24 @@ void Player::update() {
     walktime = 0.f;
   }
 
-  const float max_run_vel = run_input ? 160.f : 128.f;
+  const float max_run_vel = run_input ? 160.f : 96.f;
   if (direction > 0.f
   and vel.x >= 0.f
   and vel.x <= max_run_vel) {
-    vel.x = std::min(max_vel.x, vel.x + direction * 192.f / engine->ticktime.rate);
+    vel.x = std::min(max_vel.x, vel.x + direction * 224.f / engine->ticktime.rate);
   }
   else if (direction < 0.f
   and vel.x <= 0.f
   and vel.x >= -max_run_vel) {
-    vel.x = std::max(-max_vel.x, vel.x + direction * 192.f / engine->ticktime.rate);
+    vel.x = std::max(-max_vel.x, vel.x + direction * 224.f / engine->ticktime.rate);
   }
   else if (direction < 0.f
   and vel.x > 0.f) {
-    vel.x = std::max(0.f, vel.x - 320.f / engine->ticktime.rate);
+    vel.x = std::max(0.f, vel.x - 384.f / engine->ticktime.rate);
   }
   else if (direction > 0.f
   and vel.x < 0.f) {
-    vel.x = std::min(0.f, vel.x + 320.f / engine->ticktime.rate);
+    vel.x = std::min(0.f, vel.x + 384.f / engine->ticktime.rate);
   }
   else if (!(state & airborne)) {
     if (vel.x > 0.f) {
