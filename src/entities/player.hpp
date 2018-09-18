@@ -21,11 +21,13 @@ public:
   enum State : int {
     idle       = 0,
     walking    = 1 << 0,
-    slipping   = 1 << 1,
+    turning   = 1 << 1,
     ducking    = 1 << 2,
     airborne   = 1 << 3,
     underwater = 1 << 4,
-    running    = 1 << 5
+    running    = 1 << 5,
+    slippery   = 1 << 6,
+    dead       = 1 << 7
   };
 
   static Factory create();
@@ -35,10 +37,12 @@ public:
   float walktime;
   float sliptime;
   float jumptime;
+  float deathtime;
 
   void jump(const Input&);
   void duck();
   void stand();
+  void die();
 
   void update() override;
 

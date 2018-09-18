@@ -105,31 +105,14 @@ void Player::stand() {
   }
 }
 
-void Player::updateState() {
-  if (state & airborne
-  and !(state & ducking)) {
-    setState("jumping");
+void Player::die() {
+  if (deathtime >= 0.75f
+  and pos.y + height > 0.f) {
+    vel.y = std::max(-max_vel.y, vel.y + world->gravity / engine->ticktime.rate);
+    pos += vel / engine->ticktime.rate;
   }
-  else if (state & ducking) {
-    setState("ducking");
-  }
-  else if (!(state & airborne)) {
-    if (state & slipping) {
-      setState("slipping");
-    }
-    else if (state & walking) {
-      std::size_t offset = std::floor(
-        std::fmod(
-          walktime * getFrame().duration / engine->ticktime.rate,
-          getFrameCount("walking")
-      )
-    );
-      setState("walking", offset);
-    }
-    else {
-      setState("idle");
-    }
-  }
+
+  deathtime += 1.f / engine->ticktime.rate;
 }
 
 void Player::update() {
@@ -159,12 +142,12 @@ void Player::update() {
     stand();
   }
 
-  state &= ~slipping;
+  state &= ~turning;
   if ((vel.x != 0.f or direction != 0.f)
   and !(state & airborne)) {
     if ((direction > 0.f and vel.x < 0.f)
     or  (direction < 0.f and vel.x > 0.f)) {
-      state |= slipping;
+      state |= turning;
       if (sliptime == 0.f) {
         sliptime = 0.125;
         engine->sound->play("slip");
@@ -226,7 +209,44 @@ void Player::update() {
   pos.x += vel.x / engine->ticktime.rate;
   resolveWorldCollisionsX();
 
+  if (pos.y + height <= 0.f) {
+    state |= dead;
+    deathtime = 0.f;
+    vel.x = 0.f;
+    vel.y = 256.f;
+  }
+
   updateState();
+}
+
+void Player::updateState() {
+  if (state & dead) {
+    setState("death");
+  }
+  else if (state & airborne
+  and !(state & ducking)) {
+    setState("jumping");
+  }
+  else if (state & ducking) {
+    setState("ducking");
+  }
+  else if (!(state & airborne)) {
+    if (state & turning) {
+      setState("slipping");
+    }
+    else if (state & walking) {
+      std::size_t offset = std::floor(
+        std::fmod(
+          walktime * getFrame().duration / engine->ticktime.rate,
+          getFrameCount("walking")
+        )
+      );
+      setState("walking", offset);
+    }
+    else {
+      setState("idle");
+    }
+  }
 }
 
 Player::Player(Engine* engine, World* world)
@@ -243,5 +263,7 @@ Player::Player(Engine* engine, World* world)
   pushFrame("ducking", "bigmarioduck", Rect(0, 0, 14, 18), Vec2(7.f, -1.f), 0.f);
 
   pushFrame("jumping", "bigmariojump", Rect(0, 0, 16, 26), Vec2(8.f, -1.f), 0.f);
+
+  pushFrame("death", "mariodeath", Rect(0, 0, 16, 16), Vec2(8.f, -1.f), 0.f);
 }
 }

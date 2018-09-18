@@ -10,9 +10,7 @@ PauseMenu::Factory PauseMenu::create(GameState* previous) {
   };
 }
 
-void PauseMenu::enter() {
-  previous->pause();
-}
+void PauseMenu::enter() {}
 
 void PauseMenu::exit() {
   previous->resume();
