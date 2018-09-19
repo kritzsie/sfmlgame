@@ -16,8 +16,8 @@ void Player::resolveEntityCollisionsY() {}
 
 void Player::resolveWorldCollisionsX() {
   Rect<int> range = World::tilesInBBox(getBBox());
-  for (int x = range.x; x <= range.x + range.w; ++x)
-  for (int y = range.y; y <= range.y + range.h; ++y) {
+  for (int y = range.y; y <= range.y + range.h; ++y)
+  for (int x = range.x; x <= range.x + range.w; ++x) {
     Rect<float> plyrBox = getBBox();
     Rect<float> tileBox = World::tileBBox(x, y);
 
@@ -56,8 +56,8 @@ void Player::resolveWorldCollisionsY() {
   state |= airborne;
 
   Rect<int> range = World::tilesInBBox(getBBox());
-  for (int x = range.x; x <= range.x + range.w; ++x)
-  for (int y = range.y; y <= range.y + range.h; ++y) {
+  for (int y = range.y; y <= range.y + range.h; ++y)
+  for (int x = range.x; x <= range.x + range.w; ++x) {
     Rect<float> plyrBox = getBBox();
     Rect<float> tileBox = World::tileBBox(x, y);
 
@@ -96,7 +96,7 @@ void Player::jump(const Input& jump_input) {
   }
 
   if (jumptime > 0.f) {
-    vel.y = 176.f + std::abs(vel.x / 16.f);
+    vel.y = std::max(vel.y, 176.f + std::abs(vel.x / 8.f));
     jumptime = std::max(0.f, jumptime - 1.f / engine->ticktime.rate);
   }
 }

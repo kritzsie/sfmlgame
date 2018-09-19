@@ -21,7 +21,7 @@ public:
 
 private:
   SNES_SPC* snes_spc = nullptr;
-  float spc_tempo = 1.0f;
+  float spc_tempo = 1.f;
 
 public:
   spc_err_t load_spc(const std::vector<char>&);
