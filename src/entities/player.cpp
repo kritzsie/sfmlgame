@@ -40,6 +40,16 @@ void Player::resolveWorldCollisionsX() {
       }
     }
   }
+
+  Rect<float> plyrBBox = getBBox();
+  if (plyrBBox.x < 0.f) {
+    vel.x = 0.f;
+    pos.x -= plyrBBox.x;
+  }
+  else if (plyrBBox.x + plyrBBox.w > (world->size.x) * 16.f) {
+    vel.x = 0.f;
+    pos.x -= plyrBBox.x + plyrBBox.w - (world->size.x) * 16.f;
+  }
 }
 
 void Player::resolveWorldCollisionsY() {
