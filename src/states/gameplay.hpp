@@ -5,6 +5,8 @@
 #include "../entities.hpp"
 #include "../world.hpp"
 
+#include <SFML/Graphics.hpp>
+
 #include <vector>
 
 namespace ke {

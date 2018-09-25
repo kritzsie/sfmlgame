@@ -5,7 +5,7 @@
 
 namespace ke {
 PauseMenu::Factory PauseMenu::create(GameState* previous) {
-  return [=](Engine* engine) -> GameState* {
+  return [previous](Engine* engine) -> GameState* {
     return new PauseMenu(engine, previous);
   };
 }

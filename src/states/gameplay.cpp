@@ -6,6 +6,8 @@
 #include "../entities.hpp"
 #include "../tiletypes.hpp"
 
+#include <SFML/System.hpp>
+
 namespace ke {
 Gameplay::Factory Gameplay::create() {
   return [](Engine* engine) -> GameState* {
@@ -23,8 +25,8 @@ void Gameplay::drawBG(std::string bg, Vec2f dist) {
 
   const sf::Texture& texture = assets::gfx.getTexture(bg);
 
-  float distdivx = dist.x / (dist.x - 1.0f);
-  float distdivy = dist.y / (dist.y - 1.0f);
+  float distdivx = dist.x / (dist.x - 1.f);
+  float distdivy = dist.y / (dist.y - 1.f);
 
   float left = world->camera->pos.x - win_w / 2 / engine->viewscale;
   float bottom = world->camera->pos.y - win_h / 2 / engine->viewscale;
@@ -49,8 +51,8 @@ void Gameplay::drawBGBottom(std::string bg, Vec2f dist) {
 
   const sf::Texture& texture = assets::gfx.getTexture(bg);
 
-  float distdivx = dist.x / (dist.x - 1.0f);
-  float distdivy = dist.y / (dist.y - 1.0f);
+  float distdivx = dist.x / (dist.x - 1.f);
+  float distdivy = dist.y / (dist.y - 1.f);
 
   float left = world->camera->pos.x - win_w / 2 / engine->viewscale;
   float bottom = world->camera->pos.y - win_h / 2 / engine->viewscale;
@@ -72,8 +74,8 @@ void Gameplay::drawBGTop(std::string bg, Vec2f dist) {
 
   const sf::Texture& texture = assets::gfx.getTexture(bg);
 
-  float distdivx = dist.x / (dist.x - 1.0f);
-  float distdivy = dist.y / (dist.y - 1.0f);
+  float distdivx = dist.x / (dist.x - 1.f);
+  float distdivy = dist.y / (dist.y - 1.f);
 
   float left = world->camera->pos.x - win_w / 2 / engine->viewscale;
   float top = world->camera->pos.y + win_h / 2 / engine->viewscale;
@@ -139,7 +141,61 @@ void Gameplay::drawEntities() {
   drawEntity(world->player);
 }
 
-void Gameplay::drawUI() {}
+void Gameplay::drawUI() {
+  const sf::Texture& sbfont = assets::gfx.getTile("smb3_sbfont");
+  const Vec2u& viewsize = engine->viewsize;
+  const std::string worldnum = "abcd0";
+  const std::string p_meter = ">>>>>>()";
+  const std::string coins = "$ 0";
+  const std::string mario = "ABx 0";
+  const std::string score = "0000000";
+  const std::string timer = "@000";
+
+  for (std::size_t i = 0; i < mario.length(); ++i) {
+    const char& c = mario.at(i);
+    const int x = c * 8 % sbfont.getSize().x;
+    const int y = (c / 16) * 8 % sbfont.getSize().y;
+    sf::Sprite sprite(sbfont, sf::IntRect(x, y, 8, 8));
+    sprite.setPosition(8 * i + 18, 10);
+    engine->viewport->draw(sprite);
+  }
+
+  for (std::size_t i = 0; i < p_meter.length(); ++i) {
+    const char& c = p_meter.at(i);
+    const int x = c * 8 % sbfont.getSize().x;
+    const int y = (c / 16) * 8 % sbfont.getSize().y;
+    sf::Sprite sprite(sbfont, sf::IntRect(x, y, 8, 8));
+    sprite.setPosition(8 * i + 18, 18);
+    engine->viewport->draw(sprite);
+  }
+
+  for (std::size_t i = 0; i < timer.length(); ++i) {
+    const char& c = timer.at(i);
+    const int x = c * 8 % sbfont.getSize().x;
+    const int y = (c / 16) * 8 % sbfont.getSize().y;
+    sf::Sprite sprite(sbfont, sf::IntRect(x, y, 8, 8));
+    sprite.setPosition(8 * (i - timer.length() - 6) + viewsize.x - 2, 10);
+    engine->viewport->draw(sprite);
+  }
+
+  for (std::size_t i = 0; i < coins.length(); ++i) {
+    const char& c = coins.at(i);
+    const int x = c * 8 % sbfont.getSize().x;
+    const int y = (c / 16) * 8 % sbfont.getSize().y;
+    sf::Sprite sprite(sbfont, sf::IntRect(x, y, 8, 8));
+    sprite.setPosition(8 * (i - coins.length() - 2) + viewsize.x - 2, 10);
+    engine->viewport->draw(sprite);
+  }
+
+  for (std::size_t i = 0; i < score.length(); ++i) {
+    const char& c = score.at(i);
+    const int x = c * 8 % sbfont.getSize().x;
+    const int y = (c / 16) * 8 % sbfont.getSize().y;
+    sf::Sprite sprite(sbfont, sf::IntRect(x, y, 8, 8));
+    sprite.setPosition(8 * (i - score.length() - 2) + viewsize.x - 2, 18);
+    engine->viewport->draw(sprite);
+  }
+}
 
 void Gameplay::enter() {
   engine->music->change("overworld");
@@ -184,11 +240,12 @@ void Gameplay::update() {
 }
 
 void Gameplay::draw() {
-  uint win_w = engine->viewport->getSize().x;
-  uint win_h = engine->viewport->getSize().y;
+  const sf::Vector2u& viewsize = engine->viewport->getSize();
 
-  sf::View view(sf::Vector2f(), sf::Vector2f(win_w / engine->viewscale, win_h / engine->viewscale));
-  view.setCenter(World::toView(world->camera->pos));
+  sf::View view(
+    World::toView(world->camera->pos),
+    sf::Vector2f(viewsize.x / engine->viewscale, viewsize.y / engine->viewscale)
+  );
   engine->viewport->setView(view);
 
   drawBG(0x6898F8FF);
@@ -196,11 +253,15 @@ void Gameplay::draw() {
   drawBGTop("cloudlayer", Vec2(2.625f, 1.125f));
   drawTiles();
   drawEntities();
+
+  view = sf::View(sf::FloatRect(0.f, 0.f, engine->viewsize.x, engine->viewsize.y));
+  engine->viewport->setView(view);
+
   drawUI();
 
-  rendertime += engine->rendertime.delta;
-
   engine->viewport->display();
+
+  rendertime += engine->rendertime.delta;
 }
 
 Gameplay::Gameplay(Engine* engine) : GameState(engine) {
