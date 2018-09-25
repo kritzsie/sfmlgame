@@ -10,7 +10,7 @@ protected:
   Engine* const engine = nullptr;
 
 public:
-  using Factory = std::function<GameState*(Engine*)>;
+  using Factory = std::function<GameState* (Engine*)>;
 
   virtual void enter() = 0;
   virtual void exit() = 0;

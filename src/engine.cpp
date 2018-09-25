@@ -23,9 +23,9 @@
 #include <thread>
 
 namespace ke {
-TimeInfo::TimeInfo(float rate) : rate(rate), delta(1.0f / rate) {}
+TimeInfo::TimeInfo(float rate) : rate(rate), delta(1.f / rate) {}
 
-TimeInfo::TimeInfo() : TimeInfo(60.0f) {}
+TimeInfo::TimeInfo() : TimeInfo(60.f) {}
 
 void Engine::onResize(Vec2<uint> size) {
   viewscale = std::max(1u, std::min(size.x / viewsize.x, size.y / viewsize.y));
@@ -33,7 +33,7 @@ void Engine::onResize(Vec2<uint> size) {
   uint height = viewsize.y * viewscale;
 
   window->setView(sf::View(
-    sf::Vector2f(width / 2.0f, height / 2.0f),
+    sf::Vector2f(width / 2.f, height / 2.f),
     sf::Vector2f(size.x, size.y)
   ));
 
@@ -191,8 +191,8 @@ int Engine::main() {
 
   auto starttime = Clock::now();
   auto prevtime = starttime;
-  auto nexttick = prevtime + 1.0s / ticktime.rate;
-  auto nextrender = prevtime + 1.0s / rendertime.rate;
+  auto nexttick = prevtime + 1.s / ticktime.rate;
+  auto nextrender = prevtime + 1.s / rendertime.rate;
 
   while (window->isOpen()) {
     Clock::time_point curtime = Clock::now();
@@ -201,12 +201,12 @@ int Engine::main() {
 
     if (nexttick < curtime) {
       update();
-      nexttick += 1.0s / ticktime.rate;
+      nexttick += 1.s / ticktime.rate;
     }
 
     if (nextrender < curtime) {
       draw();
-      nextrender += 1.0s / rendertime.rate;
+      nextrender += 1.s / rendertime.rate;
     }
 
     if (events.size() > 0
@@ -274,7 +274,7 @@ bool Engine::init() {
 }
 
 Engine::Engine(const StringList& args)
-: args(args), ticktime(64.0f), rendertime(60.0f), viewsize(480, 270) {
+: args(args), ticktime(64.f), rendertime(60.f), viewsize(480, 270) {
   if (PHYSFS_isInit() == 0) {
     PHYSFS_init(args.at(0).c_str());
     deinitPhysFS = true;
@@ -288,7 +288,7 @@ Engine::Engine(const StringList& args)
 
   TileDef notile(TileType::NONE);
   notile.pushFrame("", Vec2i(), 0.f);
-  tiles.emplace(0, notile);
+  registerTileDef(0, notile);
 }
 
 Engine::~Engine() {

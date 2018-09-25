@@ -3,6 +3,8 @@
 #include "../geometry.hpp"
 #include "../types.hpp"
 
+#include <functional>
+
 namespace ke {
 class Engine;
 class World;
@@ -13,7 +15,7 @@ protected:
   World* const world = nullptr;
 
 public:
-  using Factory = BaseEntity* (*)(Engine*, World*);
+  using Factory = std::function<BaseEntity* (Engine*, World*)>;
 
   static Factory create();
 
