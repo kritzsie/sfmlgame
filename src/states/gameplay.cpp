@@ -8,7 +8,13 @@
 
 #include <SFML/System.hpp>
 
+#include <cstddef>
+#include <string>
+
 namespace ke {
+TextStyle::TextStyle(std::string font, bool align_right, bool align_bottom)
+: font(font), align(align_right, align_bottom) {}
+
 Gameplay::Factory Gameplay::create() {
   return [](Engine* engine) -> GameState* {
     return new Gameplay(engine);
@@ -141,9 +147,32 @@ void Gameplay::drawEntities() {
   drawEntity(world->player);
 }
 
+void Gameplay::drawText(std::string text, Vec2f pos, TextStyle style) {
+  const sf::Texture& texture = assets::gfx.getTexture(style.font);
+  const Vec2u viewsize = engine->viewsize;
+  const std::size_t length = text.length();
+
+  for (std::size_t i = 0; i < length; ++i) {
+    const char c = text.at(i);
+    const sf::IntRect cliprect(
+      c * 8 % texture.getSize().x, (c / 16) * 8 % texture.getSize().y, 8, 8
+    );
+    sf::Sprite sprite(texture, cliprect);
+    float x_pos = style.align.x == false ?
+      pos.x : viewsize.x - 8.f * (length) - pos.x;
+    float y_pos = style.align.y == false ?
+      pos.y : viewsize.y - 8.f - pos.y;
+    sprite.setPosition(x_pos + 8.f * i, y_pos);
+    engine->viewport->draw(sprite);
+  }
+}
+
+void Gameplay::drawText(std::string text, Vec2f pos) {
+  TextStyle style("smb3_sbfont", false, false);
+  drawText(text, pos, style);
+}
+
 void Gameplay::drawUI() {
-  const sf::Texture& sbfont = assets::gfx.getTile("smb3_sbfont");
-  const Vec2u& viewsize = engine->viewsize;
   const std::string worldnum = "abcd0";
   const std::string p_meter = ">>>>>>()";
   const std::string coins = "$ 0";
@@ -151,50 +180,11 @@ void Gameplay::drawUI() {
   const std::string score = "0000000";
   const std::string timer = "@000";
 
-  for (std::size_t i = 0; i < mario.length(); ++i) {
-    const char& c = mario.at(i);
-    const int x = c * 8 % sbfont.getSize().x;
-    const int y = (c / 16) * 8 % sbfont.getSize().y;
-    sf::Sprite sprite(sbfont, sf::IntRect(x, y, 8, 8));
-    sprite.setPosition(8 * i + 18, 10);
-    engine->viewport->draw(sprite);
-  }
-
-  for (std::size_t i = 0; i < p_meter.length(); ++i) {
-    const char& c = p_meter.at(i);
-    const int x = c * 8 % sbfont.getSize().x;
-    const int y = (c / 16) * 8 % sbfont.getSize().y;
-    sf::Sprite sprite(sbfont, sf::IntRect(x, y, 8, 8));
-    sprite.setPosition(8 * i + 18, 18);
-    engine->viewport->draw(sprite);
-  }
-
-  for (std::size_t i = 0; i < timer.length(); ++i) {
-    const char& c = timer.at(i);
-    const int x = c * 8 % sbfont.getSize().x;
-    const int y = (c / 16) * 8 % sbfont.getSize().y;
-    sf::Sprite sprite(sbfont, sf::IntRect(x, y, 8, 8));
-    sprite.setPosition(8 * (i - timer.length() - 6) + viewsize.x - 2, 10);
-    engine->viewport->draw(sprite);
-  }
-
-  for (std::size_t i = 0; i < coins.length(); ++i) {
-    const char& c = coins.at(i);
-    const int x = c * 8 % sbfont.getSize().x;
-    const int y = (c / 16) * 8 % sbfont.getSize().y;
-    sf::Sprite sprite(sbfont, sf::IntRect(x, y, 8, 8));
-    sprite.setPosition(8 * (i - coins.length() - 2) + viewsize.x - 2, 10);
-    engine->viewport->draw(sprite);
-  }
-
-  for (std::size_t i = 0; i < score.length(); ++i) {
-    const char& c = score.at(i);
-    const int x = c * 8 % sbfont.getSize().x;
-    const int y = (c / 16) * 8 % sbfont.getSize().y;
-    sf::Sprite sprite(sbfont, sf::IntRect(x, y, 8, 8));
-    sprite.setPosition(8 * (i - score.length() - 2) + viewsize.x - 2, 18);
-    engine->viewport->draw(sprite);
-  }
+  drawText(mario, Vec2f(18, 10));
+  drawText(p_meter, Vec2f(18, 20));
+  drawText(timer, Vec2f(50, 10), TextStyle("smb3_sbfont", true, false));
+  drawText(coins, Vec2f(18, 10), TextStyle("smb3_sbfont", true, false));
+  drawText(score, Vec2f(18, 20), TextStyle("smb3_sbfont", true, false));
 }
 
 void Gameplay::enter() {

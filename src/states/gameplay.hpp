@@ -12,6 +12,14 @@
 namespace ke {
 class Engine;
 
+class TextStyle {
+public:
+  std::string font;
+  Vec2<bool> align;
+
+  TextStyle(std::string, bool = false, bool = false);
+};
+
 class Gameplay : public GameState {
 private:
   World* world = nullptr;
@@ -28,6 +36,8 @@ private:
   void drawTiles();
   void drawEntity(RenderEntity*);
   void drawEntities();
+  void drawText(std::string, Vec2f);
+  void drawText(std::string, Vec2f, TextStyle);
   void drawUI();
 
 public:
