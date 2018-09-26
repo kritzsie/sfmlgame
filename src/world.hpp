@@ -45,6 +45,8 @@ public:
 
   BaseEntity* spawnEntity(BaseEntity::Factory);
 
+  void update();
+
   World(Engine*, int, int);
   World(Engine*, int, int, Padding<int>);
   ~World();

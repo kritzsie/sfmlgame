@@ -211,8 +211,6 @@ void Gameplay::resume() {
 }
 
 void Gameplay::update() {
-  const Input& pause_input = engine->inputs[Action::pause];
-
   if (world->player->state & world->player->dead) {
     if (not paused) {
       engine->music->change("playerdown");
@@ -221,18 +219,17 @@ void Gameplay::update() {
     world->player->die();
   }
   else if (not paused) {
+    const Input& pause_input = engine->inputs[Action::pause];
+
     if (~pause_input > 0.f) {
       engine->sound->play("pause");
       engine->music->setVolume(0.5f);
       engine->pushState(PauseMenu::create(this));
       pause();
     }
-
-    for (BaseEntity* entity : world->entities) {
-      entity->update();
+    else {
+      world->update();
     }
-
-    world->timer = std::max(0.f, world->timer - 1.f / engine->ticktime.rate);
   }
 }
 

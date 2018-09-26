@@ -11,13 +11,12 @@ PauseMenu::Factory PauseMenu::create(GameState* previous) {
 }
 
 void PauseMenu::enter() {}
-
-void PauseMenu::exit() {
-  previous->resume();
-}
+void PauseMenu::exit() {}
 
 void PauseMenu::pause() {}
-void PauseMenu::resume() {}
+void PauseMenu::resume() {
+  previous->resume();
+}
 
 void PauseMenu::update() {
   const Input& pause_input = engine->inputs[Action::pause];
@@ -26,6 +25,7 @@ void PauseMenu::update() {
     engine->sound->play("pause");
     engine->music->setVolume(1.f);
     engine->popState();
+    resume();
   }
 }
 
