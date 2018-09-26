@@ -28,6 +28,7 @@ public:
   Padding<int> padding;
 
   float gravity = -768.f;
+  float timer = 300.f;
 
   std::list<BaseEntity*> entities;
   Camera* camera = nullptr;

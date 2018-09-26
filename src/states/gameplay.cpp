@@ -8,7 +8,10 @@
 
 #include <SFML/System.hpp>
 
+#include <cmath>
 #include <cstddef>
+#include <iomanip>
+#include <sstream>
 #include <string>
 
 namespace ke {
@@ -178,11 +181,13 @@ void Gameplay::drawUI() {
   const std::string coins = "$ 0";
   const std::string mario = "ABx 0";
   const std::string score = "0000000";
-  const std::string timer = "@000";
+  std::stringstream timerstr;
+  timerstr << "@" << std::fixed << std::setprecision(0) << std::setw(3)
+           << std::setfill('0') << std::ceil(world->timer);
 
   drawText(mario, Vec2f(18, 10));
   drawText(p_meter, Vec2f(18, 20));
-  drawText(timer, Vec2f(50, 10), TextStyle("smb3_sbfont", true, false));
+  drawText(timerstr.str(), Vec2f(50, 10), TextStyle("smb3_sbfont", true, false));
   drawText(coins, Vec2f(18, 10), TextStyle("smb3_sbfont", true, false));
   drawText(score, Vec2f(18, 20), TextStyle("smb3_sbfont", true, false));
 }
@@ -226,6 +231,8 @@ void Gameplay::update() {
     for (BaseEntity* entity : world->entities) {
       entity->update();
     }
+
+    world->timer = std::max(0.f, world->timer - 1.f / engine->ticktime.rate);
   }
 }
 
