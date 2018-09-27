@@ -223,7 +223,7 @@ int Engine::main() {
 }
 
 bool Engine::init() {
-  setupPhysFS("Kha0z", "smb3", "basesmb3");
+  setupPhysFS("Klay", "smb3", "basesmb3");
 
   sf::VideoMode videomode = sf::VideoMode::getDesktopMode();
   uint scale = std::max(1, std::min<int>(videomode.width / viewsize.x,

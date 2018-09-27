@@ -74,6 +74,14 @@ BaseEntity* World::spawnEntity(BaseEntity::Factory factory) {
   return entity;
 }
 
+void World::update() {
+  for (BaseEntity* entity : entities) {
+    entity->update();
+  }
+
+  timer = std::max(0.f, timer - 1.f / engine->ticktime.rate);
+}
+
 World::World(Engine* engine, int x, int y, Padding<int> padding)
 : engine(engine), size(x, y), padding(padding) {
   tiles = new tileid_t[x * y]();
@@ -114,14 +122,6 @@ World::World(Engine* engine, int x, int y, Padding<int> padding)
     setTile(x, y, 9);
   }
   // End test world
-}
-
-void World::update() {
-  for (BaseEntity* entity : entities) {
-    entity->update();
-  }
-
-  timer = std::max(0.f, timer - 1.f / engine->ticktime.rate);
 }
 
 World::World(Engine* engine, int x, int y)
