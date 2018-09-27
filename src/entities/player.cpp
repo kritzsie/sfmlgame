@@ -21,8 +21,8 @@ void Player::resolveWorldCollisionsX() {
     Rect<float> plyrBox = getBBox();
     Rect<float> tileBox = World::tileBBox(x, y);
 
-    if (x >= 0 and x < world->size.x
-    and y >= 0 and y < world->size.y) {
+    if (x >= 0 and x < world->getSize().x
+    and y >= 0 and y < world->getSize().y) {
       tileid_t tileid = world->getTile(x, y);
       if (tileid != 0
       and engine->getTileDef(tileid).type == TileType::SOLID
@@ -46,9 +46,9 @@ void Player::resolveWorldCollisionsX() {
     vel.x = 0.f;
     pos.x -= plyrBBox.x;
   }
-  else if (plyrBBox.x + plyrBBox.w > (world->size.x) * 16.f) {
+  else if (plyrBBox.x + plyrBBox.w > (world->getSize().x) * 16.f) {
     vel.x = 0.f;
-    pos.x -= plyrBBox.x + plyrBBox.w - (world->size.x) * 16.f;
+    pos.x -= plyrBBox.x + plyrBBox.w - (world->getSize().x) * 16.f;
   }
 }
 
@@ -61,8 +61,8 @@ void Player::resolveWorldCollisionsY() {
     Rect<float> plyrBox = getBBox();
     Rect<float> tileBox = World::tileBBox(x, y);
 
-    if (x >= 0 and x < world->size.x
-    and y >= 0 and y < world->size.y) {
+    if (x >= 0 and x < world->getSize().x
+    and y >= 0 and y < world->getSize().y) {
       tileid_t tileid = world->getTile(x, y);
       if (tileid != 0
       and engine->getTileDef(tileid).type == TileType::SOLID

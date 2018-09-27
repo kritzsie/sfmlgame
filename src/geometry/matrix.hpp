@@ -1,11 +1,9 @@
 #pragma once
 
 #include "vec2.hpp"
-
-#include <cstddef>
+#include "../types.hpp"
 
 namespace ke {
-using Vec2i = Vec2<int>;
 template<typename T>
 class Matrix {
 protected:

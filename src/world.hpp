@@ -18,13 +18,12 @@ struct Padding {
 
 class World {
 private:
-  tileid_t* tiles = nullptr;
+  Matrix<tileid_t> tiles;
 
 protected:
   Engine* const engine = nullptr;
 
 public:
-  const Vec2<int> size;
   Padding<int> padding;
 
   float gravity = -768.f;
@@ -40,6 +39,8 @@ public:
   static Rect<int> tilesInBBox(const Rect<float>&);
   static Rect<float> tileBBox(int, int);
 
+  Vec2i getSize() const;
+
   tileid_t& getTile(int, int);
   void setTile(int, int, tileid_t);
 
@@ -49,6 +50,5 @@ public:
 
   World(Engine*, int, int);
   World(Engine*, int, int, Padding<int>);
-  ~World();
 };
 }

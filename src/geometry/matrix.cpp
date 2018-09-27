@@ -1,6 +1,7 @@
 #include "matrix.hpp"
 
-#include <cstddef>
+#include "../types.hpp"
+
 #include <sstream>
 
 namespace ke {
@@ -10,9 +11,9 @@ T& Matrix<T>::Proxy::operator[](int y) {
     return data[x + y * size.x];
   }
   else {
-    std::stringstream ss;
-    ss << "y index out of bounds (" << y << " >= " << size.y << ")";
-    throw ss.str();
+    std::stringstream what;
+    what << "y index out of bounds (" << y << " >= " << size.y << ")";
+    throw what.str();
   }
 }
 
@@ -37,9 +38,9 @@ typename Matrix<T>::Proxy Matrix<T>::operator[](int x) {
     return Proxy(data, size, x);
   }
   else {
-    std::stringstream ss;
-    ss << "x index out of bounds (" << x << " >= " << size.x << ")";
-    throw ss.str();
+    std::stringstream what;
+    what << "x index out of bounds (" << x << " >= " << size.x << ")";
+    throw what.str();
   }
 }
 

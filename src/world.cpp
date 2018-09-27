@@ -32,40 +32,16 @@ Rect<float> World::tileBBox(int x, int y) {
   return Rect<float>(x * 16, y * 16, 16, 16);
 }
 
+Vec2i World::getSize() const {
+  return tiles.size;
+}
+
 tileid_t& World::getTile(int x, int y) {
-  if (x < size.x) {
-    if (y < size.y) {
-      return tiles[x * size.y + y];
-    }
-    else {
-      std::stringstream ss;
-      ss << "y index out of bounds (" << y << " >= " << size.y << ")";
-      throw ss.str();
-    }
-  }
-  else {
-    std::stringstream ss;
-    ss << "x index out of bounds (" << x << " >= " << size.x << ")";
-    throw ss.str();
-  }
+  return tiles[x][y];
 }
 
 void World::setTile(int x, int y, tileid_t tileid) {
-  if (x < size.x) {
-    if (y < size.y) {
-      getTile(x, y) = tileid;
-    }
-    else {
-      std::stringstream ss;
-      ss << "y index out of bounds (" << y << " >= " << size.y << ")";
-      throw ss.str();
-    }
-  }
-  else {
-    std::stringstream ss;
-    ss << "x index out of bounds (" << x << " >= " << size.x << ")";
-    throw ss.str();
-  }
+  tiles[x][y] = tileid;
 }
 
 BaseEntity* World::spawnEntity(BaseEntity::Factory factory) {
@@ -83,9 +59,7 @@ void World::update() {
 }
 
 World::World(Engine* engine, int x, int y, Padding<int> padding)
-: engine(engine), size(x, y), padding(padding) {
-  tiles = new tileid_t[x * y]();
-
+: tiles(x, y), engine(engine), padding(padding) {
   // WARNING: Test world ahead
   player = dynamic_cast<Player*>(spawnEntity(Player::create()));
   camera = dynamic_cast<Camera*>(spawnEntity(Camera::create()));
@@ -110,10 +84,10 @@ World::World(Engine* engine, int x, int y, Padding<int> padding)
   setTile(7, 2, 9);
   setTile(7, 3, 9);
   setTile(10, 0, 3);
-  for (int x = 11; x <= size.x - 2; x++) {
+  for (int x = 11; x <= tiles.size.x - 2; x++) {
     setTile(x, 0, 4);
   }
-  setTile(size.x - 1, 0, 5);
+  setTile(tiles.size.x - 1, 0, 5);
   for (int x = 24; x <= 39; x++) {
     setTile(x, 1, 9);
   }
@@ -126,8 +100,4 @@ World::World(Engine* engine, int x, int y, Padding<int> padding)
 
 World::World(Engine* engine, int x, int y)
 : World(engine, x, y, Padding<int>{}) {}
-
-World::~World() {
-  delete tiles;
-}
 }

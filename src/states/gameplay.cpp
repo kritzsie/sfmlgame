@@ -106,7 +106,10 @@ void Gameplay::drawBGTop(std::string bg, Vec2f dist) {
 
   sf::Sprite sky(texture);
   for (int x = std::floor(min_x / dist.x); x < std::floor(max_x / dist.x) + 1; x++) {
-    sky.setPosition(World::toView(Vec2(x * sky_w + left / distdivx + 16.f * world->padding.left / dist.x, world->size.y * 16.f / dist.y + top / distdivy - 16.f * world->padding.top / dist.y)));
+    sky.setPosition(World::toView(Vec2(
+      x * sky_w + left / distdivx + 16.f * world->padding.left / dist.x,
+      world->getSize().y * 16.f / dist.y + top / distdivy - 16.f * world->padding.top / dist.y)
+    ));
     engine->viewport->draw(sky);
   }
 }
@@ -115,10 +118,10 @@ void Gameplay::drawTiles() {
   uint win_w = engine->viewport->getSize().x;
   uint win_h = engine->viewport->getSize().y;
 
-  int left = std::max(0, std::min(int((world->camera->pos.x - win_w / 2 / engine->viewscale) / 16), world->size.x));
-  int bottom = std::max(0, std::min(int((world->camera->pos.y - win_h / 2 / engine->viewscale) / 16), world->size.y));
-  int right = std::max(0, std::min(int((world->camera->pos.x + win_w / 2 / engine->viewscale) / 16) + 1, world->size.x));
-  int top = std::max(0, std::min(int((world->camera->pos.y + win_h / 2 / engine->viewscale) / 16) + 1, world->size.y));
+  int left = std::max(0, std::min(int((world->camera->pos.x - win_w / 2 / engine->viewscale) / 16), world->getSize().x));
+  int bottom = std::max(0, std::min(int((world->camera->pos.y - win_h / 2 / engine->viewscale) / 16), world->getSize().y));
+  int right = std::max(0, std::min(int((world->camera->pos.x + win_w / 2 / engine->viewscale) / 16) + 1, world->getSize().x));
+  int top = std::max(0, std::min(int((world->camera->pos.y + win_h / 2 / engine->viewscale) / 16) + 1, world->getSize().y));
 
   for (int y = bottom; y < top; y++)
   for (int x = left; x < right; x++) {

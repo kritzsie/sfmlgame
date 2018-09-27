@@ -33,9 +33,9 @@ void Camera::resolveWorldCollisions() {
   );
   const Padding<float> camera_padding{
     .left = view_center.x + world->padding.left * 16.f,
-    .right = world->size.x * 16.f - view_center.x - world->padding.right * 16.f,
+    .right = world->getSize().x * 16.f - view_center.x - world->padding.right * 16.f,
     .bottom = view_center.y + world->padding.bottom * 16,
-    .top = world->size.y * 16.f - view_center.y - world->padding.top * 16.f
+    .top = world->getSize().y * 16.f - view_center.y - world->padding.top * 16.f
   };
 
   if (pos.x < camera_padding.left
