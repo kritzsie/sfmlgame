@@ -7,17 +7,20 @@
 
 #include <SFML/Graphics.hpp>
 
-#include <vector>
-
 namespace ke {
 class Engine;
 
+std::string highASCII(std::string);
+
 class TextStyle {
 public:
-  std::string font;
+  std::string font = "smb3_sbfont";
   Vec2<bool> align;
 
-  TextStyle(std::string, bool = false, bool = false);
+  TextStyle() = default;
+  TextStyle(bool, bool);
+  TextStyle(std::string);
+  TextStyle(std::string, bool, bool);
 };
 
 class Gameplay : public GameState {

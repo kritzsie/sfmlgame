@@ -15,8 +15,20 @@
 #include <string>
 
 namespace ke {
+std::string highASCII(std::string str) {
+  for (auto& c : str) {
+    c |= 128;
+  }
+  return str;
+}
+
 TextStyle::TextStyle(std::string font, bool align_right, bool align_bottom)
 : font(font), align(align_right, align_bottom) {}
+
+TextStyle::TextStyle(bool align_right, bool align_bottom)
+: TextStyle("smb3_sbfont", align_right, align_bottom) {}
+
+TextStyle::TextStyle(std::string font) : TextStyle(font, false, false) {}
 
 Gameplay::Factory Gameplay::create() {
   return [](Engine* engine) -> GameState* {
@@ -156,40 +168,45 @@ void Gameplay::drawText(std::string text, Vec2f pos, TextStyle style) {
   const std::size_t length = text.length();
 
   for (std::size_t i = 0; i < length; ++i) {
-    const char c = text.at(i);
+    const ubyte c = text.at(i);
     const sf::IntRect cliprect(
       c * 8 % texture.getSize().x, (c / 16) * 8 % texture.getSize().y, 8, 8
     );
     sf::Sprite sprite(texture, cliprect);
-    float x_pos = style.align.x == false ?
-      pos.x : viewsize.x - 8.f * (length) - pos.x;
-    float y_pos = style.align.y == false ?
-      pos.y : viewsize.y - 8.f - pos.y;
+    float x_pos = style.align.x ? viewsize.x - 8.f * length - pos.x : pos.x;
+    float y_pos = style.align.y ? viewsize.y - 8.f - pos.y : pos.y;
     sprite.setPosition(x_pos + 8.f * i, y_pos);
     engine->viewport->draw(sprite);
   }
 }
 
 void Gameplay::drawText(std::string text, Vec2f pos) {
-  TextStyle style("smb3_sbfont", false, false);
-  drawText(text, pos, style);
+  drawText(text, pos, TextStyle());
 }
 
 void Gameplay::drawUI() {
-  const std::string worldnum = "abcd0";
-  const std::string p_meter = ">>>>>>()";
-  const std::string coins = "$ 0";
-  const std::string mario = "ABx 0";
-  const std::string score = "0000000";
+  std::stringstream worldnum;
+  worldnum << highASCII("abcd") << std::setw(1) << 1;
+  std::stringstream p_meter;
+  p_meter << ">>>>>>()";
+  std::stringstream coins;
+  coins << "$" << std::setw(2) << 0;
+  std::stringstream mario;
+  mario << highASCII("ABx") << std::setw(2) << 0;
+  std::stringstream score;
+  score << std::internal << std::setw(7) << std::setfill('0') << 0;
   std::stringstream timerstr;
-  timerstr << "@" << std::fixed << std::setprecision(0) << std::setw(3)
-           << std::setfill('0') << std::ceil(world->timer);
+  timerstr << "@" << std::fixed << std::internal
+           << std::setprecision(0) << std::setw(3) << std::setfill('0')
+           << int(std::ceil(world->timer));
 
-  drawText(mario, Vec2f(18, 10));
-  drawText(p_meter, Vec2f(18, 20));
-  drawText(timerstr.str(), Vec2f(50, 10), TextStyle("smb3_sbfont", true, false));
-  drawText(coins, Vec2f(18, 10), TextStyle("smb3_sbfont", true, false));
-  drawText(score, Vec2f(18, 20), TextStyle("smb3_sbfont", true, false));
+  drawText(mario.str(), Vec2f(18, 18));
+  drawText(p_meter.str(), Vec2f(18, 26));
+
+  TextStyle align_right(true, false);
+  drawText(timerstr.str(), Vec2f(50, 18), align_right);
+  drawText(coins.str(), Vec2f(18, 18), align_right);
+  drawText(score.str(), Vec2f(18, 26), align_right);
 }
 
 void Gameplay::enter() {
