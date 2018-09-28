@@ -3,6 +3,7 @@
 #include "baseentity.hpp"
 #include "entity.hpp"
 #include "../input.hpp"
+#include "../types.hpp"
 
 namespace ke {
 class Player : public Entity {
@@ -32,12 +33,15 @@ public:
 
   static Factory create();
 
-  int state = State::idle;
+  int state;
 
-  float walktime;
-  float sliptime;
-  float jumptime;
-  float deathtime;
+  float p_meter;
+
+  float state_timer;
+  float turn_timer;
+  float jump_timer;
+  float run_timer;
+  float death_timer;
 
   void jump(const Input&);
   void duck();

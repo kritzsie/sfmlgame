@@ -15,10 +15,12 @@
 #include <string>
 
 namespace ke {
+char highASCII(char c) {
+  return c |= 128;
+}
+
 std::string highASCII(std::string str) {
-  for (auto& c : str) {
-    c |= 128;
-  }
+  for (auto& c : str) c = highASCII(c);
   return str;
 }
 
@@ -188,28 +190,37 @@ void Gameplay::drawText(std::string text, Vec2f pos) {
 }
 
 void Gameplay::drawUI() {
-  std::stringstream worldnum;
-  worldnum << highASCII("abcd") << std::setw(1) << 1;
+  //std::stringstream worldnum;
+  //worldnum << highASCII("abcd") << std::setw(1) << 1;
+
   std::stringstream p_meter;
-  p_meter << ">>>>>>()";
+  for (std::size_t i = 0; i < 6; ++i) {
+    p_meter << (world->player->p_meter >= (i + 1) ? highASCII('>') : '>');
+  }
+  p_meter << (world->player->p_meter >= 7.f ? highASCII("()") : "()");
+
   std::stringstream coins;
-  coins << "$" << std::setw(2) << 0;
+  coins << "$" << std::setw(2) << -0.f;
+
   std::stringstream mario;
-  mario << highASCII("ABx") << std::setw(2) << 0;
+  mario << highASCII("ABx") << std::setw(2) << -0.f;
+
   std::stringstream score;
-  score << std::internal << std::setw(7) << std::setfill('0') << 0;
+  score << std::internal << std::setw(7) << std::setfill('0') << -0.f;
+
   std::stringstream timerstr;
   timerstr << "@" << std::fixed << std::internal
            << std::setprecision(0) << std::setw(3) << std::setfill('0')
            << int(std::ceil(world->timer));
 
-  drawText(mario.str(), Vec2f(18, 18));
-  drawText(p_meter.str(), Vec2f(18, 26));
+  //TextStyle align_left(false, false);
+  drawText(mario.str(), Vec2f(16, 16));
+  drawText(p_meter.str(), Vec2f(16, 24));
 
   TextStyle align_right(true, false);
-  drawText(timerstr.str(), Vec2f(50, 18), align_right);
-  drawText(coins.str(), Vec2f(18, 18), align_right);
-  drawText(score.str(), Vec2f(18, 26), align_right);
+  drawText(timerstr.str(), Vec2f(48, 16), align_right);
+  drawText(coins.str(), Vec2f(16, 16), align_right);
+  drawText(score.str(), Vec2f(16, 24), align_right);
 }
 
 void Gameplay::enter() {

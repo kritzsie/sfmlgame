@@ -53,7 +53,7 @@ void Player::resolveWorldCollisionsX() {
 }
 
 void Player::resolveWorldCollisionsY() {
-  state |= airborne;
+  state |= State::airborne;
 
   Rect<int> range = World::tilesInBBox(getBBox());
   for (int y = range.y; y <= range.y + range.h; ++y)
@@ -72,12 +72,13 @@ void Player::resolveWorldCollisionsY() {
           if (vel.y > 0.f) {
             engine->sound->play("bump");
           }
-          jumptime = 0.f;
+
+          jump_timer = 0.f;
           vel.y = 0.f;
           pos.y -= collBox.h;
         }
         else {
-          state &= ~airborne;
+          state &= ~State::airborne;
           vel.y = 0.f;
           pos.y += collBox.h;
         }
@@ -89,40 +90,40 @@ void Player::resolveWorldCollisionsY() {
 
 void Player::jump(const Input& jump_input) {
   if (~jump_input > 0.f
-  and !(state & airborne)
-  and !(state & underwater)) {
-    jumptime = 0.3125f;
+  and !(state & State::airborne)
+  and !(state & State::underwater)) {
+    jump_timer = 0.3125f;
     engine->sound->play("jump");
   }
 
-  if (jumptime > 0.f) {
+  if (jump_timer > 0.f) {
     vel.y = std::max(vel.y, 176.f + std::abs(vel.x / 8.f));
-    jumptime = std::max(0.f, jumptime - 1.f / engine->ticktime.rate);
+    jump_timer = std::max(0.f, jump_timer - 1.f / engine->ticktime.rate);
   }
 }
 
 void Player::duck() {
-  if (!(state & airborne)) {
+  if (!(state & State::airborne)) {
     height = 15.f;
-    state |= ducking;
+    state |= State::ducking;
   }
 }
 
 void Player::stand() {
-  if (!(state & airborne)) {
+  if (!(state & State::airborne)) {
     height = 25.f;
-    state &= ~ducking;
+    state &= ~State::ducking;
   }
 }
 
 void Player::die() {
-  if (deathtime >= 0.75f
+  if (death_timer >= 0.75f
   and pos.y + height > 0.f) {
     vel.y = std::max(-max_vel.y, vel.y + world->gravity / engine->ticktime.rate);
     pos += vel / engine->ticktime.rate;
   }
 
-  deathtime += 1.f / engine->ticktime.rate;
+  death_timer += 1.f / engine->ticktime.rate;
 }
 
 void Player::update() {
@@ -136,8 +137,8 @@ void Player::update() {
   if (jump_input > 0.f) {
     jump(jump_input);
   }
-  else if (jumptime != 0.f) {
-    jumptime = 0.f;
+  else if (jump_timer != 0.f) {
+    jump_timer = 0.f;
   }
 
   const float direction = std::max(-1.f, std::min(right_input - left_input, 1.f));
@@ -152,32 +153,70 @@ void Player::update() {
     stand();
   }
 
-  state &= ~turning;
-  if ((vel.x != 0.f or direction != 0.f)
-  and !(state & airborne)) {
-    if ((direction > 0.f and vel.x < 0.f)
-    or  (direction < 0.f and vel.x > 0.f)) {
-      state |= turning;
-      if (sliptime == 0.f) {
-        sliptime = 0.125;
-        engine->sound->play("slip");
-      }
-      sliptime = std::max(0.f, sliptime - 1.f / engine->ticktime.rate);
+  if (direction != 0.f
+  and !(state & State::airborne)
+  and std::abs(vel.x) >= 152.f) {
+    if (std::abs(vel.x) >= 176.f) {
+      p_meter = 8.f;
     }
-    else if (sliptime > 0.f) {
-      sliptime = 0.f;
+    else {
+      p_meter = std::min(8.f, p_meter + 5.f / engine->ticktime.rate);
     }
-    state |= walking;
-    walktime += engine->ticktime.rate * std::min(
-      std::abs(vel.x * 0.75f / engine->ticktime.rate) + 0.75f, 16.f
-    );
   }
-  else {
-    state &= ~walking;
-    walktime = 0.f;
+  else if (p_meter > 0.f) {
+    if (!(state & airborne)
+    or  p_meter < 7.f) {
+      p_meter = std::max(0.f, p_meter - 2.5f / engine->ticktime.rate);
+    }
   }
 
-  const float max_run_vel = run_input ? 160.f : 96.f;
+  if (p_meter >= 7.f) {
+    if (run_timer > 0.f) {
+      run_timer -= 1.f / engine->ticktime.rate;
+    }
+    else {
+      run_timer = 0.1f;
+      engine->sound->play("running");
+    }
+  }
+  else if (run_timer > 0.f) {
+    run_timer = 0.f;
+  }
+
+  state &= ~(State::walking | State::turning);
+  if (!(state & State::airborne)) {
+    state &= ~State::running;
+  }
+  if ((direction != 0.f or vel.x != 0.f)
+  and !(state & State::airborne)) {
+    if ((direction > 0.f and vel.x < 0.f)
+    or  (direction < 0.f and vel.x > 0.f)) {
+      state |= State::turning;
+      if (turn_timer == 0.f) {
+        turn_timer = 0.125;
+        engine->sound->play("slip");
+      }
+
+      turn_timer = std::max(0.f, turn_timer - 1.f / engine->ticktime.rate);
+    }
+    else if (turn_timer > 0.f) {
+      turn_timer = 0.f;
+    }
+
+    if (std::abs(vel.x) >= 192.f) {
+      state |= State::running;
+      state_timer += 1.f / engine->ticktime.rate;
+    }
+    else {
+      state |= State::walking;
+      state_timer += (std::abs(vel.x) / 96.f + 1.f) / engine->ticktime.rate;
+    }
+  }
+  else {
+    state_timer = 0.f;
+  }
+
+  const float max_run_vel = (run_input ? (p_meter > 7.f ? 192.f : 160.f) : 96.f);
   if (direction > 0.f
   and vel.x >= 0.f
   and vel.x <= max_run_vel) {
@@ -196,7 +235,7 @@ void Player::update() {
   and vel.x < 0.f) {
     vel.x = std::min(0.f, vel.x + 384.f / engine->ticktime.rate);
   }
-  else if (!(state & airborne)) {
+  else if (!(state & State::airborne)) {
     if (vel.x > 0.f) {
       vel.x = std::max(0.f, vel.x - 256.f / engine->ticktime.rate);
     }
@@ -205,7 +244,7 @@ void Player::update() {
     }
   }
 
-  if (jumptime == 0.f
+  if (jump_timer == 0.f
   and vel.y > -max_vel.y) {
     vel.y = std::max(-max_vel.y, vel.y + world->gravity / engine->ticktime.rate);
   }
@@ -220,8 +259,8 @@ void Player::update() {
   resolveWorldCollisionsX();
 
   if (pos.y + height <= 0.f) {
-    state |= dead;
-    deathtime = 0.f;
+    state |= State::dead;
+    death_timer = 0.f;
     vel.x = 0.f;
     vel.y = 256.f;
   }
@@ -230,28 +269,29 @@ void Player::update() {
 }
 
 void Player::updateState() {
-  if (state & dead) {
+  if (state & State::dead) {
     setState("death");
   }
-  else if (state & airborne
-  and !(state & ducking)) {
-    setState("jumping");
-  }
-  else if (state & ducking) {
+  else if (state & State::ducking) {
     setState("ducking");
   }
-  else if (!(state & airborne)) {
-    if (state & turning) {
+  else if (state & State::airborne) {
+    if (p_meter >= 7.f) {
+      setState("runjumping");
+    }
+    else {
+      setState("jumping");
+    }
+  }
+  else if (state & State::running) {
+    setState("running", getFrameOffset(state_timer));
+  }
+  else if (!(state & State::airborne)) {
+    if (state & State::turning) {
       setState("slipping");
     }
-    else if (state & walking) {
-      std::size_t offset = std::floor(
-        std::fmod(
-          walktime * getFrame().duration / engine->ticktime.rate,
-          getFrameCount("walking")
-        )
-      );
-      setState("walking", offset);
+    else if (state & State::walking) {
+      setState("walking", getFrameOffset(state_timer));
     }
     else {
       setState("idle");
@@ -261,19 +301,26 @@ void Player::updateState() {
 
 Player::Player(Engine* engine, World* world)
 : Entity(engine, world, 5.f, 25.f), max_vel(192.f, 256.f) {
-  pushFrame("idle", "bigmariowalk_0", Rect(0, 0, 14, 27), Vec2(7.f, -1.f), 0.f);
+  pushFrame("idle", "bigmariowalk_0", Rect(0, 0, 14, 27), Vec2f(7, -1), 0.f);
 
-  pushFrame("walking", "bigmariowalk_1", Rect(0, 0, 16, 27), Vec2(9.f, -1.f), 0.125f);
-  pushFrame("walking", "bigmariowalk_2", Rect(0, 0, 16, 26), Vec2(9.f, -1.f), 0.125f);
-  pushFrame("walking", "bigmariowalk_1", Rect(0, 0, 16, 27), Vec2(9.f, -1.f), 0.125f);
-  pushFrame("walking", "bigmariowalk_0", Rect(0, 0, 14, 27), Vec2(7.f, -1.f), 0.125f);
+  pushFrame("walking", "bigmariowalk_1", Rect(0, 0, 16, 27), Vec2f(9, -1), 0.125f);
+  pushFrame("walking", "bigmariowalk_2", Rect(0, 0, 16, 26), Vec2f(9, 0), 0.125f);
+  pushFrame("walking", "bigmariowalk_1", Rect(0, 0, 16, 27), Vec2f(9, -1), 0.125f);
+  pushFrame("walking", "bigmariowalk_0", Rect(0, 0, 14, 27), Vec2f(7, -1), 0.125f);
 
-  pushFrame("slipping", "bigmarioslip", Rect(0, 0, 16, 28), Vec2(8.f, -1.f), 0.f);
+  pushFrame("running", "bigmariorun_1", Rect(0, 0, 19, 27), Vec2f(11, -1), 1.f / 60.f);
+  pushFrame("running", "bigmariorun_2", Rect(0, 0, 19, 26), Vec2f(11, 0), 1.f / 60.f);
+  pushFrame("running", "bigmariorun_1", Rect(0, 0, 19, 27), Vec2f(11, -1), 1.f / 60.f);
+  pushFrame("running", "bigmariorun_0", Rect(0, 0, 19, 27), Vec2f(11, -1), 1.f / 60.f);
 
-  pushFrame("ducking", "bigmarioduck", Rect(0, 0, 14, 18), Vec2(7.f, -1.f), 0.f);
+  pushFrame("slipping", "bigmarioslip", Rect(0, 0, 16, 28), Vec2f(8, -1), 0.f);
 
-  pushFrame("jumping", "bigmariojump", Rect(0, 0, 16, 26), Vec2(8.f, -1.f), 0.f);
+  pushFrame("runjumping", "bigmariorunjump", Rect(0, 0, 19, 26), Vec2f(11, 0), 0.f);
 
-  pushFrame("death", "mariodeath", Rect(0, 0, 16, 16), Vec2(8.f, -1.f), 0.f);
+  pushFrame("ducking", "bigmarioduck", Rect(0, 0, 14, 18), Vec2f(7, -1), 0.f);
+
+  pushFrame("jumping", "bigmariojump", Rect(0, 0, 16, 26), Vec2f(8, 0), 0.f);
+
+  pushFrame("death", "mariodeath", Rect(0, 0, 16, 16), Vec2f(8, -1), 0.f);
 }
 }

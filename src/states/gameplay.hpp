@@ -14,12 +14,11 @@ std::string highASCII(std::string);
 
 class TextStyle {
 public:
-  std::string font = "smb3_sbfont";
+  std::string font;
   Vec2<bool> align;
 
-  TextStyle() = default;
   TextStyle(bool, bool);
-  TextStyle(std::string);
+  TextStyle(std::string = "smb3_sbfont");
   TextStyle(std::string, bool, bool);
 };
 
