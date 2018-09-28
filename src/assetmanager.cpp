@@ -18,7 +18,7 @@ static const StringList gfx_extensions {
 };
 
 static const StringList sfx_extensions {
-  "", "flac", "wav", "ogg"
+  "", "wav", "flac", "ogg"
 };
 
 sf::Texture     GFXAssets::none;
