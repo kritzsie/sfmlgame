@@ -197,7 +197,13 @@ void Gameplay::drawUI() {
   for (std::size_t i = 0; i < 6; ++i) {
     p_meter << (world->player->p_meter >= (i + 1) ? highASCII('>') : '>');
   }
-  p_meter << (world->player->p_meter >= 7.f ? highASCII("()") : "()");
+  if (world->player->p_meter >= 7.f
+  and std::fmod(rendertime, 0.25f) > 0.125) {
+    p_meter << highASCII("()");
+  }
+  else {
+    p_meter << "()";
+  }
 
   std::stringstream coins;
   coins << "$" << std::setw(2) << -0.f;

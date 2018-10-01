@@ -156,15 +156,15 @@ void Player::update() {
   if (direction != 0.f
   and !(state & State::airborne)
   and std::abs(vel.x) >= 152.f) {
-    if (std::abs(vel.x) >= 176.f) {
-      p_meter = 8.f;
+    if (std::abs(vel.x) >= 184.f) {
+      p_meter = 7.5f;
     }
     else {
-      p_meter = std::min(8.f, p_meter + 5.f / engine->ticktime.rate);
+      p_meter = std::min(8.f, p_meter + 6.f / engine->ticktime.rate);
     }
   }
   else if (p_meter > 0.f) {
-    if (!(state & airborne)
+    if (!(state & State::airborne)
     or  p_meter < 7.f) {
       p_meter = std::max(0.f, p_meter - 2.5f / engine->ticktime.rate);
     }
@@ -229,18 +229,18 @@ void Player::update() {
   }
   else if (direction < 0.f
   and vel.x > 0.f) {
-    vel.x = std::max(0.f, vel.x - 384.f / engine->ticktime.rate);
+    vel.x = std::max(0.f, vel.x - 448.f / engine->ticktime.rate);
   }
   else if (direction > 0.f
   and vel.x < 0.f) {
-    vel.x = std::min(0.f, vel.x + 384.f / engine->ticktime.rate);
+    vel.x = std::min(0.f, vel.x + 448.f / engine->ticktime.rate);
   }
   else if (!(state & State::airborne)) {
     if (vel.x > 0.f) {
-      vel.x = std::max(0.f, vel.x - 256.f / engine->ticktime.rate);
+      vel.x = std::max(0.f, vel.x - 224.f / engine->ticktime.rate);
     }
     else if (vel.x < 0.f) {
-      vel.x = std::min(0.f, vel.x + 256.f / engine->ticktime.rate);
+      vel.x = std::min(0.f, vel.x + 224.f / engine->ticktime.rate);
     }
   }
 
