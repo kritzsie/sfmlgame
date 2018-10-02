@@ -91,11 +91,11 @@ bool Engine::setupPhysFS(std::string org, std::string appname, std::string baseg
   return true;
 }
 
-void Engine::pushState(GameState::Factory factory) {
+void Engine::pushState(BaseState::Factory factory) {
   events.push_back(Event(EventType::pushState, factory));
 }
 
-GameState* Engine::popState() {
+BaseState* Engine::popState() {
   events.push_back(Event(EventType::popState, nullptr));
   return states.back();
 }
@@ -143,13 +143,13 @@ void Engine::update() {
   for (Event& event : events) {
     switch (event.first) {
       case EventType::pushState: {
-        GameState* state = event.second(this);
+        BaseState* state = event.second(this);
         states.push_back(state);
         state->enter();
         break;
       }
       case EventType::popState: {
-        GameState* state = states.back();
+        BaseState* state = states.back();
         state->exit();
         delete state;
         states.pop_back();
@@ -162,7 +162,7 @@ void Engine::update() {
     events.clear();
   }
 
-  for (GameState* state : states) {
+  for (BaseState* state : states) {
     state->update();
   }
 
@@ -174,7 +174,7 @@ void Engine::update() {
 void Engine::draw() {
   window->clear();
 
-  for (GameState* state : states) {
+  for (BaseState* state : states) {
     state->draw();
   }
 

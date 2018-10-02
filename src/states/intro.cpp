@@ -5,7 +5,7 @@
 
 namespace ke {
 Intro::Factory Intro::create() {
-  return [](Engine* engine) -> GameState* {
+  return [](Engine* engine) -> BaseState* {
     return new Intro(engine);
   };
 }
@@ -25,5 +25,5 @@ void Intro::update() {
 
 void Intro::draw() {}
 
-Intro::Intro(Engine* engine) : GameState(engine) {}
+Intro::Intro(Engine* engine) : BaseState(engine) {}
 }

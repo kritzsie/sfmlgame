@@ -29,8 +29,8 @@ add_executable(
   src/entities/player.cpp
   src/entities/renderentity.cpp
   src/states/intro.cpp
+  src/states/basestate.cpp
   src/states/gameplay.cpp
-  src/states/gamestate.cpp
   src/states/pausemenu.cpp
   src/util/file.cpp
   src/assetmanager.cpp

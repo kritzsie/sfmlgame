@@ -1,4 +1,4 @@
-#include "gameplay.hpp"
+#include "basestate.hpp"
 
 #include "pausemenu.hpp"
 #include "../assetmanager.hpp"
@@ -33,7 +33,7 @@ TextStyle::TextStyle(bool align_right, bool align_bottom)
 TextStyle::TextStyle(std::string font) : TextStyle(font, false, false) {}
 
 Gameplay::Factory Gameplay::create() {
-  return [](Engine* engine) -> GameState* {
+  return [](Engine* engine) -> BaseState* {
     return new Gameplay(engine);
   };
 }
@@ -295,7 +295,7 @@ void Gameplay::draw() {
   rendertime += engine->rendertime.delta;
 }
 
-Gameplay::Gameplay(Engine* engine) : GameState(engine) {
+Gameplay::Gameplay(Engine* engine) : BaseState(engine) {
   world = new World(engine, 176, 27);
 }
 

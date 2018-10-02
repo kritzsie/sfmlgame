@@ -5,12 +5,12 @@
 namespace ke {
 class Engine;
 
-class GameState {
+class BaseState {
 protected:
   Engine* const engine = nullptr;
 
 public:
-  using Factory = std::function<GameState* (Engine*)>;
+  using Factory = std::function<BaseState* (Engine*)>;
 
   virtual void enter() = 0;
   virtual void exit() = 0;
@@ -21,10 +21,10 @@ public:
   virtual void update() = 0;
   virtual void draw() = 0;
 
-  virtual ~GameState() = default;
+  virtual ~BaseState() = default;
 
 protected:
-  GameState(Engine*);
+  BaseState(Engine*);
 };
 }
 

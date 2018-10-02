@@ -1,6 +1,6 @@
 #pragma once
 
-#include "gamestate.hpp"
+#include "basestate.hpp"
 #include "../engine.hpp"
 #include "../entities.hpp"
 #include "../world.hpp"
@@ -22,7 +22,7 @@ public:
   TextStyle(std::string, bool, bool);
 };
 
-class Gameplay : public GameState {
+class Gameplay : public BaseState {
 private:
   World* world = nullptr;
 

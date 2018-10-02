@@ -47,7 +47,7 @@ public:
     pushState, popState
   };
 
-  using Event = std::pair<EventType, GameState::Factory>;
+  using Event = std::pair<EventType, BaseState::Factory>;
 
 private:
   bool deinitPhysFS = false;
@@ -55,7 +55,7 @@ private:
   sf::RenderWindow* window = nullptr;
 
   std::vector<Event> events;
-  std::vector<GameState*> states;
+  std::vector<BaseState*> states;
 
   // TODO: move tiledef functions to a more suitable location
   std::map<tileid_t, TileDef> tiles;
@@ -82,8 +82,8 @@ protected:
 public:
   bool setupPhysFS(std::string, std::string, std::string);
 
-  void pushState(GameState::Factory);
-  GameState* popState();
+  void pushState(BaseState::Factory);
+  BaseState* popState();
 
   void registerTileDef(tileid_t, TileDef);
   const TileDef& getTileDef(tileid_t) const;

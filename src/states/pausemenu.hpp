@@ -1,14 +1,14 @@
 #pragma once
 
-#include "gamestate.hpp"
+#include "basestate.hpp"
 
 namespace ke {
-class PauseMenu : public GameState {
+class PauseMenu : public BaseState {
 private:
-  GameState* const previous;
+  BaseState* const previous;
 
 public:
-  static Factory create(GameState*);
+  static Factory create(BaseState*);
 
   void enter() final;
   void exit() final;
@@ -22,6 +22,6 @@ public:
   ~PauseMenu() final = default;
 
 private:
-  PauseMenu(Engine*, GameState*);
+  PauseMenu(Engine*, BaseState*);
 };
 }

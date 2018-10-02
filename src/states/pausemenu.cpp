@@ -4,8 +4,8 @@
 #include "../engine.hpp"
 
 namespace ke {
-PauseMenu::Factory PauseMenu::create(GameState* previous) {
-  return [previous](Engine* engine) -> GameState* {
+PauseMenu::Factory PauseMenu::create(BaseState* previous) {
+  return [previous](Engine* engine) -> BaseState* {
     return new PauseMenu(engine, previous);
   };
 }
@@ -31,6 +31,6 @@ void PauseMenu::update() {
 
 void PauseMenu::draw() {}
 
-PauseMenu::PauseMenu(Engine* engine, GameState* previous)
-: GameState(engine), previous(previous) {}
+PauseMenu::PauseMenu(Engine* engine, BaseState* previous)
+: BaseState(engine), previous(previous) {}
 }

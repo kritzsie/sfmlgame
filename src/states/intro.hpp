@@ -1,10 +1,10 @@
 #pragma once
 
-#include "gamestate.hpp"
+#include "basestate.hpp"
 #include "../engine.hpp"
 
 namespace ke {
-class Intro : public GameState {
+class Intro : public BaseState {
 public:
   static Factory create();
 
