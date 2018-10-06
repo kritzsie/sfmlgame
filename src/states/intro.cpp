@@ -1,6 +1,6 @@
 #include "intro.hpp"
 
-#include "gameplay.hpp"
+#include "basegame.hpp"
 #include "../engine.hpp"
 
 namespace ke {
@@ -10,17 +10,26 @@ Intro::Factory Intro::create() {
   };
 }
 
-void Intro::enter() {}
+void Intro::enter() {
+  resume();
+}
+
 void Intro::exit() {}
 
-void Intro::pause() {}
-void Intro::resume() {}
+void Intro::pause() {
+  paused = true;
+}
+
+void Intro::resume() {
+  paused = false;
+}
 
 void Intro::update() {
-  engine->popState();
-  engine->pushState(Gameplay::create());
-
-  ticktime += engine->ticktime.delta;
+  if (not paused) {
+    engine->popState();
+    engine->pushState(BaseGame::create());
+    pause();
+  }
 }
 
 void Intro::draw() {}

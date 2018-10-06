@@ -4,14 +4,12 @@
 #include "../engine.hpp"
 
 namespace ke {
-class Intro : public BaseState {
+class BaseGame : public BaseState {
 private:
   bool paused = true;
 
 public:
   static Factory create();
-
-  float ticktime = 0.f;
 
   void enter() final;
   void exit() final;
@@ -22,9 +20,9 @@ public:
   void update() final;
   void draw() final;
 
-  ~Intro() final = default;
+  ~BaseGame() final = default;
 
 private:
-  Intro(Engine*);
+  BaseGame(Engine*);
 };
 }

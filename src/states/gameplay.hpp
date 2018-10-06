@@ -10,6 +10,8 @@
 namespace ke {
 class Engine;
 
+class BaseGame;
+
 std::string highASCII(std::string);
 
 class TextStyle {
@@ -24,6 +26,7 @@ public:
 
 class Gameplay : public BaseState {
 private:
+  BaseGame* basegame = nullptr;
   World* world = nullptr;
 
   float ticktime = 0.f;
@@ -43,7 +46,7 @@ private:
   void drawUI();
 
 public:
-  static Factory create();
+  static Factory create(BaseGame*);
 
   void enter() final;
   void exit() final;
@@ -57,6 +60,6 @@ public:
   ~Gameplay() final;
 
 private:
-  Gameplay(Engine*);
+  Gameplay(Engine*, BaseGame*);
 };
 }
