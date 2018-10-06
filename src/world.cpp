@@ -71,12 +71,24 @@ World::World(Engine* engine, int x, int y, Padding<int> padding)
   for (int x = 1; x <= 6; x++) {
     setTile(x, 0, 4);
   }
+
   setTile(7, 0, 5);
+
+  // brick & question block platform
   setTile(15, 4, 1);
   setTile(16, 4, 2);
   setTile(17, 4, 1);
   setTile(18, 4, 2);
   setTile(19, 4, 1);
+
+  // row of coins
+  setTile(29, 8, 10);
+  setTile(30, 8, 10);
+  setTile(31, 8, 10);
+  setTile(32, 8, 10);
+  setTile(33, 8, 10);
+  setTile(34, 8, 10);
+
   setTile(5, 1, 9);
   setTile(6, 1, 9);
   setTile(6, 2, 9);

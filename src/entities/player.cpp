@@ -25,18 +25,27 @@ void Player::resolveWorldCollisionsX() {
     and y >= 0 and y < world->getSize().y) {
       tileid_t tileid = world->getTile(x, y);
       if (tileid != 0
-      and engine->getTileDef(tileid).type == TileType::SOLID
       and plyrBox.intersects(tileBox)) {
-        Rect<float> collBox = plyrBox.intersection(tileBox);
-        if (plyrBox.x + plyrBox.w / 2.f < tileBox.x + tileBox.w / 2.f) {
-          vel.x = 0.f;
-          pos.x -= collBox.w;
+        switch (engine->getTileDef(tileid).type) {
+        case TileType::SOLID: {
+          Rect<float> collBox = plyrBox.intersection(tileBox);
+          if (plyrBox.x + plyrBox.w / 2.f < tileBox.x + tileBox.w / 2.f) {
+            vel.x = 0.f;
+            pos.x -= collBox.w;
+          }
+          else {
+            vel.x = 0.f;
+            pos.x += collBox.w;
+          }
+          return;
         }
-        else {
-          vel.x = 0.f;
-          pos.x += collBox.w;
+        case TileType::GOLDCOIN:
+          world->setTile(x, y, 0);
+          engine->sound->play("coin");
+          break;
+        default:
+          continue;
         }
-        return;
       }
     }
   }

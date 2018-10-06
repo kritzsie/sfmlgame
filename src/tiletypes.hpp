@@ -8,11 +8,11 @@
 #include <cstdint>
 
 namespace ke {
-enum struct TileType : char {
-  NONE, SOLID, LIQUID, SLOPE
+enum class TileType : ubyte {
+  NONE, SOLID, LIQUID, SLOPE, GOLDCOIN
 };
 
-enum struct TileSide : char {
+enum class TileSide : ubyte {
   NONE, SOLID, HURT, KILL
 };
 

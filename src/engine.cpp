@@ -109,7 +109,7 @@ TileRedefinitionError::TileRedefinitionError(const char* what)
 void Engine::registerTileDef(tileid_t tileid, TileDef tiledef) {
   if (tiles.find(tileid) != tiles.end()) {
     std::stringstream ss;
-    ss << "attempted to redefine tile with id " << tileid;
+    ss << "attempted to redefine tile id " << tileid;
     throw TileRedefinitionError(ss.str());
   }
 
@@ -140,7 +140,7 @@ void Engine::handleEvents() {
 }
 
 void Engine::update() {
-  for (Event& event : events) {
+  for (Event& event : std::vector<Event>(events)) {
     switch (event.first) {
       case EventType::pushState: {
         BaseState* state = event.second(this);
@@ -240,14 +240,14 @@ bool Engine::init() {
   brickblock.pushFrame("smb3_tile_atlas", Vec2(16, 0), 8.f / 60.f);
   brickblock.pushFrame("smb3_tile_atlas", Vec2(32, 0), 8.f / 60.f);
   brickblock.pushFrame("smb3_tile_atlas", Vec2(48, 0), 8.f / 60.f);
-  registerTileDef(1, brickblock);
+  registerTileDef(1, std::move(brickblock));
 
   TileDef itemblock;
   itemblock.pushFrame("smb3_tile_atlas", Vec2(0, 48), 8.f / 60.f);
   itemblock.pushFrame("smb3_tile_atlas", Vec2(16, 48), 8.f / 60.f);
   itemblock.pushFrame("smb3_tile_atlas", Vec2(32, 48), 8.f / 60.f);
   itemblock.pushFrame("smb3_tile_atlas", Vec2(48, 48), 8.f / 60.f);
-  registerTileDef(2, itemblock);
+  registerTileDef(2, std::move(itemblock));
 
   TileDef woodfloor0, woodfloor1, woodfloor2;
   TileDef woodfloor3, woodfloor4, woodfloor5;
@@ -257,16 +257,23 @@ bool Engine::init() {
   woodfloor3.pushFrame("smb3_tile_atlas", Vec2(80, 48), 0.f);
   woodfloor4.pushFrame("smb3_tile_atlas", Vec2(96, 48), 0.f);
   woodfloor5.pushFrame("smb3_tile_atlas", Vec2(112, 48), 0.f);
-  registerTileDef(3, woodfloor0);
-  registerTileDef(4, woodfloor1);
-  registerTileDef(5, woodfloor2);
-  registerTileDef(6, woodfloor3);
-  registerTileDef(7, woodfloor4);
-  registerTileDef(8, woodfloor5);
+  registerTileDef(3, std::move(woodfloor0));
+  registerTileDef(4, std::move(woodfloor1));
+  registerTileDef(5, std::move(woodfloor2));
+  registerTileDef(6, std::move(woodfloor3));
+  registerTileDef(7, std::move(woodfloor4));
+  registerTileDef(8, std::move(woodfloor5));
 
   TileDef woodblock;
   woodblock.pushFrame("smb3_tile_atlas", Vec2(208, 96), 0.f);
-  registerTileDef(9, woodblock);
+  registerTileDef(9, std::move(woodblock));
+
+  TileDef goldcoin(TileType::GOLDCOIN);
+  goldcoin.pushFrame("smb3_tile_atlas", Vec2(0, 32), 8.f / 60.f);
+  goldcoin.pushFrame("smb3_tile_atlas", Vec2(16, 32), 8.f / 60.f);
+  goldcoin.pushFrame("smb3_tile_atlas", Vec2(32, 32), 8.f / 60.f);
+  goldcoin.pushFrame("smb3_tile_atlas", Vec2(48, 32), 8.f / 60.f);
+  registerTileDef(10, std::move(goldcoin));
 
   pushState(Intro::create());
 

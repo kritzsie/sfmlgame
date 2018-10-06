@@ -10,6 +10,22 @@ BaseGame::Factory BaseGame::create() {
   };
 }
 
+ubyte BaseGame::getCoins() const {
+  return coins;
+}
+
+ubyte BaseGame::getLives() const {
+  return lives;
+}
+
+void BaseGame::addCoins(ubyte count) {
+  coins += count;
+}
+
+void BaseGame::addLives(ubyte count) {
+  lives += count;
+}
+
 void BaseGame::enter() {
   resume();
 }
