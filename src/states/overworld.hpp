@@ -1,10 +1,11 @@
 #pragma once
 
 #include "basestate.hpp"
-#include "basegame.hpp"
 #include "../types.hpp"
 
 namespace ke {
+class BaseGame;
+
 class Overworld : public BaseState {
 public:
   enum class State : byte {

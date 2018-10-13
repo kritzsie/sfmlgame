@@ -207,13 +207,13 @@ void Gameplay::drawUI() {
   }
 
   std::stringstream coins;
-  coins << "$" << std::setw(2) << -0.f;
+  coins << "$" << std::setw(2) << +basegame->getCoins();
 
   std::stringstream mario;
-  mario << highASCII("ABx") << std::setw(2) << -0.f;
+  mario << highASCII("ABx") << std::setw(2) << +basegame->getLives();
 
   std::stringstream score;
-  score << std::internal << std::setw(7) << std::setfill('0') << -0.f;
+  score << std::internal << std::setw(7) << std::setfill('0') << basegame->getScore();
 
   std::stringstream timerstr;
   timerstr << "@" << std::fixed << std::internal
@@ -298,7 +298,7 @@ void Gameplay::draw() {
 
 Gameplay::Gameplay(Engine* engine, BaseGame* basegame)
 : BaseState(engine), basegame(basegame) {
-  world = new World(engine, 176, 27);
+  world = new World(engine, basegame, 176, 27);
 }
 
 Gameplay::~Gameplay() {

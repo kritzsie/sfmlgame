@@ -40,8 +40,7 @@ void Player::resolveWorldCollisionsX() {
           return;
         }
         case TileType::GOLDCOIN:
-          world->setTile(x, y, 0);
-          engine->sound->play("coin");
+          world->triggerCoin(x, y);
           break;
         default:
           continue;

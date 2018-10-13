@@ -9,6 +9,8 @@
 namespace ke {
 class Engine;
 
+class BaseGame;
+
 using tileid_t = uint32_t;
 
 template<typename T>
@@ -22,6 +24,7 @@ private:
 
 protected:
   Engine* const engine = nullptr;
+  BaseGame* const basegame = nullptr;
 
 public:
   Padding<int> padding;
@@ -46,9 +49,11 @@ public:
 
   BaseEntity* spawnEntity(BaseEntity::Factory);
 
+  void triggerCoin(int, int);
+
   void update();
 
-  World(Engine*, int, int);
-  World(Engine*, int, int, Padding<int>);
+  World(Engine*, BaseGame*, int, int);
+  World(Engine*, BaseGame*, int, int, Padding<int>);
 };
 }

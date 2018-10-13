@@ -10,14 +10,18 @@ private:
 
   ubyte coins = 0;
   ubyte lives = 5;
+  ulong score = 0;
 
 public:
   static Factory create();
 
   ubyte getCoins() const;
   ubyte getLives() const;
-  void addCoins(ubyte);
-  void addLives(ubyte);
+  ulong getScore() const;
+
+  void addCoins(int);
+  void addLives(int);
+  void addScore(ulong);
 
   void enter() final;
   void exit() final;

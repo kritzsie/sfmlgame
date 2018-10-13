@@ -2,6 +2,9 @@
 
 #include "overworld.hpp"
 #include "../engine.hpp"
+#include "../util.hpp"
+
+#include <cmath>
 
 namespace ke {
 BaseGame::Factory BaseGame::create() {
@@ -18,12 +21,20 @@ ubyte BaseGame::getLives() const {
   return lives;
 }
 
-void BaseGame::addCoins(ubyte count) {
-  coins += count;
+ulong BaseGame::getScore() const {
+  return score;
 }
 
-void BaseGame::addLives(ubyte count) {
-  lives += count;
+void BaseGame::addCoins(int count) {
+  coins = util::absmod(coins + count, 100);
+}
+
+void BaseGame::addLives(int count) {
+  lives = std::max(0, std::min(lives + count, 99));
+}
+
+void BaseGame::addScore(ulong count) {
+  score += count;
 }
 
 void BaseGame::enter() {

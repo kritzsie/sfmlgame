@@ -4,7 +4,6 @@
 
 #include <SFML/System.hpp>
 
-#include <cstddef>
 #include <string>
 #include <vector>
 

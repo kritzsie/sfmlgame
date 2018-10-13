@@ -2,6 +2,7 @@
 
 #include "engine.hpp"
 #include "geometry.hpp"
+#include "states/basegame.hpp"
 
 #include <cmath>
 #include <sstream>
@@ -50,6 +51,17 @@ BaseEntity* World::spawnEntity(BaseEntity::Factory factory) {
   return entity;
 }
 
+void World::triggerCoin(int x, int y) {
+  setTile(x, y, 0);
+  if (basegame->getCoins() >= 99) {
+    basegame->addLives(1);
+    engine->sound->play("1up");
+  }
+  basegame->addCoins(1);
+  basegame->addScore(50);
+  engine->sound->play("coin");
+}
+
 void World::update() {
   for (BaseEntity* entity : entities) {
     entity->update();
@@ -58,8 +70,8 @@ void World::update() {
   timer = std::max(0.f, timer - 1.f / engine->ticktime.rate);
 }
 
-World::World(Engine* engine, int x, int y, Padding<int> padding)
-: tiles(x, y), engine(engine), padding(padding) {
+World::World(Engine* engine, BaseGame* basegame, int x, int y, Padding<int> padding)
+: tiles(x, y), engine(engine), basegame(basegame), padding(padding) {
   // WARNING: Test world ahead
   player = dynamic_cast<Player*>(spawnEntity(Player::create()));
   camera = dynamic_cast<Camera*>(spawnEntity(Camera::create()));
@@ -74,7 +86,7 @@ World::World(Engine* engine, int x, int y, Padding<int> padding)
 
   setTile(7, 0, 5);
 
-  // brick & question block platform
+  // brick & item block platform
   setTile(15, 4, 1);
   setTile(16, 4, 2);
   setTile(17, 4, 1);
@@ -110,6 +122,6 @@ World::World(Engine* engine, int x, int y, Padding<int> padding)
   // End test world
 }
 
-World::World(Engine* engine, int x, int y)
-: World(engine, x, y, Padding<int>{}) {}
+World::World(Engine* engine, BaseGame* basegame, int x, int y)
+: World(engine, basegame, x, y, Padding<int>{}) {}
 }

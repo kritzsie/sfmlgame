@@ -1,15 +1,12 @@
 #pragma once
 
 #include "basestate.hpp"
-#include "../engine.hpp"
 #include "../entities.hpp"
 #include "../world.hpp"
 
 #include <SFML/Graphics.hpp>
 
 namespace ke {
-class Engine;
-
 class BaseGame;
 
 std::string highASCII(std::string);
