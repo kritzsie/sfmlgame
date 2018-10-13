@@ -14,6 +14,7 @@
 #include <SFML/Window.hpp>
 
 #include <algorithm>
+#include <array>
 #include <chrono>
 #include <cmath>
 #include <cstddef>
@@ -92,11 +93,11 @@ bool Engine::setupPhysFS(std::string org, std::string appname, std::string baseg
 }
 
 void Engine::pushState(BaseState::Factory factory) {
-  events.push_back(Event(EventType::pushState, factory));
+  events.push_back(StateEvent(StateEventType::pushState, factory));
 }
 
 BaseState* Engine::popState() {
-  events.push_back(Event(EventType::popState, nullptr));
+  events.push_back(StateEvent(StateEventType::popState, nullptr));
   return states.back();
 }
 
@@ -140,15 +141,15 @@ void Engine::handleEvents() {
 }
 
 void Engine::update() {
-  for (Event& event : std::vector<Event>(events)) {
+  for (StateEvent& event : std::vector<StateEvent>(events)) {
     switch (event.first) {
-      case EventType::pushState: {
+      case StateEventType::pushState: {
         BaseState* state = event.second(this);
         states.push_back(state);
         state->enter();
         break;
       }
-      case EventType::popState: {
+      case StateEventType::popState: {
         BaseState* state = states.back();
         state->exit();
         delete state;
@@ -232,8 +233,10 @@ bool Engine::init() {
   uint height = viewsize.y * scale;
 
   window->create(sf::VideoMode(width, height), "Super Mario Bros. 3");
-  window->setPosition(sf::Vector2i((videomode.width - width) / 2,
-                                   (videomode.height - height) / 2));
+  window->setPosition(sf::Vector2i(
+    (videomode.width - width) / 2,
+    (videomode.height - height) / 2
+  ));
 
   TileDef brickblock;
   brickblock.pushFrame("smb3_tile_atlas", Vec2(0, 0), 8.f / 60.f);
@@ -249,20 +252,16 @@ bool Engine::init() {
   itemblock.pushFrame("smb3_tile_atlas", Vec2(48, 48), 8.f / 60.f);
   registerTileDef(2, std::move(itemblock));
 
-  TileDef woodfloor0, woodfloor1, woodfloor2;
-  TileDef woodfloor3, woodfloor4, woodfloor5;
-  woodfloor0.pushFrame("smb3_tile_atlas", Vec2(80, 48), 0.f);
-  woodfloor1.pushFrame("smb3_tile_atlas", Vec2(96, 48), 0.f);
-  woodfloor2.pushFrame("smb3_tile_atlas", Vec2(112, 48), 0.f);
-  woodfloor3.pushFrame("smb3_tile_atlas", Vec2(80, 48), 0.f);
-  woodfloor4.pushFrame("smb3_tile_atlas", Vec2(96, 48), 0.f);
-  woodfloor5.pushFrame("smb3_tile_atlas", Vec2(112, 48), 0.f);
-  registerTileDef(3, std::move(woodfloor0));
-  registerTileDef(4, std::move(woodfloor1));
-  registerTileDef(5, std::move(woodfloor2));
-  registerTileDef(6, std::move(woodfloor3));
-  registerTileDef(7, std::move(woodfloor4));
-  registerTileDef(8, std::move(woodfloor5));
+  std::array<TileDef, 6> woodfloors;
+  woodfloors[0].pushFrame("smb3_tile_atlas", Vec2(80, 48), 0.f);
+  woodfloors[1].pushFrame("smb3_tile_atlas", Vec2(96, 48), 0.f);
+  woodfloors[2].pushFrame("smb3_tile_atlas", Vec2(112, 48), 0.f);
+  woodfloors[3].pushFrame("smb3_tile_atlas", Vec2(80, 64), 0.f);
+  woodfloors[4].pushFrame("smb3_tile_atlas", Vec2(96, 64), 0.f);
+  woodfloors[5].pushFrame("smb3_tile_atlas", Vec2(112, 64), 0.f);
+  for (std::size_t i = 0; i < woodfloors.size(); ++i) {
+    registerTileDef(i + 3, std::move(woodfloors[i]));
+  }
 
   TileDef woodblock;
   woodblock.pushFrame("smb3_tile_atlas", Vec2(208, 96), 0.f);

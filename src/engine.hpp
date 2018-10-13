@@ -43,18 +43,18 @@ public:
 
 class Engine {
 public:
-  enum class EventType {
+  enum class StateEventType {
     pushState, popState
   };
 
-  using Event = std::pair<EventType, BaseState::Factory>;
+  using StateEvent = std::pair<StateEventType, BaseState::Factory>;
 
 private:
   bool deinitPhysFS = false;
 
   sf::RenderWindow* window = nullptr;
 
-  std::vector<Event> events;
+  std::vector<StateEvent> events;
   std::vector<BaseState*> states;
 
   // TODO: move tiledef functions to a more suitable location
