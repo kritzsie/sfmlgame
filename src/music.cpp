@@ -77,7 +77,7 @@ SPCStream::~SPCStream() {
 bool Music::change(std::string name) {
   std::string path = "/music/" + name + ".spc";
 
-  if (stream->spc.load_spc(util::readFile(path))) {
+  if (name.length() and stream->spc.load_spc(util::readFile(path))) {
     return false;
   }
 
