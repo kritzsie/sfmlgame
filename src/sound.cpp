@@ -29,6 +29,7 @@ std::size_t Sound::play(std::string name) {
 
   for (std::size_t i = 0; i < MAX_VOICES - 1; i++) {
     if (play(i, name)) {
+      voices[i].setLoop(false);
       return i;
     }
   }
@@ -38,6 +39,12 @@ std::size_t Sound::play(std::string name) {
   }
   voices[MAX_VOICES - 1].play();
   return MAX_VOICES - 1;
+}
+
+std::size_t Sound::playLoop(std::string name) {
+  std::size_t index = play(name);
+  voices[index].setLoop(true);
+  return index;
 }
 
 bool Sound::pause(std::size_t voice_id) {

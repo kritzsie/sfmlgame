@@ -18,6 +18,7 @@ private:
 public:
   bool play(std::size_t, std::string);
   std::size_t play(std::string);
+  std::size_t playLoop(std::string);
   bool pause(std::size_t);
   std::size_t pause();
   bool resume(std::size_t);
