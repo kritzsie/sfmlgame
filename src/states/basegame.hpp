@@ -15,8 +15,8 @@ private:
 public:
   static Factory create();
 
-  ubyte getCoins() const;
-  ubyte getLives() const;
+  uint getCoins() const;
+  uint getLives() const;
   ulong getScore() const;
 
   void addCoins(int);

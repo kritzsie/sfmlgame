@@ -13,11 +13,11 @@ BaseGame::Factory BaseGame::create() {
   };
 }
 
-ubyte BaseGame::getCoins() const {
+uint BaseGame::getCoins() const {
   return coins;
 }
 
-ubyte BaseGame::getLives() const {
+uint BaseGame::getLives() const {
   return lives;
 }
 
