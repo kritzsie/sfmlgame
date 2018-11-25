@@ -14,6 +14,7 @@
 #include <iomanip>
 #include <sstream>
 #include <string>
+#include <optional>
 
 namespace ke {
 char highASCII(char c) {
@@ -191,15 +192,15 @@ void Gameplay::drawText(std::string text, Vec2f pos) {
 }
 
 void Gameplay::drawUI() {
-  //std::stringstream worldnum;
-  //worldnum << highASCII("abcd") << std::setw(1) << 1;
+  std::stringstream worldnum;
+  worldnum << highASCII("abcd") << '\0' << '-' << 1;
 
   std::stringstream p_meter;
   for (std::size_t i = 0; i < 6; ++i) {
     p_meter << (world->player->p_meter >= (i + 1) ? highASCII('>') : '>');
   }
   if (world->player->p_meter >= 7.f
-  and std::fmod(rendertime, 0.25f) > 0.125) {
+  and std::fmod(rendertime, 0.25f) > 0.125f) {
     p_meter << highASCII("()");
   }
   else {
@@ -207,10 +208,10 @@ void Gameplay::drawUI() {
   }
 
   std::stringstream coins;
-  coins << "$" << std::setw(2) << +basegame->getCoins();
+  coins << "$" << std::setw(2) << basegame->getCoins();
 
   std::stringstream mario;
-  mario << highASCII("ABx") << std::setw(2) << +basegame->getLives();
+  mario << highASCII("ABx") << std::setw(2) << basegame->getLives();
 
   std::stringstream score;
   score << std::internal << std::setw(7) << std::setfill('0') << basegame->getScore();
@@ -221,13 +222,16 @@ void Gameplay::drawUI() {
            << int(std::ceil(world->timer));
 
   //TextStyle align_left(false, false);
-  drawText(mario.str(), Vec2f(16, 16));
-  drawText(p_meter.str(), Vec2f(16, 24));
+  drawText(worldnum.str(), Vec2f(16, 16));
+  drawText(mario.str(), Vec2f(16, 24));
 
   TextStyle align_right(true, false);
   drawText(timerstr.str(), Vec2f(48, 16), align_right);
   drawText(coins.str(), Vec2f(16, 16), align_right);
   drawText(score.str(), Vec2f(16, 24), align_right);
+
+  TextStyle align_bottom(false, true);
+  drawText(p_meter.str(), Vec2f(64, 6), align_bottom);
 }
 
 void Gameplay::enter() {
@@ -251,6 +255,10 @@ void Gameplay::resume() {
 void Gameplay::update() {
   if (world->player->state & world->player->dead) {
     if (not paused) {
+      if (world->player->snd_running.has_value()) {
+        engine->sound->stop(world->player->snd_running.value());
+        world->player->snd_running = std::nullopt;
+      }
       engine->music->change("playerdown");
       pause();
     }
@@ -260,6 +268,10 @@ void Gameplay::update() {
     const Input& pause_input = engine->inputs[Action::pause];
 
     if (~pause_input > 0.f) {
+      if (world->player->snd_running.has_value()) {
+        engine->sound->stop(world->player->snd_running.value());
+        world->player->snd_running = std::nullopt;
+      }
       engine->sound->play("pause");
       engine->music->setVolume(0.5f);
       engine->pushState(PauseMenu::create(this));

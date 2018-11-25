@@ -3,6 +3,7 @@
 
 #include <cmath>
 #include <cstddef>
+#include <optional>
 
 namespace ke {
 Player::Factory Player::create() {
@@ -178,17 +179,12 @@ void Player::update() {
     }
   }
 
-  if (p_meter >= 7.f) {
-    if (run_timer > 0.f) {
-      run_timer -= 1.f / engine->ticktime.rate;
-    }
-    else {
-      run_timer = 0.1f;
-      engine->sound->play("running");
-    }
+  if (p_meter >= 7.f and not snd_running.has_value() ) {
+    snd_running = engine->sound->playLoop("running");
   }
-  else if (run_timer > 0.f) {
-    run_timer = 0.f;
+  else if (p_meter < 7.f and snd_running.has_value() ) {
+    engine->sound->stop(snd_running.value());
+    snd_running = std::nullopt;
   }
 
   state &= ~(State::walking | State::turning);

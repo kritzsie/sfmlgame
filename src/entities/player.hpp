@@ -1,5 +1,7 @@
 #pragma once
 
+#include <optional>
+
 #include "baseentity.hpp"
 #include "entity.hpp"
 #include "../input.hpp"
@@ -33,15 +35,16 @@ public:
 
   static Factory create();
 
-  int state;
+  int state = State::idle;
 
-  float p_meter;
+  float p_meter = 0.f;
 
-  float state_timer;
-  float turn_timer;
-  float jump_timer;
-  float run_timer;
-  float death_timer;
+  float state_timer = 0.f;
+  float turn_timer = 0.f;
+  float jump_timer = 0.f;
+  float death_timer = 0.f;
+
+  std::optional<std::size_t> snd_running;
 
   void jump(const Input&);
   void duck();
