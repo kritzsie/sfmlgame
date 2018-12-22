@@ -155,7 +155,7 @@ void Gameplay::drawEntity(RenderEntity* renderentity) {
 }
 
 void Gameplay::drawEntities() {
-  for (BaseEntity* baseentity : world->entities) {
+  for (BaseEntity* baseentity : world->getEntities()) {
     if (baseentity == world->player) {
       continue;
     }
@@ -219,7 +219,7 @@ void Gameplay::drawUI() {
   std::stringstream timerstr;
   timerstr << "@" << std::fixed << std::internal
            << std::setprecision(0) << std::setw(3) << std::setfill('0')
-           << int(std::ceil(world->timer));
+           << int(std::ceil(world->getTimer()));
 
   //TextStyle align_left(false, false);
   drawText(worldnum.str(), Vec2f(16, 16));

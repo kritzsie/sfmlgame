@@ -126,9 +126,10 @@ void Player::stand() {
 }
 
 void Player::die() {
-  if (death_timer >= 0.75f
-  and pos.y + height > 0.f) {
-    vel.y = std::max(-max_vel.y, vel.y + world->gravity / engine->ticktime.rate);
+  float gravity = world->getGravity();
+
+  if (death_timer >= 0.75f and pos.y + height > 0.f) {
+    vel.y = std::max(-max_vel.y, vel.y + gravity / engine->ticktime.rate);
     pos += vel / engine->ticktime.rate;
   }
 
@@ -142,6 +143,8 @@ void Player::update() {
 
   const Input& run_input = engine->inputs[Action::run];
   const Input& jump_input = engine->inputs[Action::jump];
+
+  const float gravity = world->getGravity();
 
   if (jump_input > 0.f) {
     jump(jump_input);
@@ -250,7 +253,7 @@ void Player::update() {
 
   if (jump_timer == 0.f
   and vel.y > -max_vel.y) {
-    vel.y = std::max(-max_vel.y, vel.y + world->gravity / engine->ticktime.rate);
+    vel.y = std::max(-max_vel.y, vel.y + gravity / engine->ticktime.rate);
   }
 
   resolveEntityCollisionsY();

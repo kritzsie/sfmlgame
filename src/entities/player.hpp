@@ -21,6 +21,7 @@ private:
   void updateState();
 
 public:
+  // TODO: implement states as mutually exclusive fields
   enum State : int {
     idle       = 0,
     walking    = 1 << 0,

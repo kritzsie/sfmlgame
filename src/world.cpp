@@ -9,6 +9,22 @@
 #include <string>
 
 namespace ke {
+World::State& World::State::operator =(const World::State& next) {
+  // TODO: implement tile update functions
+  gravity = next.gravity;
+  timer = next.timer;
+
+  return *this;
+}
+
+World::State::State(int x, int y) : tiles(x, y) {}
+
+void World::States::update() {
+  cur = next;
+}
+
+World::States::States(int x, int y) : cur(x, y), next(x, y) {}
+
 Vec2f World::toView(Vec2f vector) {
   return Vec2(vector.x, -vector.y);
 }
@@ -34,21 +50,37 @@ Rect<float> World::tileBBox(int x, int y) {
 }
 
 Vec2i World::getSize() const {
-  return tiles.size;
+  return states.cur.tiles.size;
 }
 
 tileid_t& World::getTile(int x, int y) {
-  return tiles[x][y];
+  return states.cur.tiles[x][y];
 }
 
 void World::setTile(int x, int y, tileid_t tileid) {
-  tiles[x][y] = tileid;
+  states.cur.tiles[x][y] = tileid;
+}
+
+const std::list<BaseEntity*>& World::getEntities() const {
+  return states.cur.entities;
 }
 
 BaseEntity* World::spawnEntity(BaseEntity::Factory factory) {
   BaseEntity* entity = factory(engine, this);
-  entities.push_back(entity);
+  states.next.entities.push_back(entity);
   return entity;
+}
+
+float World::getGravity() const {
+  return states.cur.gravity;
+}
+
+void World::setGravity(float gravity) {
+  states.next.gravity = gravity;
+}
+
+float World::getTimer() const {
+  return states.cur.timer;
 }
 
 void World::triggerCoin(int x, int y) {
@@ -63,15 +95,17 @@ void World::triggerCoin(int x, int y) {
 }
 
 void World::update() {
-  for (BaseEntity* entity : entities) {
+  for (BaseEntity* entity : states.next.entities) {
     entity->update();
   }
 
-  timer = std::max(0.f, timer - 1.f / engine->ticktime.rate);
+  states.next.timer = std::max(0.f, states.cur.timer - 1.f / engine->ticktime.rate);
+
+  states.update();
 }
 
 World::World(Engine* engine, BaseGame* basegame, int x, int y, Padding<int> padding)
-: tiles(x, y), engine(engine), basegame(basegame), padding(padding) {
+: states(x, y), engine(engine), basegame(basegame), padding(padding) {
   // WARNING: Test world ahead
   player = dynamic_cast<Player*>(spawnEntity(Player::create()));
   camera = dynamic_cast<Camera*>(spawnEntity(Camera::create()));
@@ -93,13 +127,27 @@ World::World(Engine* engine, BaseGame* basegame, int x, int y, Padding<int> padd
   setTile(18, 4, 2);
   setTile(19, 4, 1);
 
-  // row of coins
-  setTile(29, 8, 10);
-  setTile(30, 8, 10);
-  setTile(31, 8, 10);
-  setTile(32, 8, 10);
-  setTile(33, 8, 10);
-  setTile(34, 8, 10);
+  // coins above wooden platform
+  for (int y = 6; y <= 11; ++y)
+  for (int x = 29; x <= 34; ++x) {
+    setTile(x, y, 10);
+    setTile(x, y, 10);
+    setTile(x, y, 10);
+    setTile(x, y, 10);
+    setTile(x, y, 10);
+    setTile(x, y, 10);
+  }
+
+  // more coins
+  for (int y = 4; y <= 7; ++y)
+  for (int x = 42; x <= 58; ++x) {
+    setTile(x, y, 10);
+    setTile(x, y, 10);
+    setTile(x, y, 10);
+    setTile(x, y, 10);
+    setTile(x, y, 10);
+    setTile(x, y, 10);
+  }
 
   setTile(5, 1, 9);
   setTile(6, 1, 9);
@@ -108,10 +156,10 @@ World::World(Engine* engine, BaseGame* basegame, int x, int y, Padding<int> padd
   setTile(7, 2, 9);
   setTile(7, 3, 9);
   setTile(10, 0, 3);
-  for (int x = 11; x <= tiles.size.x - 2; x++) {
+  for (int x = 11; x <= getSize().x - 2; x++) {
     setTile(x, 0, 4);
   }
-  setTile(tiles.size.x - 1, 0, 5);
+  setTile(getSize().x - 1, 0, 5);
   for (int x = 24; x <= 39; x++) {
     setTile(x, 1, 9);
   }
@@ -120,6 +168,8 @@ World::World(Engine* engine, BaseGame* basegame, int x, int y, Padding<int> padd
     setTile(x, y, 9);
   }
   // End test world
+
+  states.next = states.cur;
 }
 
 World::World(Engine* engine, BaseGame* basegame, int x, int y)

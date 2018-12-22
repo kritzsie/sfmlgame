@@ -19,20 +19,39 @@ struct Padding {
 };
 
 class World {
-private:
-  Matrix<tileid_t> tiles;
+public:
+  class State {
+  public:
+    Matrix<tileid_t> tiles;
+
+    std::list<BaseEntity*> entities;
+
+    float gravity = -768.f;
+    float timer = 300.f;
+
+    State& operator =(const State&);
+
+    State(int, int);
+  };
+
+  class States {
+  public:
+    State cur, next;
+
+    void update();
+
+    States(int, int);
+  };
 
 protected:
   Engine* const engine = nullptr;
   BaseGame* const basegame = nullptr;
 
+  States states;
+
 public:
   Padding<int> padding;
 
-  float gravity = -768.f;
-  float timer = 300.f;
-
-  std::list<BaseEntity*> entities;
   Camera* camera = nullptr;
   Player* player = nullptr;
 
@@ -47,7 +66,13 @@ public:
   tileid_t& getTile(int, int);
   void setTile(int, int, tileid_t);
 
+  const std::list<BaseEntity*>& getEntities() const;
   BaseEntity* spawnEntity(BaseEntity::Factory);
+
+  float getGravity() const;
+  void setGravity(float);
+
+  float getTimer() const;
 
   void triggerCoin(int, int);
 
