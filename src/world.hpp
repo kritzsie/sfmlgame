@@ -22,16 +22,10 @@ class World {
 public:
   class State {
   public:
-    Matrix<tileid_t> tiles;
-
     std::list<BaseEntity*> entities;
 
     float gravity = -768.f;
     float timer = 300.f;
-
-    State& operator =(const State&);
-
-    State(int, int);
   };
 
   class States {
@@ -39,14 +33,14 @@ public:
     State cur, next;
 
     void update();
-
-    States(int, int);
   };
 
 protected:
   Engine* const engine = nullptr;
   BaseGame* const basegame = nullptr;
 
+private:
+  Matrix<tileid_t> tiles;
   States states;
 
 public:

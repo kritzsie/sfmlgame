@@ -5,3 +5,4 @@
 #include "entities/entity.hpp"
 #include "entities/camera.hpp"
 #include "entities/player.hpp"
+#include "entities/goomba.hpp"

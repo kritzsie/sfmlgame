@@ -2,7 +2,6 @@
 
 #include <optional>
 
-#include "baseentity.hpp"
 #include "entity.hpp"
 #include "../input.hpp"
 #include "../types.hpp"
@@ -10,7 +9,7 @@
 namespace ke {
 class Player : public Entity {
 private:
-  Vec2f max_vel;
+  Vec2f max_vel = Vec2f(192.f, 256.f);
 
   void resolveEntityCollisionsX();
   void resolveEntityCollisionsY();
@@ -21,7 +20,7 @@ private:
   void updateState();
 
 public:
-  // TODO: implement states as mutually exclusive fields
+  // TODO: implement states as mutually exclusive fields (enum classes)
   enum State : int {
     idle       = 0,
     walking    = 1 << 0,

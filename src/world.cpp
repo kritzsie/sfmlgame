@@ -9,21 +9,9 @@
 #include <string>
 
 namespace ke {
-World::State& World::State::operator =(const World::State& next) {
-  // TODO: implement tile update functions
-  gravity = next.gravity;
-  timer = next.timer;
-
-  return *this;
-}
-
-World::State::State(int x, int y) : tiles(x, y) {}
-
 void World::States::update() {
   cur = next;
 }
-
-World::States::States(int x, int y) : cur(x, y), next(x, y) {}
 
 Vec2f World::toView(Vec2f vector) {
   return Vec2(vector.x, -vector.y);
@@ -50,15 +38,15 @@ Rect<float> World::tileBBox(int x, int y) {
 }
 
 Vec2i World::getSize() const {
-  return states.cur.tiles.size;
+  return tiles.size;
 }
 
 tileid_t& World::getTile(int x, int y) {
-  return states.cur.tiles[x][y];
+  return tiles[x][y];
 }
 
 void World::setTile(int x, int y, tileid_t tileid) {
-  states.cur.tiles[x][y] = tileid;
+  tiles[x][y] = tileid;
 }
 
 const std::list<BaseEntity*>& World::getEntities() const {
@@ -105,13 +93,15 @@ void World::update() {
 }
 
 World::World(Engine* engine, BaseGame* basegame, int x, int y, Padding<int> padding)
-: states(x, y), engine(engine), basegame(basegame), padding(padding) {
+: engine(engine), basegame(basegame), tiles(x, y), padding(padding) {
   // WARNING: Test world ahead
   player = dynamic_cast<Player*>(spawnEntity(Player::create()));
   camera = dynamic_cast<Camera*>(spawnEntity(Camera::create()));
-
   player->pos = Vec2(32.f, 16.f);
   camera->setTarget(player);
+
+  Entity* goomba = dynamic_cast<Goomba*>(spawnEntity(Goomba::create()));
+  goomba->pos = Vec2(320.f, 16.f);
 
   setTile(0, 0, 3);
   for (int x = 1; x <= 6; x++) {
@@ -130,11 +120,6 @@ World::World(Engine* engine, BaseGame* basegame, int x, int y, Padding<int> padd
   // coins above wooden platform
   for (int y = 6; y <= 11; ++y)
   for (int x = 29; x <= 34; ++x) {
-    setTile(x, y, 10);
-    setTile(x, y, 10);
-    setTile(x, y, 10);
-    setTile(x, y, 10);
-    setTile(x, y, 10);
     setTile(x, y, 10);
   }
 
@@ -168,8 +153,6 @@ World::World(Engine* engine, BaseGame* basegame, int x, int y, Padding<int> padd
     setTile(x, y, 9);
   }
   // End test world
-
-  states.next = states.cur;
 }
 
 World::World(Engine* engine, BaseGame* basegame, int x, int y)

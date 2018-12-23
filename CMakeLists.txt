@@ -26,6 +26,7 @@ add_executable(
   src/entities/baseentity.cpp
   src/entities/camera.cpp
   src/entities/entity.cpp
+  src/entities/goomba.cpp
   src/entities/player.cpp
   src/entities/renderentity.cpp
   src/states/intro.cpp
