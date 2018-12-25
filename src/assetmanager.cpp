@@ -28,7 +28,7 @@ GFXAssets& gfx = GFXAssets::getInstance();
 SFXAssets& sfx = SFXAssets::getInstance();
 
 bool AssetManager::load(std::string dir, std::string name) {
-  for (auto& ext : extensions) {
+  for (std::string ext : extensions) {
     std::string path = "/" + dir + "/" + (ext.empty() ? name : name + "." + ext);
     if (PHYSFS_exists(path.c_str())) {
       util::FileInputStream ifs;
