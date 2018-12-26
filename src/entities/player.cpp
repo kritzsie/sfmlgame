@@ -144,7 +144,7 @@ void Player::update() {
   const Input& run_input = engine->inputs[Action::run];
   const Input& jump_input = engine->inputs[Action::jump];
 
-  const float gravity = world->getGravity();
+  float gravity = world->getGravity();
 
   if (jump_input > 0.f) {
     jump(jump_input);
@@ -153,7 +153,7 @@ void Player::update() {
     jump_timer = 0.f;
   }
 
-  const float direction = std::max(-1.f, std::min(right_input - left_input, 1.f));
+  float direction = std::max(-1.f, std::min(right_input - left_input, 1.f));
   if (duck_input > 0.f
   and direction == 0.f) {
     duck();
@@ -223,7 +223,7 @@ void Player::update() {
     state_timer = 0.f;
   }
 
-  const float max_run_vel = (run_input ? (p_meter > 7.f ? 192.f : 160.f) : 96.f);
+  float max_run_vel = (run_input ? (p_meter > 7.f ? 192.f : 160.f) : 96.f);
   if (direction > 0.f
   and vel.x >= 0.f
   and vel.x <= max_run_vel) {
