@@ -101,7 +101,7 @@ World::World(Engine* engine, BaseGame* basegame, int x, int y, Padding<int> padd
   camera->setTarget(player);
 
   Entity* goomba = dynamic_cast<Goomba*>(spawnEntity(Goomba::create()));
-  goomba->pos = Vec2(320.f, 16.f);
+  goomba->pos = Vec2(360.f, 96.f);
 
   setTile(0, 0, 3);
   for (int x = 1; x <= 6; x++) {

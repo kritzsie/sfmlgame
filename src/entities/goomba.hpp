@@ -7,20 +7,26 @@ class Goomba : public Entity {
 private:
   Vec2f max_vel = Vec2f(192.f, 256.f);
 
-  void resolveEntityCollisions();
+  float timer = 0.f;
 
+  bool valid = true;
+
+  bool alive = true;
+  bool airborne = true;
+
+  void die();
+  void think();
+  void applyGravity();
+  void resolveEntityCollisions();
   void resolveWorldCollisions();
 
 public:
-  enum class State {
-    alive, dead
-  };
-
   static Factory create();
 
-  State state = State::alive;
+  bool isValid() const;
 
-  float timer = 0.f;
+  bool isAlive() const;
+  bool isAirborne() const;
 
   void update() override;
 
