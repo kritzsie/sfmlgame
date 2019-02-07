@@ -17,12 +17,14 @@
 #include <optional>
 
 namespace ke {
-char highASCII(char c) {
+static char highASCII(char c) {
   return c |= 128;
 }
 
-std::string highASCII(std::string str) {
-  for (auto& c : str) c = highASCII(c);
+static std::string highASCII(std::string str) {
+  for (auto& c : str) {
+    c = highASCII(c);
+  }
   return str;
 }
 

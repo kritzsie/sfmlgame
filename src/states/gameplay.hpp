@@ -9,8 +9,6 @@
 namespace ke {
 class BaseGame;
 
-std::string highASCII(std::string);
-
 class TextStyle {
 public:
   std::string font;
