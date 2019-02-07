@@ -21,6 +21,8 @@ public:
 
   void addCoins(int);
   void addLives(int);
+  void addScore(int);
+  void addScore(long);
   void addScore(ulong);
 
   void enter() final;

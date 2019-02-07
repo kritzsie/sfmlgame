@@ -33,6 +33,14 @@ void BaseGame::addLives(int count) {
   lives = std::max(0, std::min(lives + count, 99));
 }
 
+void BaseGame::addScore(int count) {
+  score += count;
+}
+
+void BaseGame::addScore(long count) {
+  score += count;
+}
+
 void BaseGame::addScore(ulong count) {
   score += count;
 }
