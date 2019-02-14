@@ -8,10 +8,17 @@ BaseEntity::Factory BaseEntity::create() {
   };
 }
 
+EntityType BaseEntity::getType() const {
+  return type;
+}
+
 void BaseEntity::update() {
   pos += vel / engine->ticktime.rate;
 }
 
+BaseEntity::BaseEntity(EntityType type, Engine* engine, World* world)
+: type(type), engine(engine), world(world) {}
+
 BaseEntity::BaseEntity(Engine* engine, World* world)
-: engine(engine), world(world) {}
+: BaseEntity(EntityType::Marker, engine, world) {}
 }

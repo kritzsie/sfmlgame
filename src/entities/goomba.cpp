@@ -130,7 +130,7 @@ void Goomba::update() {
 }
 
 Goomba::Goomba(Engine* engine, World* world)
-: Entity(engine, world) {
+: Entity(EntityType::Goomba, engine, world) {
   pushFrame("walking", "goombawalk0", Rect(0, 0, 16, 16), Vec2(8.f, -1.f), 0.25f);
   pushFrame("walking", "goombawalk1", Rect(0, 0, 16, 16), Vec2(8.f, -1.f), 0.25f);
 

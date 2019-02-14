@@ -307,7 +307,7 @@ void Player::updateState() {
 }
 
 Player::Player(Engine* engine, World* world)
-: Entity(engine, world, 5.f, 25.f) {
+: Entity(EntityType::Player, engine, world, 5.f, 25.f) {
   pushFrame("idle", "bigmariowalk_0", Rect(0, 0, 14, 27), Vec2f(7, -1), 0.f);
 
   pushFrame("walking", "bigmariowalk_1", Rect(0, 0, 16, 27), Vec2f(9, -1), 0.125f);

@@ -22,10 +22,7 @@ public:
 };
 
 class RenderEntity : public BaseEntity, public Sprite {
-public:
-  static Factory create();
-
 protected:
-  RenderEntity(Engine*, World*);
+  RenderEntity(EntityType, Engine*, World*);
 };
 }

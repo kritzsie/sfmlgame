@@ -7,15 +7,13 @@
 namespace ke {
 class Entity : public RenderEntity {
 public:
-  static Factory create();
-
   float radius;
   float height;
 
   Rect<float> getBBox() const;
 
 protected:
-  Entity(Engine*, World*);
-  Entity(Engine*, World*, float, float);
+  Entity(EntityType, Engine*, World*);
+  Entity(EntityType, Engine*, World*, float, float);
 };
 }

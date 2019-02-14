@@ -82,5 +82,6 @@ void Camera::update() {
   resolveWorldCollisions();
 }
 
-Camera::Camera(Engine* engine, World* world) : BaseEntity(engine, world) {}
+Camera::Camera(Engine* engine, World* world)
+: BaseEntity(EntityType::Camera, engine, world) {}
 }

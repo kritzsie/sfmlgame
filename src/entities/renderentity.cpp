@@ -17,12 +17,6 @@ void Sprite::setDirection(byte d) {
 
 Sprite::Sprite() : RenderStates(), scale(1.f) {}
 
-RenderEntity::Factory RenderEntity::create() {
-  return [](Engine* engine, World* world) -> BaseEntity* {
-    return new RenderEntity(engine, world);
-  };
-}
-
-RenderEntity::RenderEntity(Engine* engine, World* world)
-: BaseEntity(engine, world), Sprite() {}
+RenderEntity::RenderEntity(EntityType type, Engine* engine, World* world)
+: BaseEntity(type, engine, world), Sprite() {}
 }
