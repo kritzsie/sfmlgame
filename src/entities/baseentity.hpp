@@ -28,8 +28,6 @@ public:
   Vec2f pos;
   Vec2f vel;
 
-  virtual EntityType getType() const;
-
   virtual void update();
 
   virtual ~BaseEntity() = default;

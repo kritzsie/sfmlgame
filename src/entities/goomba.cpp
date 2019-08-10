@@ -45,8 +45,8 @@ void Goomba::applyGravity() {
 
 void Goomba::resolveEntityCollisions() {
   for (BaseEntity* baseentity : world->getEntities()) {
-    Entity* player = dynamic_cast<Player*>(baseentity);
-    if (player != nullptr) {
+    if (baseentity->type == EntityType::Player) {
+      Entity* player = dynamic_cast<Player*>(baseentity);
       if (alive == true
       and player->getBBox().intersects(getBBox())) {
         die();

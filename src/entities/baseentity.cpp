@@ -8,10 +8,6 @@ BaseEntity::Factory BaseEntity::create() {
   };
 }
 
-EntityType BaseEntity::getType() const {
-  return type;
-}
-
 void BaseEntity::update() {
   pos += vel / engine->ticktime.rate;
 }
