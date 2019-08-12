@@ -8,6 +8,7 @@ enum class EntityType : uint32_t {
   Marker,
   Camera,
   Player,
+  GoalCard,
   Goomba
 };
 }

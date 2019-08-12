@@ -100,8 +100,11 @@ World::World(Engine* engine, BaseGame* basegame, int x, int y, Padding<int> padd
   player->pos = Vec2(32.f, 16.f);
   camera->setTarget(player);
 
-  Entity* goomba = dynamic_cast<Goomba*>(spawnEntity(Goomba::create()));
-  goomba->pos = Vec2(360.f, 96.f);
+  BaseEntity* entity = spawnEntity(Goomba::create());
+  entity->pos = Vec2(360.f, 96.f);
+
+  entity = spawnEntity(GoalCard::create());
+  entity->pos = Vec2(1032.f, 96.f);
 
   setTile(0, 0, 3);
   for (int x = 1; x <= 6; x++) {
